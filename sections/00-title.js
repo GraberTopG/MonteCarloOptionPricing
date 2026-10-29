@@ -109,7 +109,8 @@
     .hk-q{position:absolute;left:0;right:0;top:684px;margin:0;font:700 46px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}
     /* the Swiss Derivative Map in one row: families as small boxes, the yield-enhancement categories as chips, ours highlighted */
     .hk-fam{position:absolute;left:0;right:0;top:442px;height:226px}
-    .hk-fam-h{margin:0 0 8px;font:700 20px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink)}
+    .hk-fam-h{margin:0 0 8px;font:700 20px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink);display:flex;align-items:baseline}
+    .hk-fam-h .pop{margin-left:auto;font:700 21px/1 var(--f-body);letter-spacing:0;text-transform:none;color:var(--green)}
     .hk-fam-r{display:grid;grid-template-columns:170px 1fr 170px 200px 170px;gap:14px;height:196px}
     .hk-fb{background:var(--card);border-radius:8px;padding:10px 12px;opacity:.55}
     .hk-fb b{display:block;font:800 32px/1 var(--f-head);color:var(--green-ink)}
@@ -558,10 +559,10 @@
             <div class="hk-rf" data-step="1" style="--d:11"><p class="k">Risk-free rate</p><p class="n">${R_TXT}%</p><p>continuously compounded ≈ ${R_YEAR}% a year</p></div>
           </div>
           <div class="hk-fam">
-            <p class="hk-fam-h">Where it sits: Swiss Derivative Map (SSPA)</p>
+            <p class="hk-fam-h">Where it sits: Swiss Derivative Map (SSPA)<span class="pop">BRCs: one of the most popular structured products in Switzerland, primarily due to its high fixed coupon</span></p>
             <div class="hk-fam-r">
               <div class="hk-fb"><b>11</b><span>Capital protection</span></div>
-              <div class="hk-fb y"><div class="hd"><b>12</b><span>Yield enhancement</span><span class="tg">You give up upside for a high, fixed coupon</span></div>
+              <div class="hk-fb y"><div class="hd"><b>12</b><span>Yield enhancement</span></div>
                 <div class="hk-chips">${[["1200", "Discount Certificate"], ["1230", "Barrier Reverse Convertible"], ["1210", "Barrier Discount Certificate"], ["1255", "Conditional Coupon Reverse Convertible"], ["1220", "Reverse Convertible"], ["1260", "Conditional Coupon Barrier Reverse Convertible"]].map(([c, n]) => `<i${c === "1230" ? ' class="me"' : ""}>${c}<em>${n}</em></i>`).join("")}</div></div>
               <div class="hk-fb"><b>13</b><span>Participation</span></div>
               <div class="hk-fb"><b>14</b><span>Investment products with additional credit risk</span></div>
