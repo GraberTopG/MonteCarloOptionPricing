@@ -19,7 +19,7 @@
   const $ = (s, root) => (root || document).querySelector(s);
 
   // ---------- shared utilities ----------
-  const F = { head: '"Raleway", Arial, sans-serif', body: "Arial, Helvetica, sans-serif", mono: '"JetBrains Mono", Consolas, monospace', math: '"Cambria Math", "STIX Two Math", Cambria, serif' };
+  const F = { head: 'Arial, Helvetica, sans-serif', body: "Arial, Helvetica, sans-serif", mono: 'Arial, Helvetica, sans-serif', math: '"Cambria Math", "STIX Two Math", Cambria, serif' };
   const util = {
     W, H, F,
     // the system's "Reduce motion" turns the animations off, except in record mode: a take always animates

@@ -37,9 +37,9 @@
   --c-adbe:#1F3B2D; --c-aapl:#00802F; --c-msft:#8CCAA1;
   --c-adbe-light:#1F3B2D; --c-aapl-light:#00802F; --c-msft-light:#529069;   /* the same on text: Microsoft darker, so it reads on white and grey */
 
-  --f-head:"Raleway", Arial, sans-serif;
+  --f-head:Arial, Helvetica, sans-serif;
   --f-body:Arial, Helvetica, sans-serif;
-  --f-mono:"JetBrains Mono", Consolas, "Courier New", monospace;
+  --f-mono:Arial, Helvetica, sans-serif;
   --f-math:"Cambria Math", "STIX Two Math", "Latin Modern Math", Cambria, math;
 }
 *{box-sizing:border-box}
