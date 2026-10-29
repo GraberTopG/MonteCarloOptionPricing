@@ -191,6 +191,11 @@
       // what the chart shows, under it: the payoff of the two highlighted years, and what each line is
       ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
       ctx.textAlign = "left";
+      if (o.title) {   // the chart's own title, top left, in the label style but larger
+        ctx.font = "700 24px " + U.F.body; ctx.fillStyle = U.css("--green-ink");
+        ctx.fillText(o.title.toUpperCase(), o.titleX, o.titleY);
+        ctx.font = "700 18px " + U.F.body;
+      }
       if (lg > 0) {
         ctx.globalAlpha = lg;
         const ly = LY, items = [["PAYOFF:", null], ["COUPONS + USD 1,000", col.green], ["COUPONS + SHARES OF THE WORST", col.ink]];
@@ -202,7 +207,7 @@
           x += w[i] + 28;
         });
         ctx.fillStyle = col.muted; ctx.textAlign = "right";
-        ctx.fillText("EACH LINE: ONE SIMULATED YEAR OF THE WORST-PERFORMING UNDERLYING UNTIL REDEMPTION", XR, ly + 36);
+        ctx.fillText("EACH LINE = ONE SIMULATED YEAR", XR, ly + 36);
         ctx.globalAlpha = 1;
       }
       ctx.letterSpacing = "0px";
@@ -229,7 +234,7 @@
           <p class="tt-uni">University of St.Gallen · Corporate Finance (7,107)</p>
           <p class="tt-meta"><b>Group III</b> · Ali Bozan Can, Benjamin Marco Bolliger, Cédric Anwar El Soda, Ivan Kissinger, Joaquim Graber, Leandro Broccucci, Mirko Cirantineo</p>
         </div>`;
-      return pathsArt(root, 7, { full: true, X0: 330, X1: 1780, XR: 1800, Y1: 580, SC: 410, LY: 885 });
+      return pathsArt(root, 7, { full: true, title: "Monte Carlo: simulated paths of the worst underlying until redemption", titleX: 120, titleY: 318, X0: 330, X1: 1780, XR: 1800, Y1: 580, SC: 410, LY: 885 });
     }
   });
 
