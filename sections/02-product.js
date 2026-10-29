@@ -105,15 +105,24 @@
     .prd-tl li::before{content:"";position:absolute;left:-46px;top:5px;width:18px;height:18px;border-radius:50%;background:var(--green)}
     .prd-tl li:not(:last-child)::after{content:"";position:absolute;left:-38.5px;top:14px;width:3px;height:calc(100% + 30px);background:var(--green-mid)}
     .prd-tl b{display:block;font:700 34px var(--f-body);color:var(--green-ink)}
-    .prd-tb.cp .ok{margin-top:48px;font:700 32px var(--f-body);color:var(--green)}
+    .prd-tb.cp .ok{margin-top:48px;font:700 30px/1.2 var(--f-body);color:var(--green)}
     .prd-tb.q{background:#fff;box-shadow:inset 0 0 0 3px var(--green-ink);flex-direction:row;align-items:center;gap:20px;font:700 28px/1.25 var(--f-body);color:var(--ink)}
     .prd-tb.q .num{width:52px;height:52px}
     /* the three outcomes, numbered 1-3 (the deck's round number badges) */
     .prd-tb.cash,.prd-tb.shr{flex-direction:row;align-items:center;justify-content:flex-start;gap:24px}
-    .prd-tb.cash{background:var(--green-light);border-left:8px solid var(--green);border-radius:4px 12px 12px 4px;font:700 40px/1.1 var(--f-body);color:var(--green)}
+    .prd-tb.cash{background:var(--green-light);border-left:8px solid var(--green);border-radius:4px 12px 12px 4px}
+    .prd-tb.cash b{display:block;font:700 36px/1.1 var(--f-body);color:var(--green)}
+    .prd-tb .num.g{background:var(--green)} .prd-tb .num.k{background:var(--red-ink)} .prd-tb .num.g,.prd-tb .num.k{font-size:24px}
+    /* the coupons in every outcome: a chip in the colour of the coupon card on the left */
+    .prd-tb .cpn{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:6px;background:#3B8A5A;color:#fff;font:700 24px/1.2 var(--f-body)}
+    .prd-tb .tt{display:inline-block;margin-left:12px;font:700 26px/1.2 var(--f-body);color:var(--green-ink)}
+    .prd-tb.shr .sm{display:block;font-size:22px;line-height:1.3;color:var(--muted);margin-top:8px}
+    .prd-tb.shr .exl{margin:10px 0 0;padding-top:8px;border-top:2px dashed var(--rule);font:21px/1.3 var(--f-body);color:var(--ink);white-space:nowrap}
+    .prd-tb.shr .exl b.tot{display:inline;font-size:22px;color:var(--red-ink)}
+    .slide .prd-tb .exl[data-step]{transform:none}
     .prd-tb.shr{background:var(--red-soft);border-left:8px solid var(--red-ink);border-radius:4px 12px 12px 4px}
     .prd-tb.shr b{display:block;font:700 32px/1.15 var(--f-body);color:var(--red-ink)}
-    .prd-tb.shr div span{display:block;font-size:26px;line-height:1.3;color:var(--ink);margin-top:8px}
+
     .prd-tb.ex{background:var(--orange-light);justify-content:flex-start;padding:16px 26px}
     .prd-tb.ex h4{margin:0 0 8px;font:700 28px/1.2 var(--f-body);color:var(--ink)}
     .prd-calc{display:grid;grid-template-columns:1fr auto;gap:2px 16px;font-size:26px;line-height:1.35}
@@ -423,14 +432,14 @@
   // ================= brc-tree: what you get at maturity, one branch per click; the three outcomes numbered 1-3 =================
   Deck.addSlide({
     id: "brc-tree", section: "product", steps: 4, secs: 34,
-    title: "Payoff scenarios per USD 1,000 invested",
+    title: "Payoff scenarios per USD 1,000 invested",   // outcomes 1, 2a, 2b as on the payoff slide
     subtitle: "You always get the coupons, then either your USD 1,000 back or shares of the worst stock",
     sources: "Own illustration",
     notes: `You always get both coupons, ${CPN} dollars. [→] At the end, your thousand comes back in cash if no stock touched its barrier. [→] If one did, that's called the kick-in. Then the final prices decide. If every stock ends at or above its starting price, you still get cash. [→] If even one ends below, you get shares of the worst stock, with fractions paid in cash. [→] Say it ends ${f0((1 - EX_WORST) * 100)} percent down: shares worth ${f0(EX_SHARES)}, plus the coupons, ${f0(EX_SHARES + CPN)}.`,
     render(body) {
       // boxes in body pixels (the body is always 1744 × 740): x, y, w, h
       const Q1 = [470, 20, 590, 160], A1 = [1180, 20, 564, 160], Q2 = [470, 290, 590, 160], B1 = [1180, 290, 564, 160];
-      const C1 = [470, 560, 590, 160], EX = [1180, 510, 564, 210];   // EX ends at 720 with C1 and the coupon card
+      const C1 = [1180, 474, 564, 246];   // outcome 2b, in the same column as 1 and 2a; the example goes inside it
       const pos = r => `left:${r[0]}px;top:${r[1]}px;width:${r[2]}px;height:${r[3]}px`;
       const mid = r => [r[0] + r[2] / 2, r[1] + r[3] / 2];
       const pill = (x, y, t, ok) => `<g class="pill ${ok ? "ok" : "ko"}" transform="translate(${x} ${y})"><rect x="-38" y="-21" width="76" height="42" rx="21"/><text>${t}</text></g>`;
@@ -444,35 +453,23 @@
             <defs><marker id="prd-arr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--rule);stroke:none"/></marker></defs>
             <g data-step="1"><path d="M360 ${mid(Q1)[1]}H${Q1[0] - 6}" marker-end="url(#prd-arr)"/>${hArrow(Q1, A1)}${pill(cx(Q1, A1), mid(Q1)[1], "No", true)}</g>
             <g data-step="2">${vArrow(Q1, Q2)}${pill(mid(Q1)[0], cy(Q1, Q2), "Yes", false)}${hArrow(Q2, B1)}${pill(cx(Q2, B1), mid(Q2)[1], "Yes", true)}</g>
-            <g data-step="3">${vArrow(Q2, C1)}${pill(mid(Q2)[0], cy(Q2, C1), "No", false)}</g>
-            <g data-step="4"><path class="dash" d="M${C1[0] + C1[2]} ${mid(C1)[1]}H${EX[0] - 4}"/></g>
+            <g data-step="3"><path d="M${mid(Q2)[0]} ${Q2[1] + Q2[3]}V${C1[1] + 80}H${C1[0] - 6}" marker-end="url(#prd-arr)"/>${pill(mid(Q2)[0], Q2[1] + Q2[3] + 46, "No", false)}</g>
           </svg>
           <div class="prd-tb cp">
             <span class="chip">COUPONS</span>
             <div class="v">${f0(CPN)}</div><div class="eq">= ${N_CPN} × ${HALF}</div><div class="unit">USD per 1,000</div>
             <ol class="prd-tl">${MONTHS.map(m => `<li><b>${HALF}</b>after ${m} months</li>`).join("")}</ol>
-            <div class="ok">always paid</div>
+            <div class="ok">paid in 1, 2a and 2b</div>
           </div>
           <div class="prd-tb q" style="${pos(Q1)}" data-step="1"><span class="num">?</span><span>Kick-in: did any stock touch ${KI}?</span></div>
-          <div class="prd-tb cash" style="${pos(A1)};--d:2" data-step="1"><span class="num">1</span><span>USD 1,000 in cash</span></div>
+          <div class="prd-tb cash" style="${pos(A1)};--d:2" data-step="1"><span class="num g">1</span><div><b>USD 1,000 in cash</b><span class="cpn">+ USD ${CPN} coupons</span><span class="tt">= USD ${f0(NOM + CPN)}</span></div></div>
           <div class="prd-tb q" style="${pos(Q2)}" data-step="2"><span class="num">?</span><span>Is every stock at or above its strike, its starting price?</span></div>
-          <div class="prd-tb cash" style="${pos(B1)};--d:2" data-step="2"><span class="num">2</span><span>USD 1,000 in cash</span></div>
-          <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><span class="num">3</span><div><b>Shares of the worst stock</b><span>USD 1,000 ÷ its starting price; fractions in cash</span></div></div>
-          <div class="prd-tb ex" style="${pos(EX)}" data-step="4">
-            <h4>Example: worst stock −${f0((1 - EX_WORST) * 100)}%</h4>
-            <div class="prd-calc"><span>${ex[0]}</span><span class="r">${ex[1]}</span><span>${ex[2]}</span><span class="r">${ex[3]}</span>
-              <span class="tot">You get</span><span class="tot r">–</span></div>
-          </div>
+          <div class="prd-tb cash" style="${pos(B1)};--d:2" data-step="2"><span class="num g">2a</span><div><b>USD 1,000 in cash</b><span class="cpn">+ USD ${CPN} coupons</span><span class="tt">= USD ${f0(NOM + CPN)}</span></div></div>
+          <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><span class="num k">2b</span><div><b>Shares of the worst stock</b><span class="cpn">+ USD ${CPN} coupons</span>
+            <span class="sm">Number: USD 1,000 ÷ starting price</span>
+            <p class="exl" data-step="4">e.g. worst stock −${f0((1 - EX_WORST) * 100)}%: ${f0(EX_SHARES)} + ${CPN} = <b class="tot">USD ${f0(EX_SHARES + CPN)}</b></p></div></div>
         </div>`;
-      const tot = body.querySelector(".prd-calc .tot.r");
-      let a = null;
-      return {
-        step(i) {
-          if (a) a.cancel();
-          if (i >= 4) a = U.counter(tot, EX_SHARES, EX_SHARES + CPN, 900, 0, "USD "); else tot.textContent = "USD " + f0(EX_SHARES + CPN);
-        },
-        leave() { if (a) a.cancel(); }
-      };
+      return {};
     }
   });
 
