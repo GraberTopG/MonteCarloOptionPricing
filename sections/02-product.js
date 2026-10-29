@@ -111,7 +111,7 @@
     /* the three outcomes, numbered 1-3 (the deck's round number badges) */
     .prd-tb.cash,.prd-tb.shr{flex-direction:row;align-items:center;justify-content:flex-start;gap:24px}
     .prd-tb.cash{background:var(--green-light);border-left:8px solid var(--green);border-radius:4px 12px 12px 4px}
-    .prd-tb.cash b{display:block;font:700 36px/1.1 var(--f-body);color:var(--green)}
+    .prd-tb.cash b{display:block;font:700 30px/1.1 var(--f-body);color:var(--green)}
     .prd-tb .num.g{background:var(--green)} .prd-tb .num.k{background:var(--red-ink)} .prd-tb .num.g,.prd-tb .num.k{font-size:24px}
     /* the coupons in every outcome: a chip in the colour of the coupon card on the left */
     .prd-tb .cpn{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:6px;background:#3B8A5A;color:#fff;font:700 24px/1.2 var(--f-body)}
@@ -120,12 +120,15 @@
     .prd-tb.shr .exl{margin:12px 0 0;padding-top:10px;border-top:2px dashed var(--rule);font:21px/1.35 var(--f-body);color:var(--ink)}
     .prd-tb.shr .exl .eh{margin:0 0 2px;font-weight:700}
     .prd-tb.shr .exl .ec{margin:0 0 2px;color:var(--ink)}
-    .prd-tb.shr .exl .eg{display:grid;grid-template-columns:1fr auto;column-gap:16px}
-    .prd-tb.shr .exl .r{text-align:right;font-variant-numeric:tabular-nums}
-    .prd-tb.shr .exl .t{font-weight:700;border-top:1.5px solid var(--ink);margin-top:2px}
+    .prd-tb .eg{display:grid;grid-template-columns:1fr auto;column-gap:16px}
+    .prd-tb .eg .r{text-align:right;font-variant-numeric:tabular-nums}
+    .prd-tb .eg .t{font-weight:700;border-top:1.5px solid var(--ink);margin-top:2px}
+    .prd-tb .eg .c{color:#2F7A4C;font-weight:700}   /* the coupons, in every outcome */
+    .prd-tb .eg.cash{margin-top:6px;font:21px/1.35 var(--f-body);color:var(--ink);width:100%}
+    .prd-tb.cash>div,.prd-tb.shr>div{flex:1}
     .slide .prd-tb .exl[data-step]{transform:none}
     .prd-tb.shr{background:var(--red-soft);border-left:8px solid var(--red-ink);border-radius:4px 12px 12px 4px}
-    .prd-tb.shr b{display:block;font:700 32px/1.15 var(--f-body);color:var(--red-ink)}
+    .prd-tb.shr b{display:block;font:700 30px/1.1 var(--f-body);color:var(--red-ink)}
     .prd-tb.shr{align-items:flex-start;padding-top:22px} .prd-tb.shr>.num{margin-top:2px}
 
     .prd-tb.ex{background:var(--orange-light);justify-content:flex-start;padding:16px 26px}
@@ -445,7 +448,7 @@
       // boxes in body pixels (the body is always 1744 × 740): x, y, w, h
       // three outcomes in one column (1 and 2a short, 2b tall for the example); question 1 level with outcome 1, question 2
       // centred between 2a and 2b, so its two answers branch up and down symmetrically
-      const A1 = [1060, 20, 684, 150], B1 = [1060, 190, 684, 150], C1 = [1060, 360, 684, 360];
+      const A1 = [1060, 20, 684, 170], B1 = [1060, 210, 684, 170], C1 = [1060, 400, 684, 320];
       const Q1 = [430, 20, 520, 150], Q2 = [430, (B1[1] + B1[3] / 2 + C1[1] + C1[3] / 2) / 2 - 75, 520, 150];
       // the example: the worst stock (Adobe) ends 20% down; the note delivers its conversion ratio in shares, whole shares
       // in kind and the fraction in cash
@@ -474,16 +477,16 @@
             <div class="ok">paid in 1, 2a and 2b</div>
           </div>
           <div class="prd-tb q" style="${pos(Q1)}" data-step="1"><span class="num">?</span><span>Kick-in: did any stock touch ${KI}?</span></div>
-          <div class="prd-tb cash" style="${pos(A1)};--d:2" data-step="1"><span class="num g">1</span><div><b>USD 1,000 in cash</b><span class="cpn">+ USD ${CPN} coupons</span><span class="tt">= USD ${f0(NOM + CPN)}</span></div></div>
+          <div class="prd-tb cash" style="${pos(A1)};--d:2" data-step="1"><span class="num g">1</span><div><b>Max return</b><div class="eg cash"><span>Nominal</span><span class="r">${fx(NOM)}</span><span class="c">Coupons 2 × ${HALF}</span><span class="r c">${fx(CPN)}</span><span class="t">Total value</span><span class="r t">USD ${fx(NOM + CPN)}</span></div></div></div>
           <div class="prd-tb q" style="${pos(Q2)}" data-step="2"><span class="num">?</span><span>Is every stock at or above its strike, its starting price?</span></div>
-          <div class="prd-tb cash" style="${pos(B1)};--d:2" data-step="2"><span class="num g">2a</span><div><b>USD 1,000 in cash</b><span class="cpn">+ USD ${CPN} coupons</span><span class="tt">= USD ${f0(NOM + CPN)}</span></div></div>
-          <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><span class="num k">2b</span><div><b>Shares of the worst stock</b><span class="cpn">+ USD ${CPN} coupons</span>
+          <div class="prd-tb cash" style="${pos(B1)};--d:2" data-step="2"><span class="num g">2a</span><div><b>Max return</b><div class="eg cash"><span>Nominal</span><span class="r">${fx(NOM)}</span><span class="c">Coupons 2 × ${HALF}</span><span class="r c">${fx(CPN)}</span><span class="t">Total value</span><span class="r t">USD ${fx(NOM + CPN)}</span></div></div></div>
+          <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><span class="num k">2b</span><div><b>Shares of the worst stock</b>
             <span class="sm">Whole shares delivered, the fraction paid in cash</span>
             <div class="exl" data-step="4"><p class="eh">e.g. Adobe worst, −${f0((1 - EX_WORST) * 100)}%: USD ${fx(S0w)} × ${f0(EX_WORST * 100)}% = ${fx(ST)}</p>
               <p class="ec">Conversion ratio: 1,000 ÷ ${fx(S0w)} = ${U.fmt(RATIO_W, 4)} shares</p>
               <div class="eg"><span>${WHOLE} Adobe shares delivered</span><span class="r">${fx(WHOLE * ST)}</span>
               <span>${U.fmt(FRAC, 4)} share paid in cash</span><span class="r">${fx(FRAC * ST)}</span>
-              <span>Coupons 2 × ${HALF}</span><span class="r">${fx(CPN)}</span>
+              <span class="c">Coupons 2 × ${HALF}</span><span class="r c">${fx(CPN)}</span>
               <span class="t">Total value</span><span class="r t">USD ${fx(RATIO_W * ST + CPN)}</span></div></div></div></div>
         </div>`;
       return {};
