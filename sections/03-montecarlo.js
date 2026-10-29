@@ -72,7 +72,7 @@
     .mc-o-chk b{font-size:34px;color:var(--green)}
     .mc-o-chk p+p{font-size:21px;color:var(--muted)}
     .mc-o-ev .ev{color:var(--green)}
-    .mc-o-lo{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:28px}
+    .mc-o-lo{order:-1;flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:28px}
     .mc-o-chart{margin:0;min-height:0;display:flex;flex-direction:column}
     .mc-o-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
     .mc-o-lg{display:flex;justify-content:flex-end;gap:28px;font:19px var(--f-body);color:var(--ink)}
@@ -223,7 +223,7 @@
               <div class="mc-o-evf" data-step="2">${EV}</div>
             </div>
             <div class="mc-o-lo">
-              <figure class="mc-o-chart" data-step="1">
+              <figure class="mc-o-chart">
                 <div class="mc-o-lg"><span><i class="mc-lg"></i>Average so far</span><span data-step="2"><i class="mc-lg d"></i>Exact E(X) = 3.5</span></div>
                 <canvas></canvas>
                 <figcaption>${fmt(ROLL.n, 0)} simulated rolls of a fair die: each dot is one roll, the line the average so far</figcaption>
