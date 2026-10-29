@@ -116,12 +116,16 @@
     /* the coupons in every outcome: a chip in the colour of the coupon card on the left */
     .prd-tb .cpn{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:6px;background:#3B8A5A;color:#fff;font:700 24px/1.2 var(--f-body)}
     .prd-tb .tt{display:inline-block;margin-left:12px;font:700 26px/1.2 var(--f-body);color:var(--green-ink)}
-    .prd-tb.shr .sm{display:block;font-size:22px;line-height:1.3;color:var(--muted);margin-top:8px}
-    .prd-tb.shr .exl{margin:10px 0 0;padding-top:8px;border-top:2px dashed var(--rule);font:21px/1.3 var(--f-body);color:var(--ink);white-space:nowrap}
-    .prd-tb.shr .exl b.tot{display:inline;font-size:22px;color:var(--red-ink)}
+    .prd-tb.shr .sm{display:block;font-size:20px;line-height:1.3;color:var(--muted);margin-top:10px}
+    .prd-tb.shr .exl{margin:12px 0 0;padding-top:10px;border-top:2px dashed var(--rule);font:21px/1.35 var(--f-body);color:var(--ink)}
+    .prd-tb.shr .exl .eh{margin:0 0 2px;font-weight:700}
+    .prd-tb.shr .exl .eg{display:grid;grid-template-columns:1fr auto;column-gap:16px}
+    .prd-tb.shr .exl .r{text-align:right;font-variant-numeric:tabular-nums}
+    .prd-tb.shr .exl .t{font-weight:700;border-top:1.5px solid var(--ink);margin-top:2px}
     .slide .prd-tb .exl[data-step]{transform:none}
     .prd-tb.shr{background:var(--red-soft);border-left:8px solid var(--red-ink);border-radius:4px 12px 12px 4px}
     .prd-tb.shr b{display:block;font:700 32px/1.15 var(--f-body);color:var(--red-ink)}
+    .prd-tb.shr{align-items:flex-start;padding-top:22px} .prd-tb.shr>.num{margin-top:2px}
 
     .prd-tb.ex{background:var(--orange-light);justify-content:flex-start;padding:16px 26px}
     .prd-tb.ex h4{margin:0 0 8px;font:700 28px/1.2 var(--f-body);color:var(--ink)}
@@ -435,11 +439,17 @@
     title: "Payoff scenarios per USD 1,000 invested",   // outcomes 1, 2a, 2b as on the payoff slide
     subtitle: "You always get the coupons, then either your USD 1,000 back or shares of the worst stock",
     sources: "Own illustration",
-    notes: `You always get both coupons, ${CPN} dollars. [→] At the end, your thousand comes back in cash if no stock touched its barrier. [→] If one did, that's called the kick-in. Then the final prices decide. If every stock ends at or above its starting price, you still get cash. [→] If even one ends below, you get shares of the worst stock, with fractions paid in cash. [→] Say it ends ${f0((1 - EX_WORST) * 100)} percent down: shares worth ${f0(EX_SHARES)}, plus the coupons, ${f0(EX_SHARES + CPN)}.`,
+    notes: `You always get both coupons, ${CPN} dollars. [→] At the end, your thousand comes back in cash if no stock touched its barrier. [→] If one did, that's called the kick-in. Then the final prices decide. If every stock ends at or above its starting price, you still get cash. [→] If even one ends below, you get shares of the worst stock, with fractions paid in cash. [→] Say Adobe is the worst and ends ${f0((1 - EX_WORST) * 100)} percent down. The conversion ratio gives you 4.1959 shares: four Adobe shares are delivered, the rest is paid in cash. Together they're worth ${f0(EX_SHARES)} dollars, plus the coupons, ${f0(EX_SHARES + CPN)}.`,
     render(body) {
       // boxes in body pixels (the body is always 1744 × 740): x, y, w, h
-      const Q1 = [470, 20, 590, 160], A1 = [1180, 20, 564, 160], Q2 = [470, 290, 590, 160], B1 = [1180, 290, 564, 160];
-      const C1 = [1180, 474, 564, 246];   // outcome 2b, in the same column as 1 and 2a; the example goes inside it
+      // three outcomes in one column (1 and 2a short, 2b tall for the example); question 1 level with outcome 1, question 2
+      // centred between 2a and 2b, so its two answers branch up and down symmetrically
+      const A1 = [1060, 20, 684, 150], B1 = [1060, 190, 684, 150], C1 = [1060, 360, 684, 360];
+      const Q1 = [430, 20, 520, 150], Q2 = [430, (B1[1] + B1[3] / 2 + C1[1] + C1[3] / 2) / 2 - 75, 520, 150];
+      // the example: the worst stock (Adobe) ends 20% down; the note delivers its conversion ratio in shares, whole shares
+      // in kind and the fraction in cash
+      const S0w = XL.S0[0], ST = S0w * EX_WORST, RATIO_W = NOM / S0w, WHOLE = Math.floor(RATIO_W), FRAC = RATIO_W - WHOLE;
+      const fx = v => U.fmt(v, 2);
       const pos = r => `left:${r[0]}px;top:${r[1]}px;width:${r[2]}px;height:${r[3]}px`;
       const mid = r => [r[0] + r[2] / 2, r[1] + r[3] / 2];
       const pill = (x, y, t, ok) => `<g class="pill ${ok ? "ok" : "ko"}" transform="translate(${x} ${y})"><rect x="-38" y="-21" width="76" height="42" rx="21"/><text>${t}</text></g>`;
@@ -452,8 +462,9 @@
           <svg aria-hidden="true">
             <defs><marker id="prd-arr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--rule);stroke:none"/></marker></defs>
             <g data-step="1"><path d="M360 ${mid(Q1)[1]}H${Q1[0] - 6}" marker-end="url(#prd-arr)"/>${hArrow(Q1, A1)}${pill(cx(Q1, A1), mid(Q1)[1], "No", true)}</g>
-            <g data-step="2">${vArrow(Q1, Q2)}${pill(mid(Q1)[0], cy(Q1, Q2), "Yes", false)}${hArrow(Q2, B1)}${pill(cx(Q2, B1), mid(Q2)[1], "Yes", true)}</g>
-            <g data-step="3"><path d="M${mid(Q2)[0]} ${Q2[1] + Q2[3]}V${C1[1] + 80}H${C1[0] - 6}" marker-end="url(#prd-arr)"/>${pill(mid(Q2)[0], Q2[1] + Q2[3] + 46, "No", false)}</g>
+            <g data-step="2">${vArrow(Q1, Q2)}${pill(mid(Q1)[0], cy(Q1, Q2), "Yes", false)}
+              <path d="M${Q2[0] + Q2[2]} ${mid(Q2)[1]}H1005V${mid(B1)[1]}H${B1[0] - 6}" marker-end="url(#prd-arr)"/>${pill(1005, (mid(Q2)[1] + mid(B1)[1]) / 2, "Yes", true)}</g>
+            <g data-step="3"><path d="M1005 ${mid(Q2)[1]}V${mid(C1)[1]}H${C1[0] - 6}" marker-end="url(#prd-arr)"/>${pill(1005, (mid(Q2)[1] + mid(C1)[1]) / 2, "No", false)}</g>
           </svg>
           <div class="prd-tb cp">
             <span class="chip">COUPONS</span>
@@ -466,8 +477,12 @@
           <div class="prd-tb q" style="${pos(Q2)}" data-step="2"><span class="num">?</span><span>Is every stock at or above its strike, its starting price?</span></div>
           <div class="prd-tb cash" style="${pos(B1)};--d:2" data-step="2"><span class="num g">2a</span><div><b>USD 1,000 in cash</b><span class="cpn">+ USD ${CPN} coupons</span><span class="tt">= USD ${f0(NOM + CPN)}</span></div></div>
           <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><span class="num k">2b</span><div><b>Shares of the worst stock</b><span class="cpn">+ USD ${CPN} coupons</span>
-            <span class="sm">Number: USD 1,000 ÷ starting price</span>
-            <p class="exl" data-step="4">e.g. worst stock −${f0((1 - EX_WORST) * 100)}%: ${f0(EX_SHARES)} + ${CPN} = <b class="tot">USD ${f0(EX_SHARES + CPN)}</b></p></div></div>
+            <span class="sm">Conversion ratio = USD 1,000 ÷ starting price: whole shares delivered, the fraction paid in cash</span>
+            <div class="exl" data-step="4"><p class="eh">e.g. Adobe worst, −${f0((1 - EX_WORST) * 100)}%: USD ${fx(S0w)} → ${fx(ST)}</p>
+              <div class="eg"><span>${WHOLE} Adobe shares delivered</span><span class="r">${fx(WHOLE * ST)}</span>
+              <span>${U.fmt(FRAC, 4)} share paid in cash</span><span class="r">${fx(FRAC * ST)}</span>
+              <span>Coupons 2 × ${HALF}</span><span class="r">${fx(CPN)}</span>
+              <span class="t">Total value</span><span class="r t">USD ${fx(RATIO_W * ST + CPN)}</span></div></div></div></div>
         </div>`;
       return {};
     }
