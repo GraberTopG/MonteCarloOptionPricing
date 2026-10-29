@@ -538,7 +538,7 @@
   Deck.addSlide({
     id: "hook-product", section: "product", steps: 2, secs: secsFor(NOTES_PR, 2),
     title: "Banks' solution: A Multi‑BRC on $ADBE, $AAPL, $MSFT",   // non-breaking hyphen: "Multi-BRC" stays on one line
-    subtitle: "Banks offer this product to enhance your yield in sideways to slightly down markets",
+    subtitle: "Banks offer this highly popular product to enhance your yield in sideways to slightly down markets",
     sources: "Bloomberg (2026); Swiss Structured Products Association (2026)",
     notes: NOTES_PR,
     render(body) {
@@ -560,7 +560,7 @@
             <div class="hk-rf" data-step="1" style="--d:11"><p class="k">Risk-free rate</p><p class="n">${R_TXT}%</p><p>continuously compounded ≈ ${R_YEAR}% a year</p></div>
           </div>
           <div class="hk-fam">
-            <p class="hk-fam-h">Where it sits: Swiss Derivative Map (SSPA)<span class="pop">BRCs: one of the most popular structured products in Switzerland, primarily due to its high fixed coupon</span></p>
+            <p class="hk-fam-h">Where it sits: Swiss Derivative Map (SSPA)</p>
             <div class="hk-fam-r">
               <div class="hk-fb"><b>11</b><span>Capital protection</span></div>
               <div class="hk-fb y"><div class="hd"><b>12</b><span>Yield enhancement</span></div>
