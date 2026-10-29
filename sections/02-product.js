@@ -62,6 +62,8 @@
     .prd-po-l{display:flex;flex-direction:column;min-width:0}
     .prd-po-h{font:700 26px/1.2 var(--f-body);margin:0 0 4px;color:var(--ink)}
     .prd-po-h span{font-weight:400;color:var(--muted)}
+    .prd-po-h .sc{margin-left:22px;color:var(--ink);font-weight:400;white-space:nowrap}
+    .prd-po-h .sc i{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--green-ink);color:#fff;font:700 18px/1 var(--f-body);font-style:normal;margin-right:8px;vertical-align:2px}
     .prd-po-l canvas{flex:1;width:100%;min-height:0;display:block}
     .prd-po-r{position:relative;display:grid;grid-template-rows:repeat(3,1fr);gap:24px}
     .prd-po-c{position:relative;display:flex;gap:20px;align-items:center;background:var(--card);border-radius:10px;padding:20px 24px 20px 18px;border-left:8px solid transparent;transition:border-color .4s,background .4s}
@@ -213,8 +215,8 @@
   const PO_EX = [{ k: 0, low: 0.72, fin: EX_WORST }, { k: 2, low: B.kickIn, fin: 0.95 }, { k: 1, low: 0.90, fin: 1.20 }];
   Deck.addSlide({
     id: "brc-payoff", section: "product", steps: 3, secs: 60,
-    title: "The Multi-BRC Explained",
-    subtitle: "From a BRC to a Multi-BRC",
+    title: "How the Multi-BRC pays out",
+    subtitle: "Built in three steps: reverse convertible, then the barrier, then the worst of three stocks",
     sources: "Arnold (2026), slide 14; adapted from UBS AG (2018); own illustration",
     notes: `Let's build it in three steps. [→] Step one: a reverse convertible on one stock. The catch: if the stock ends below its starting price, you're paid back in shares, not cash. In option terms, you own a bond and have sold a put; the part of the coupon above normal interest is what the bank pays you for it. [→] Step two: the barrier. Now the put only kicks in if the stock touches 65 percent of its starting price. It becomes a down-and-in put. If the stock never gets there, you get your thousand back. [→] Step three: three stocks, and the worst-of principle. One touch by any of them is enough, and you get shares of the worst one, which isn't always the one that touched. So three stocks don't make it safer. They give you three chances to hit a barrier.`,
     render(body) {
@@ -222,12 +224,12 @@
       body.innerHTML = `
         <div class="prd-po">
           <div class="prd-po-l">
-            <p class="prd-po-h">Repayment at maturity, USD per 1,000 <span>· plus USD ${CPN} in coupons in every case</span></p>
+            <p class="prd-po-h">At maturity: <span class="sc"><i>1</i>Above strike → USD 1,000 + coupons</span><span class="sc"><i>2</i>Below strike → shares + coupons</span></p>
             <canvas></canvas>
           </div>
           <div class="prd-po-r">
             <div class="prd-po-slots">${[1, 2, 3].map(k => `<div class="prd-po-slot"><span class="num">${k}</span></div>`).join("")}</div>
-            ${card(1, "Reverse convertible", `<b>= bond + sold put</b><br>Below strike (100%): You receive shares`)}
+            ${card(1, "Reverse convertible", `<b>= bond + sold put</b><br>Strike decides if you receive the nominal or shares at maturity`)}
             ${card(2, `+ Barrier at ${KI}`, `<b>= down-and-in put</b><br>Touch of the barrier turns the product into a reverse convertible`)}
             ${card(3, "+ Worst Of Principle", `underlying asset with the worst performance counts`)}
           </div>
@@ -251,6 +253,10 @@
         ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.lineTo(f.x, f.y + f.h); ctx.lineTo(f.x + f.w, f.y + f.h); ctx.stroke();
         // step 3's example year is not on the USD scale: it gets its own box over the gridlines, from just under the payoff
         // line down to the x axis (only its % positions count); the barrier and the bars are drawn on top of it
+        if (S.k1 > 0) {   // the strike at 100%: above it USD 1,000 in cash, below it shares (under the example box of step 3)
+          ctx.save(); ctx.globalAlpha = lerp(S.k1, .3, .8); ctx.setLineDash([8, 6]); ctx.strokeStyle = U.css("--green-ink"); ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.moveTo(X(100), f.y + f.h); ctx.lineTo(X(100), Y(1190)); ctx.stroke(); ctx.restore();
+        }
         const exL = Math.min(...PO_EX.map(e => e.low)) * 100 - 5;
         const ex = { x: X(exL), y: Y(exL * 10) + 24, r: f.x + f.w - 2, b: Y(0) - 10 };
         const rowY = j => ex.y + 44 + (ex.b - ex.y - 44) * (2 * j + 1) / 6;
@@ -262,6 +268,11 @@
           ctx.save(); ctx.globalAlpha = o.a == null ? 1 : o.a; ctx.fillStyle = o.c || muted; ctx.font = (o.b ? "700 " : "") + (o.s || 22) + "px " + U.F.body;
           ctx.textAlign = o.al || "left"; ctx.textBaseline = o.bl || "middle";
           if (o.rot) { ctx.translate(x, y); ctx.rotate(o.rot); x = 0; y = 0; }
+          if (o.halo) {   // a solid background behind the text, so lines under it do not run through the letters
+            const m = ctx.measureText(s), wd = m.width, x0 = ctx.textAlign === "right" ? x - wd : ctx.textAlign === "center" ? x - wd / 2 : x;
+            ctx.fillStyle = o.halo; ctx.fillRect(x0 - 6, y - m.actualBoundingBoxAscent - 4, wd + 12, m.actualBoundingBoxAscent + m.actualBoundingBoxDescent + 8);
+            ctx.fillStyle = o.c || muted;
+          }
           ctx.fillText(s, x, y); ctx.restore();
         };
         // axis titles: from step 3 on, the x axis is the worst of the three stocks
@@ -269,6 +280,7 @@
         text("Stock at maturity (% of its starting level)", xc, xt, { al: "center", a: 1 - S.k3 });
         text("Worst stock at maturity (% of its starting level)", xc, xt, { al: "center", a: S.k3, c: oink, b: true });
         text("USD per 1,000", f.x - 76, f.y + f.h / 2, { al: "center", rot: -Math.PI / 2 });
+        if (S.k1 > 0) text("strike 100%", X(100) + 10, Y(1190), { b: true, c: U.css("--green-ink"), bl: "top", a: lerp(S.k1, .3, .8) });
         const poly = pts => { ctx.beginPath(); pts.forEach(([x, y], j) => j ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y))); ctx.closePath(); };
         const bk = B.kickIn * 100, slope = Math.atan2(Y(1000) - Y(0), X(100) - X(0));
         if (S.k1 > 0) {
@@ -304,7 +316,7 @@
           text("kick-in " + KI, X(bk) - 10, Y(1190), { b: true, c: loss, al: "right", bl: "top", a: S.k2 });
           ctx.strokeStyle = green; ctx.lineWidth = 7; ctx.lineCap = "round";
           ctx.beginPath(); ctx.moveTo(X(100), Y(1000)); ctx.lineTo(X(100 - (100 - bk) * S.k2), Y(1000)); ctx.stroke();
-          text("never touched: USD 1,000", X(bk) + 8, Y(1000) - 22, { b: true, c: green, a: lerp(S.k2, .5, 1) });
+          text("never touched: USD 1,000", X(bk) + 8, Y(1000) - 22, { b: true, c: green, a: lerp(S.k2, .5, 1), halo: "#fff" });
         }
         if (S.k3 > 0) {
           // three stocks: lowest → final level of each this year; any touch counts, but the worst one is paid out
@@ -339,7 +351,7 @@
             ctx.save(); ctx.globalAlpha = t; ctx.setLineDash([6, 6]); ctx.strokeStyle = orange; ctx.lineWidth = 2.5;
             ctx.beginPath(); ctx.moveTo(wx, y0 - 12); ctx.lineTo(wx, y0 - 12 + (wy - y0 + 12) * t); ctx.stroke(); ctx.setLineDash([]);
             ctx.fillStyle = orange; ctx.beginPath(); ctx.arc(wx, wy, 11, 0, 7); ctx.fill(); ctx.restore();
-            text("shares worth USD " + f0(EX_SHARES), wx + 24, wy + 3, { b: true, c: oink, a: t });   // level with its dot (not on the 750 gridline), under the payoff line
+            text("shares worth USD " + f0(EX_SHARES), wx + 24, wy + 3, { b: true, c: oink, a: t, halo: "#fff" });   // level with its dot (not on the 750 gridline), under the payoff line
           }
         }
       }
