@@ -5,6 +5,7 @@
   const U = Deck.util;
 
   Deck.addStyle(`
+    .slide[data-id="bs-recap"] .s-title{font-size:50px;white-space:nowrap}   /* the long title on one line */
     .lec{display:grid;grid-template-columns:1fr 600px;gap:56px;height:100%}
     .lec-l{display:flex;flex-direction:column;min-width:0}
     .lec-l .label{margin-bottom:22px}
@@ -47,7 +48,10 @@
     .lec-bot ul{grid-template-columns:1fr 1fr;gap:24px}
     .lec-bot .icard{font:22px/1.3 var(--f-body);padding:12px 20px 12px 16px}
     .lec-bot .icard b{font-size:27px}
-    .lec-bot .lec-why{margin:14px 0 0;font-size:24px} .lec-why b.no{color:var(--red-ink)}
+    .lec-why2{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:16px;padding:12px 14px 12px 22px;border-radius:10px;background:var(--green-light);font:24px/1.3 var(--f-body);color:var(--ink)}
+    .lec-why2 b{color:var(--green)}
+    .lec-why2 .no{flex:none;display:flex;align-items:center;gap:12px;padding:10px 20px 10px 12px;border-radius:8px;background:var(--red-ink);color:#fff;font:700 26px/1 var(--f-head)}
+    .lec-why2 .x{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--red-ink);display:grid;place-items:center;font:800 20px/1 var(--f-body)}
     .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:18px}
     .lec-panel .icard .num{width:46px;height:46px;font-size:22px}
     .lec-panel .icard{font:24px/1.3 var(--f-body);padding:16px 22px 16px 16px}
@@ -63,7 +67,7 @@
 
   Deck.addSlide({
     id: "bs-recap", section: "why", steps: 1, secs: 10,
-    title: "Recap: Where Black-Scholes can be applied",
+    title: "Recap: Black-Scholes and why it can't price a Multi-BRC",
     subtitle: "An exact formula for vanilla options, but only for one underlying and path-independent payoffs",
     lecture: "Lecture 4, slide 7",
     sources: "Arnold (2026); Black & Scholes (1973); Merton (1973)",
@@ -99,7 +103,7 @@
               <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>the formula prices an option on a single underlying</span></li>
               <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>European payoff: the path along the way is ignored</span></li>
             </ul>
-            <p class="lec-why" data-step="1" style="--d:6">Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path → Black-Scholes <b class="no">can't be applied</b></p>
+            <div class="lec-why2" data-step="1" style="--d:6"><span>Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path</span><span class="no"><span class="x">✕</span>Black-Scholes can't be applied</span></div>
           </section>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
