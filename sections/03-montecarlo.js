@@ -68,13 +68,18 @@
     .mc-o-ev>math{margin-top:14px}
     .mc-o-ev .ev{color:var(--green)}
     .mc-o-lo{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:28px}
-    .mc-o-lo .term{min-height:0}
+    .mc-o-chart{margin:0;min-height:0;display:flex;flex-direction:column}
+    .mc-o-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
+    .mc-o-lg{display:flex;justify-content:flex-end;gap:28px;font:19px var(--f-body);color:var(--ink)}
+    .mc-o-lg span:first-child{color:var(--green);font-weight:700}
+    .mc-o-chart figcaption{margin-top:6px;font:21px var(--f-body);color:var(--muted)}
     .mc-o-r{display:flex;flex-direction:column;gap:30px;min-width:0}
     .mc-o-res{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:20px 26px;font-size:26px}
     .mc-o-res b{font:800 56px/1 var(--f-head);color:var(--green);font-variant-numeric:lining-nums}
     .mc-o-int{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:20px 22px}
     .mc-o-int p{margin:0;font:24px/1.3 var(--f-body);color:var(--ink)}
     .mc-o-int math{font-size:34px}
+    .mc-o-int p.mb{font-size:21px;color:var(--muted)}
 
     /* ---------- 2) mc-sample ---------- */
     .mc-sa{display:grid;grid-template-rows:182px minmax(0,1fr);row-gap:16px;height:100%}
@@ -173,7 +178,7 @@
   const dieSVG = v => `<svg class="mc-die" viewBox="0 0 100 100" role="img" aria-label="${v}"><rect x="4" y="4" width="92" height="92" rx="16"/>${PIPS[v].map(i => `<circle cx="${26 + (i % 3) * 24}" cy="${26 + Math.floor(i / 3) * 24}" r="8.5"/>`).join("")}</svg>`;
   // Seed 1838 (searched offline with Deck.util.rng): the first roll is a 6, the first 10 average 4.5, the first 100 3.71
   // and all 1,000 3.499. One roll = one draw, 1 + floor(6u).
-  const ROLL = { seed: 1838, n: 1000, ms: 2400 };
+  const ROLL = { seed: 1838, n: 1000, ms: 5200 };
   const rolls = (() => {
     const r = U.rng(ROLL.seed), v = new Uint8Array(ROLL.n), avg = new Float64Array(ROLL.n + 1);
     let s = 0;
@@ -189,18 +194,18 @@
   const INT = `<math display="block">${EX}<mo>=</mo><mo>∫</mo><mi>x</mi><mo>·</mo><mi>f</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mspace width="0.2em"></mspace><mi>d</mi><mi>x</mi></math>`;
 
   Deck.addSlide({
-    id: "mc-origin", section: "mc", steps: 2, secs: 27,
+    id: "mc-origin", section: "mc", steps: 2, secs: 40,
     title: "Monte Carlo: averaging random draws to estimate an expected value",
     subtitle: "The exact expected value of a die is 3.5; by the law of large numbers, 1,000 random rolls get there too",
     sources: "Eckhardt (1987), p. 131; Metropolis (1987), p. 127; Haigh et al. (2014); dice example adapted from The Synthetic Mind (2026), about 1:20; own simulation",
-    notes: "In 1946, Stanislaw Ulam was recovering from an illness and playing solitaire. Instead of calculating his chances, he asked: why not play a hundred games and count the wins? [→] With John von Neumann, he applied the trick to neutrons in atomic bombs, for Los Alamos. [→] Their colleague Nicholas Metropolis suggested the name: Ulam had an uncle who just had to go to Monte Carlo.",
+    notes: "In 1946, Stanislaw Ulam was recovering from an illness and playing solitaire. Instead of calculating his chances, he asked: why not play a hundred games and count the wins? With John von Neumann, he used the idea for neutrons in atomic bombs at Los Alamos, and their colleague Nicholas Metropolis named it: Ulam had an uncle who just had to go to Monte Carlo. Take a die: we can calculate its expected value exactly, 3.5. [→] Now roll it a thousand times. At first the average jumps around, then it settles at 3.5. That's the law of large numbers, and that's Monte Carlo: estimate an expected value by averaging random draws. [→] A share price isn't a die: it's continuous, so the expected value becomes an integral. For our Multi-BRC, that integral has no closed-form solution, so we simulate it.",
     render(body) {
       body.innerHTML = `
         <div class="mc-o">
           <aside class="mc-o-h">
             <div><b>1946</b><p>Stanislaw Ulam, recovering from an illness, plays solitaire: why not play <em>100 games</em> and <em>count the wins</em>?</p></div>
-            <div data-step="1"><b>1947</b><p>With John von Neumann: neutrons in atomic bombs, for Los Alamos</p></div>
-            <div data-step="2"><b>The name</b><p>Their colleague Nicholas Metropolis suggests it: Ulam had an uncle who “just had to go to Monte Carlo”</p><small>Metropolis (1987), p. 127</small></div>
+            <div><b>1947</b><p>With John von Neumann: neutrons in atomic bombs, for Los Alamos</p></div>
+            <div><b>The name</b><p>Their colleague Nicholas Metropolis suggests it: Ulam had an uncle who “just had to go to Monte Carlo”</p><small>Metropolis (1987), p. 127</small></div>
           </aside>
           <div class="mc-o-m">
             <div class="fbox mc-o-ev"><span class="chip">EXPECTED VALUE</span>
@@ -211,27 +216,26 @@
               ${EV}
             </div>
             <div class="mc-o-lo">
-              ${U.term({ cls: "mc-term", fn: "MCSIM", title: `ROLL THE DIE ${fmt(ROLL.n, 0)} TIMES`, body: "<canvas></canvas>",
-                meta: `<span class="t-green"><i class="mc-lg"></i>AVERAGE SO FAR</span><span style="margin-left:24px"><i class="mc-lg d"></i>E(X) = 3.5</span>`,
-                stats: `<div><div class="k">Rolls</div><div class="v mc-v0">0</div></div><div><div class="k">Last roll</div><div class="v mc-v1">–</div></div><div><div class="k">Average so far</div><div class="v mc-v2">–</div></div>` }).replace('class="term ', 'data-step="1" class="term ')}
+              <figure class="mc-o-chart" data-step="1">
+                <div class="mc-o-lg"><span><i class="mc-lg"></i>Average so far</span><span><i class="mc-lg d"></i>E(X) = 3.5</span></div>
+                <canvas></canvas>
+                <figcaption>${fmt(ROLL.n, 0)} simulated rolls of a fair die: each dot is one roll, the line the average so far</figcaption>
+              </figure>
               <div class="mc-o-r">
-                <div class="card mc-o-res" data-step="2"><span>average of ${fmt(ROLL.n, 0)} rolls</span><b>≈ 3.5</b></div>
-                <div class="fbox gray mc-o-int" data-step="2" style="--d:2"><p>for a continuous variable:</p>${INT}</div>
+                <div class="card mc-o-res" data-step="1" style="--d:58"><span>average of ${fmt(ROLL.n, 0)} rolls</span><b>≈ 3.5</b></div>
+                <div class="fbox gray mc-o-int" data-step="2"><p>for a continuous variable, like a share price:</p>${INT}<p class="mb">For the Multi-BRC: no closed-form solution, so we simulate it</p></div>
               </div>
             </div>
           </div>
         </div>`;
-      const cv = body.querySelector("canvas"), vs = [0, 1, 2].map(i => body.querySelector(".mc-v" + i));
+      const cv = body.querySelector("canvas");
       let n = 0, a = null, cur = 0;   // n: rolls shown
       function draw() {
-        vs[0].textContent = fmt(n, 0);
-        vs[1].textContent = n ? String(rolls.v[n - 1]) : "–";
-        vs[2].textContent = n ? fmt(rolls.avg[n], 2) : "–";
         const c = U.canvas(cv); if (!c) return;
         const { ctx, w, h } = c;
         // x: the number of rolls on a log scale (1, 10, 100, 1,000), so the noisy start is as wide as the calm end
-        const f = { x: 58, y: 24, w: w - 92, h: h - 90 };
-        const ax = U.axes(ctx, f, { xMin: 0, xMax: Math.log10(ROLL.n), xTicks: [0, 1, 2, 3], xFmt: v => fmt(Math.pow(10, v), 0), xLabel: "NUMBER OF ROLLS (LOG SCALE)", yMin: 1, yMax: 6, yTicks: [1, 2, 3, 4, 5, 6] });
+        const f = { x: 92, y: 14, w: w - 112, h: h - 74 };
+        const ax = U.axes(ctx, f, { xMin: 0, xMax: Math.log10(ROLL.n), xTicks: [0, 1, 2, 3], xFmt: v => fmt(Math.pow(10, v), 0), xLabel: "Number of rolls (log scale)", yLabel: "Roll", yMin: 1, yMax: 6, yTicks: [1, 2, 3, 4, 5, 6] });
         const X = m => ax.X(Math.log10(m)), green = css("--green"), ink = css("--ink");
         ctx.save(); ctx.setLineDash([8, 6]); ctx.strokeStyle = ink; ctx.lineWidth = 1.8;
         ctx.beginPath(); ctx.moveTo(f.x, ax.Y(3.5)); ctx.lineTo(f.x + f.w, ax.Y(3.5)); ctx.stroke(); ctx.restore();
