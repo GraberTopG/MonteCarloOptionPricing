@@ -224,7 +224,7 @@
     id: "brc-payoff", section: "product", steps: 3, secs: 60,
     title: "The Payoff of the Multi-BRC",
     subtitle: "Based on three elements: reverse convertible + a barrier + three underlyings with a worst-of principle",
-    sources: "Arnold (2026), slide 14; adapted from UBS AG (2018); own illustration",
+    sources: "Arnold (2026), slide 14; adapted from UBS AG (2018); concept of the payout bars adapted from Vontobel; own illustration",
     notes: `Let's build it in three steps. [→] Step one: a reverse convertible on one stock. The catch: if the stock ends below its starting price, you're paid back in shares, not cash. In option terms, you own a bond and have sold a put; the part of the coupon above normal interest is what the bank pays you for it. [→] Step two: the barrier. Now the put only kicks in if the stock touches 65 percent of its starting price. It becomes a down-and-in put. If the stock never gets there, you get your thousand back. [→] Step three: three stocks, and the worst-of principle. One touch by any of them is enough, and you get shares of the worst one, which isn't always the one that touched. So three stocks don't make it safer. They give you three chances to hit a barrier.`,
     render(body) {
       const card = (k, h, p) => `<div class="prd-po-c" data-step="${k}"><span class="num">${k}</span><div><h4>${h}</h4><p>${p}</p></div></div>`;
@@ -257,7 +257,7 @@
         ctx.lineCap = "butt";   // the payoff line below sets round caps; the next frame's axes must not inherit them
         const green = U.css("--green"), muted = U.css("--muted"), oink = U.css("--orange-ink"), orange = U.css("--orange");
         const loss = U.css("--red-ink"), ink = U.css("--ink"), grey = U.css("--rule");   // kick-in and shares black, the put grey
-        const f = { x: 100, y: 52, w: w - 100 - 34, h: h - 52 - 96 };
+        const f = { x: 100, y: 52, w: w - 100 - 34, h: h - 52 - 190 };   // room under the x axis for the two payout bars
         const { X, Y } = U.axes(ctx, f, {
           theme: "light", xMin: 0, xMax: 150, yMin: 0, yMax: 1200,
           xTicks: [0, 25, 50, 75, 100, 125, 150], yTicks: [0, 250, 500, 750, 1000], xFmt: v => v + "%", yFmt: v => f0(v)
@@ -290,6 +290,25 @@
         };
         // axis titles: from step 3 on, the x axis is the worst of the three stocks
         const xt = f.y + f.h + 48, xc = f.x + f.w / 2;
+        // under the axis: what you are paid back, by where the (worst) stock ends; and the coupons, paid in every case
+        if (S.k1 > 0) {
+          const by = f.y + f.h + 80, bh = 38, gap = 6, bkx = B.kickIn * 100;
+          const seg = (x0, x1, fill, txt, col, al) => {
+            ctx.save(); ctx.globalAlpha = al; ctx.fillStyle = fill;
+            ctx.beginPath(); ctx.roundRect(X(x0) + (x0 ? gap / 2 : 0), by, X(x1) - X(x0) - (x0 ? gap / 2 : 0) - (x1 < 150 ? gap / 2 : 0), bh, 6); ctx.fill();
+            ctx.fillStyle = col; ctx.font = "700 " + (X(x1) - X(x0) < 260 ? 17 : 19) + "px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText(txt, (X(x0) + X(x1)) / 2, by + bh / 2 + 1); ctx.restore();
+          };
+          const a1 = lerp(S.k1, .4, .9);
+          seg(0, 100, ink, "Shares", "#fff", a1 * (1 - S.k2));
+          seg(0, bkx, ink, "Shares", "#fff", a1 * S.k2);
+          seg(bkx, 100, U.css("--green-light"), "USD 1,000 if untouched", U.css("--green-ink"), a1 * S.k2);
+          seg(100, 150, green, "USD 1,000", "#fff", a1);
+          ctx.save(); ctx.globalAlpha = a1; ctx.fillStyle = U.css("--green-mid");
+          ctx.beginPath(); ctx.roundRect(X(0), by + bh + gap, X(150) - X(0), bh, 6); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.font = "700 19px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText("+ coupons: USD " + CPN + " (2 × " + HALF + "), in every case", xc, by + bh + gap + bh / 2 + 1); ctx.restore();
+        }
         text("Stock at maturity (% of its starting level)", xc, xt, { al: "center", a: 1 - S.k3 });
         text("Worst stock at maturity (% of its starting level)", xc, xt, { al: "center", a: S.k3, c: oink, b: true });
         text("USD per 1,000", f.x - 76, f.y + f.h / 2, { al: "center", rot: -Math.PI / 2 });
@@ -311,6 +330,8 @@
           ctx.restore();
           text("sold put", X(4), Y(880), { b: true, c: ink, a: S.k1 * (1 - S.k2) });
           text("down-and-in put", X(4), Y(880), { b: true, c: ink, a: S.k2 });
+          text("safety buffer", (X(bk) + X(100)) / 2, Y(470), { b: true, c: U.css("--green-ink"), al: "center", a: S.k2 * (1 - S.k3), s: 20 });
+          text("← 35% →", (X(bk) + X(100)) / 2, Y(470) + 28, { b: true, c: U.css("--green-ink"), al: "center", a: S.k2 * (1 - S.k3), s: 20 });
           // the payoff: shares below 100% (black), 1,000 in cash above (green); drawn left to right
           const xe = 150 * S.k1;
           ctx.lineCap = "round"; ctx.strokeStyle = loss; ctx.lineWidth = 5;
