@@ -66,7 +66,8 @@
     .hk-art .red{stroke:var(--red-ink)} .hk-art .grn{stroke:var(--green)}
     .hk-art text{font:700 17px var(--f-body)}
     .hk-art .t-red{fill:var(--red-ink)} .hk-art .t-grn{fill:var(--green)} .hk-art .t-mut{fill:var(--muted);font-weight:400}
-    .hk-opt h3{align-self:flex-start;position:relative;font:700 44px/1.15 var(--f-head);color:var(--green-ink);margin:24px 0 12px}
+    .slide .hk-opt p.hk-acap{font-size:19px;line-height:1.2;margin:2px 0 0;color:var(--muted)}
+    .hk-opt h3{align-self:flex-start;position:relative;font:700 44px/1.15 var(--f-head);color:var(--green-ink);margin:12px 0 12px}
     .hk-strike{position:absolute;left:-8px;right:-8px;top:calc(50% - 1px);height:6px;border-radius:3px;background:var(--red-ink);transform:scaleX(0);transform-origin:0 50%;transition:transform .35s ease var(--xd)}
     .hk-opt:has(.hk-xon.on) .hk-strike{transform:none}
     .hk-opt p{font-size:30px;line-height:1.3;margin:0;color:var(--ink)}
@@ -471,22 +472,23 @@
       <path class="ln red" d="M262 126l-17-1M262 126l-8-15"/>`,
     bond: `<path class="ax" d="M18 8V138H290"/><path class="lv" d="M22 96H286"/>
       <path class="ln grn" d="M22 96L270 82"/><circle cx="270" cy="82" r="7" fill="var(--green)"/>
-      <text class="t-grn" x="270" y="66" text-anchor="end">≈ ${R_YEAR}%</text>`,
+      <text class="t-mut" x="24" y="84">USD 1,000</text>
+      <text class="t-grn" x="286" y="66" text-anchor="end">USD ${U.fmt(1000 * (1 + parseFloat(R_YEAR) / 100), 0)}</text>`,
     call: `<path class="ax" d="M18 8V138"/><path class="lv" d="M18 104H290"/>
       <path class="ln red" d="M22 122H172"/><path class="ln grn" d="M172 122L282 18"/>
       <text class="t-red" x="26" y="146">premium you pay</text><text class="t-grn" x="298" y="94" text-anchor="end">big jump</text>`
   };
   const OPTS = [
-    { art: ART.shares, t: "Shares?", why: "You are exposed to the full downside" },
-    { art: ART.bond, t: "Government bond?", why: `Safe, but only ≈ ${R_YEAR}% a year` },
-    { art: ART.call, t: "Call option?", why: "You are not expecting an increase in the share price" }
+    { art: ART.shares, cap: "Share price over one year", t: "Shares?", why: "You are exposed to the full downside" },
+    { art: ART.bond, cap: "Value of USD 1,000 over one year", t: "Government bond?", why: `Safe, but only ≈ ${R_YEAR}% a year` },
+    { art: ART.call, cap: "Payoff at expiry", t: "Call option?", why: "You are not expecting an increase in the share price" }
   ];
   const NOTES_CH = "So how would you invest? [→] Shares? You take the full downside. [→] [→] A government bond? Safe, but only about four and a half percent. [→] [→] A call option? You pay for a big jump you don't expect. [→] [→] So is there a better product for a sideways to slightly down market?";
   Deck.addSlide({
     id: "hook-choices", section: "hook", steps: 7, secs: secsFor(NOTES_CH, 7),
     title: "Which financial instrument lets us express the market view best?",
     subtitle: `Three ways to invest USD ${NOM} for a sideways to slightly down year`,
-    sources: "Bloomberg (2026) (USD 1-year rate); own Excel model, sheet 2; own illustration",
+    sources: "Bloomberg",
     notes: NOTES_CH,
     render(body) {
       // the X ends above the bottom label band of the drawings (y 196 of 240)
@@ -500,6 +502,7 @@
             <div class="card hk-opt" data-step="${2 * i + 1}" style="--xd:${XD[i]}s">
               <i class="hk-xon" data-step="${2 * i + 2}" hidden></i>
               <svg class="hk-art" viewBox="0 0 300 150" aria-hidden="true">${o.art}</svg>
+              <p class="hk-acap">${o.cap}</p>
               <h3>${o.t}<span class="hk-strike"></span></h3>
               <p>${o.why}</p>
               <svg class="hk-x" viewBox="0 0 480 240" aria-hidden="true"><line x1="110" y1="22" x2="370" y2="196" pathLength="1"/><line x1="370" y1="22" x2="110" y2="196" pathLength="1"/></svg>
