@@ -326,7 +326,7 @@
               <figcaption>${fmt(FAN.n, 0)} simulated years of one stock (volatility ${fmt(M.sigma * 100, 0)}%, like Apple; risk-free rate ${fmt(M.r * 100, 2)}%): each line is one year</figcaption>
             </figure>
             <div class="mc-sa-r">
-              <div class="fbox mc-sa-f" data-step="2"><span class="n">2</span><span class="chip">RISK-NEUTRAL VALUATION OF A PAYOFF</span><div class="mc-sa-fw">${PRICE}${lectureNote(`<math>${RF}</math>`)}</div></div>
+              <div class="fbox mc-sa-f" data-step="2"><span class="n">2</span><span class="chip">RISK-NEUTRAL VALUATION OF A PAYOFF</span><div class="mc-sa-fw">${PRICE}</div></div>
               <div class="fbox mc-lln" data-step="3"><span class="n">3</span><span class="chip">LAW OF LARGE NUMBERS</span>${LLN}<p>the average converges to the true value</p></div>
             </div>
           </div>
