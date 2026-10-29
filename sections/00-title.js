@@ -42,8 +42,9 @@
     /* ---------- hook 1: the past year of prices ---------- */
     .hk-px{position:relative;height:100%}
     /* the chart starts lower and is a little shorter: the two-line title pushes the subtitle down */
-    .hk-px canvas{position:absolute;left:0;top:150px;bottom:0;width:100%;height:calc(100% - 150px);display:block}
-    .hk-goal{position:absolute;left:0;right:0;top:44px;height:96px;padding-right:32px}
+    .hk-px canvas{position:absolute;left:0;top:112px;width:100%;height:calc(100% - 112px - 40px);display:block}
+    .hk-cap{position:absolute;left:0;right:0;bottom:4px;margin:0;font:400 21px var(--f-body);color:var(--muted)}
+    .hk-goal{position:absolute;left:0;right:0;top:4px;height:96px;padding-right:32px}
     .hk-goal p{margin:0}
     .hk-gk{flex:none;font:700 32px var(--f-body);color:var(--green-ink);white-space:nowrap}
     .hk-gv{flex:1;min-width:0;font-size:30px;line-height:1.3}
@@ -314,7 +315,6 @@
   Deck.addSlide({
     id: "hook-prices", section: "hook", steps: 1, secs: secsFor(NOTES_PX, 1),
     title: "Assumption: USD 1,000 to invest and sideways or slightly down year expected",
-    subtitle: "Daily closing prices from 7 Oct 2024 to 6 Oct 2026, and an illustrative consensus path to expiry",
     sources: "Bloomberg (2026); own Excel model, sheet 3; consensus path: own illustration, not analyst targets",
     notes: NOTES_PX,
     render(body) {
@@ -324,9 +324,10 @@
             <div class="badge">${U.icon("avg")}</div>
             <p class="hk-gk">USD ${NOM} · ${B.T} year</p>
             <span class="sep"></span>
-            <p class="hk-gv">Consensus: 86% of analysts issue a HOLD rating for the three underlyings; no growth catalyst ahead and downside risks already priced in</p>
+            <p class="hk-gv">Consensus: 86% of analysts issue a <b>HOLD</b> rating for the three underlyings; no growth catalyst ahead and downside risks already priced in</p>
           </div>
           <canvas></canvas>
+          <p class="hk-cap">Daily closing prices from 7 Oct 2024 to 6 Oct 2026, and an illustrative consensus path to the 12M target price at expiry. Sources: Bloomberg</p>
         </div>`;
       const cv = body.querySelector("canvas");
       const COL = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];
@@ -364,7 +365,7 @@
         vline(xt, "Today: issue date, " + dayTxt(H.dates[LAST]), "center", true);
         vline(xe, "Expiry, 6 Oct 2027", "right", false);
         ctx.fillStyle = U.css("--muted"); ctx.font = "italic 19px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
-        ctx.fillText("consensus path, illustrative", (xt + xe) / 2, f.y + 10);
+        ctx.fillText("consensus path to the 12M target price, illustrative", (xt + xe) / 2, f.y + 10);
         // the history (first 75% of the time), then the consensus paths (dashed)
         const kh = Math.min(1, k / .75), kf = Math.max(0, (k - .75) / .25);
         const upto = Math.max(1, Math.round(LAST * kh));
@@ -383,18 +384,21 @@
           }
           ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(upto), Y(p[upto]), 6.5, 0, 7); ctx.fill();
         });
-        // labels at the right end: today's price and the change over the past year
+        // labels: today's price next to each dot, and at the right end the name and the (illustrative) 12M target price
         const lab = Math.max(0, Math.min(1, (kf - .6) / .4));
+        if (kf > 0) {
+          ctx.globalAlpha = Math.min(1, kf * 4); ctx.textAlign = "left"; ctx.textBaseline = "bottom"; ctx.font = "700 20px " + U.F.body;
+          H.px.forEach((p, s) => { ctx.fillStyle = U.css(COL[s]); ctx.fillText(U.fmt(XL.S0[s], 2), xt + 12, Y(p[LAST]) - 10); });
+        }
         if (lab > 0) {
           ctx.globalAlpha = lab; ctx.textAlign = "left";
-          const ys = H.px.map((p, s) => Y(consPath(s, FUT)));
           H.px.forEach((p, s) => {
-            const y = ys[s], x = xe + 20;
+            const y = Y(consPath(s, FUT)), x = xe + 20;
             ctx.fillStyle = U.css(COL[s]); ctx.font = "700 26px " + U.F.body; ctx.textBaseline = "bottom";
-            ctx.fillText(B.names[s] + " " + U.fmt(XL.S0[s], 2), x, y + 2);
-            ctx.fillStyle = CHG[s] < 0 ? U.css("--red-ink") : U.css("--green");
-            ctx.font = "700 21px " + U.F.body; ctx.textBaseline = "top";
-            ctx.fillText("today · " + (CHG[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CHG[s]), 1) + "% past year", x, y + 6);
+            ctx.fillText(B.names[s], x, y - 2);
+            ctx.font = "400 19px " + U.F.body; ctx.textBaseline = "top";
+            ctx.fillText("Consensus 12M target price", x, y + 6);
+            ctx.font = "700 21px " + U.F.body; ctx.fillText("USD " + U.fmt(consPath(s, FUT), 2), x, y + 30);
           });
         }
         ctx.globalAlpha = 1;
