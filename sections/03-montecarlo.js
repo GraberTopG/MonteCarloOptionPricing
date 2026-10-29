@@ -49,7 +49,7 @@
     .mc-key .hl{color:var(--green-ink)}
 
     /* ---------- 1) mc-origin ---------- */
-    .slide[data-id="mc-sample"] .s-title{font-size:46px;white-space:nowrap}
+    .slide[data-id="mc-sample"] .s-title{font-size:43px;white-space:nowrap}
     .slide[data-id="mc-origin"] .s-title{font-size:50px;white-space:nowrap}
     .mc-o{display:grid;grid-template-columns:400px minmax(0,1fr);column-gap:48px;height:100%}
     .mc-o-h{display:flex;flex-direction:column;gap:32px;padding:4px 40px 0 0;border-right:2px solid var(--rule-light);min-width:0}
@@ -307,7 +307,7 @@
 
   Deck.addSlide({
     id: "mc-sample", section: "mc", steps: 2, secs: 31,
-    title: "Monte Carlo pricing: simulate paths, average payoffs, discount",
+    title: "Monte Carlo pricing: simulate paths, discount payoffs, average them",
     subtitle: "Instead of rolling a die, we simulate a whole year of share prices, 2,000 times",
     lecture: "Lecture 4, slide 15",
     sources: "Arnold (2026), slides 11 and 15; explanation adapted from The Synthetic Mind (2026); own simulation",
