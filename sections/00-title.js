@@ -485,7 +485,7 @@
   Deck.addSlide({
     id: "hook-choices", section: "hook", steps: 3, secs: secsFor(NOTES_CH, 3),
     title: "Which financial instrument lets us express the market view best?",
-    subtitle: `Three ways to invest USD ${NOM} for one year · Consensus: HOLD`,
+    subtitle: `Three ways to invest USD ${NOM} for a sideways to slightly down year`,
     sources: "Bloomberg (2026) (USD 1-year rate); own Excel model, sheet 2; own illustration",
     notes: NOTES_CH,
     render(body) {
