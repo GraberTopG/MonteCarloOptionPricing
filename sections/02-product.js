@@ -259,20 +259,28 @@
         const green = U.css("--green"), muted = U.css("--muted"), oink = U.css("--orange-ink"), orange = U.css("--orange");
         const loss = U.css("--red-ink"), ink = U.css("--ink"), grey = U.css("--rule");   // kick-in and shares black, the put grey
         const f = { x: 100, y: 52, w: w - 100 - 34, h: h - 52 - 190 };   // room under the x axis for the two payout bars
-        const { X, Y } = U.axes(ctx, f, {
-          theme: "light", xMin: 0, xMax: 150, yMin: 0, yMax: 1200,
-          xTicks: [0, 25, 50, 75, 100, 125, 150], yTicks: [0, 250, 500, 750, 1000], xFmt: v => v + "%", yFmt: v => f0(v)
+        const { X, Y: Ya } = U.axes(ctx, f, {
+          theme: "light", xMin: 0, xMax: 150, yMin: 0, yMax: 1420,
+          xTicks: [0, 25, 50, 75, 100, 125, 150], yTicks: [0, 250, 500, 750, 1000, 1250], xFmt: v => v + "%", yFmt: v => f0(v)
         });
+        const Y = Ya, Yp = v => Ya(v + CPN);   // the payoff is drawn as the total received: repayment + USD 150 coupons
         ctx.strokeStyle = U.css("--rule"); ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.lineTo(f.x, f.y + f.h); ctx.lineTo(f.x + f.w, f.y + f.h); ctx.stroke();
         // step 3's example year is not on the USD scale: it gets its own box over the gridlines, from just under the payoff
         // line down to the x axis (only its % positions count); the barrier and the bars are drawn on top of it
         if (S.k1 > 0) {   // the strike at 100%: above it USD 1,000 in cash, below it shares (under the example box of step 3)
           ctx.save(); ctx.globalAlpha = lerp(S.k1, .3, .8); ctx.setLineDash([8, 6]); ctx.strokeStyle = U.css("--green-ink"); ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(X(100), f.y + f.h); ctx.lineTo(X(100), Y(1190)); ctx.stroke(); ctx.restore();
+          ctx.beginPath(); ctx.moveTo(X(100), f.y + f.h); ctx.lineTo(X(100), Y(1410)); ctx.stroke(); ctx.restore();
+        }
+        if (S.k1 > 0) {   // what you paid: USD 1,000; below it you lose money. With the coupons, that only happens below 85%
+          const ra = lerp(S.k1, .5, 1), be = (NOM - CPN) / NOM * 100;
+          ctx.save(); ctx.globalAlpha = ra; ctx.setLineDash([3, 5]); ctx.strokeStyle = U.css("--muted"); ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(X(0), Y(NOM)); ctx.lineTo(X(150), Y(NOM)); ctx.stroke(); ctx.restore();
+          ctx.save(); ctx.globalAlpha = ra * (1 - S.k3); ctx.fillStyle = U.css("--ink");
+          ctx.beginPath(); ctx.arc(X(be), Y(NOM), 7, 0, 7); ctx.fill(); ctx.restore();
         }
         const exL = Math.min(...PO_EX.map(e => e.low)) * 100 - 5;
-        const ex = { x: X(exL), y: Y(exL * 10) + 24, r: f.x + f.w - 2, b: Y(0) - 10 };
+        const ex = { x: X(exL), y: Yp(exL * 10) + 24, r: f.x + f.w - 2, b: Y(0) - 10 };
         const rowY = j => ex.y + 44 + (ex.b - ex.y - 44) * (2 * j + 1) / 6;
         if (S.k3 > 0) {
           ctx.save(); ctx.globalAlpha = lerp(S.k3, 0, .35); ctx.fillStyle = U.css("--card");
@@ -312,9 +320,13 @@
         }
         text("Stock at maturity (% of its starting level)", xc, xt, { al: "center", a: 1 - S.k3 });
         text("Worst stock at maturity (% of its starting level)", xc, xt, { al: "center", a: S.k3, c: oink, b: true });
-        text("USD per 1,000", f.x - 76, f.y + f.h / 2, { al: "center", rot: -Math.PI / 2 });
-        if (S.k1 > 0) text("strike 100%", X(100) + 10, Y(1190), { b: true, c: U.css("--green-ink"), bl: "top", a: lerp(S.k1, .3, .8) });
-        const poly = pts => { ctx.beginPath(); pts.forEach(([x, y], j) => j ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y))); ctx.closePath(); };
+        text("Total received, USD per 1,000", f.x - 76, f.y + f.h / 2, { al: "center", rot: -Math.PI / 2 });
+        if (S.k1 > 0) {
+          text("your investment: USD 1,000", X(150), Y(NOM) + 18, { c: muted, al: "right", a: lerp(S.k1, .5, 1) * (1 - S.k3), s: 19 });
+          text("break-even " + f0((NOM - CPN) / NOM * 100) + "%", X((NOM - CPN) / NOM * 100) + 6, Y(NOM) + 26, { b: true, c: ink, halo: "#fff", a: lerp(S.k1, .5, 1) * (1 - S.k2), s: 19 });
+        }
+        if (S.k1 > 0) text("strike 100%", X(100) + 10, Y(1410), { b: true, c: U.css("--green-ink"), bl: "top", a: lerp(S.k1, .3, .8) });
+        const poly = pts => { ctx.beginPath(); pts.forEach(([x, y], j) => j ? ctx.lineTo(X(x), Yp(y)) : ctx.moveTo(X(x), Yp(y))); ctx.closePath(); };
         const bk = B.kickIn * 100, slope = Math.atan2(Y(1000) - Y(0), X(100) - X(0));
         if (S.k1 > 0) {
           // the sold put: what the investor loses below 100%; from step 2 on, the part above the barrier only after a touch (hatched).
@@ -326,32 +338,32 @@
           if (S.k2 > 0) {
             ctx.globalAlpha = S.k2; poly([[bk, bk * 10], [bk, 1000], [100, 1000]]); ctx.clip();
             ctx.strokeStyle = grey; ctx.lineWidth = 2;
-            for (let x = X(bk) - 400; x < X(100); x += 14) { ctx.beginPath(); ctx.moveTo(x, Y(bk * 10)); ctx.lineTo(x + (Y(bk * 10) - Y(1000)), Y(1000)); ctx.stroke(); }
+            for (let x = X(bk) - 400; x < X(100); x += 14) { ctx.beginPath(); ctx.moveTo(x, Yp(bk * 10)); ctx.lineTo(x + (Yp(bk * 10) - Yp(1000)), Yp(1000)); ctx.stroke(); }
           }
           ctx.restore();
-          text("sold put", X(4), Y(880), { b: true, c: ink, a: S.k1 * (1 - S.k2) });
-          text("down-and-in put", X(4), Y(880), { b: true, c: ink, a: S.k2 });
-          text("safety buffer", (X(bk) + X(100)) / 2, Y(470), { b: true, c: U.css("--green-ink"), al: "center", a: S.k2 * (1 - S.k3), s: 20 });
-          text("← 35% →", (X(bk) + X(100)) / 2, Y(470) + 28, { b: true, c: U.css("--green-ink"), al: "center", a: S.k2 * (1 - S.k3), s: 20 });
+          text("sold put", X(4), Yp(880), { b: true, c: ink, a: S.k1 * (1 - S.k2) });
+          text("down-and-in put", X(4), Yp(880), { b: true, c: ink, a: S.k2 });
+          text("safety buffer", (X(bk) + X(100)) / 2, Yp(470), { b: true, c: U.css("--green-ink"), al: "center", a: S.k2 * (1 - S.k3), s: 20 });
+          text("← 35% →", (X(bk) + X(100)) / 2, Yp(470) + 28, { b: true, c: U.css("--green-ink"), al: "center", a: S.k2 * (1 - S.k3), s: 20 });
           // the payoff: shares below 100% (black), 1,000 in cash above (green); drawn left to right
           const xe = 150 * S.k1;
           ctx.lineCap = "round"; ctx.strokeStyle = loss; ctx.lineWidth = 5;
-          ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(Math.min(xe, 100)), Y(Math.min(xe, 100) * 10)); ctx.stroke();
-          if (xe > 100) { ctx.strokeStyle = green; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(X(100), Y(1000)); ctx.lineTo(X(xe), Y(1000)); ctx.stroke(); }
+          ctx.beginPath(); ctx.moveTo(X(0), Yp(0)); ctx.lineTo(X(Math.min(xe, 100)), Yp(Math.min(xe, 100) * 10)); ctx.stroke();
+          if (xe > 100) { ctx.strokeStyle = green; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(X(100), Yp(1000)); ctx.lineTo(X(xe), Yp(1000)); ctx.stroke(); }
           const la = lerp(S.k1, .55, 1);
-          text("USD 1,000 in cash", X(150), Y(1000) - 22, { b: true, c: green, al: "right", a: la });
-          const lx = X(20), ly = Y(200);
-          text("shares, not cash", lx + 12, ly + 14, { b: true, c: loss, al: "center", bl: "top", rot: slope, a: la * (1 - S.k2) });
-          text("touched: shares", lx + 12, ly + 14, { b: true, c: loss, al: "center", bl: "top", rot: slope, a: la * S.k2 });
+          text("USD 1,000 + 150 coupons", X(150), Yp(1000) - 22, { b: true, c: green, al: "right", a: la });
+          const lx = X(20), ly = Yp(200);
+          text("shares + coupons", lx + 12, ly + 14, { b: true, c: loss, al: "center", bl: "top", rot: slope, a: la * (1 - S.k2) });
+          text("touched: shares + coupons", lx + 12, ly + 14, { b: true, c: loss, al: "center", bl: "top", rot: slope, a: la * S.k2 });
         }
         if (S.k2 > 0) {
           // the barrier at 65%: between 65% and 100% two branches, never touched (1,000 in cash) or touched (shares)
           ctx.save(); ctx.globalAlpha = S.k2; ctx.setLineDash([8, 6]); ctx.strokeStyle = loss; ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(X(bk), f.y + f.h); ctx.lineTo(X(bk), Y(1190)); ctx.stroke(); ctx.restore();
-          text("kick-in " + KI, X(bk) - 10, Y(1190), { b: true, c: loss, al: "right", bl: "top", a: S.k2 });
+          ctx.beginPath(); ctx.moveTo(X(bk), f.y + f.h); ctx.lineTo(X(bk), Y(1410)); ctx.stroke(); ctx.restore();
+          text("kick-in " + KI, X(bk) - 10, Y(1410), { b: true, c: loss, al: "right", bl: "top", a: S.k2 });
           ctx.strokeStyle = green; ctx.lineWidth = 7; ctx.lineCap = "round";
-          ctx.beginPath(); ctx.moveTo(X(100), Y(1000)); ctx.lineTo(X(100 - (100 - bk) * S.k2), Y(1000)); ctx.stroke();
-          text("never touched: USD 1,000", X(bk) + 8, Y(1000) - 22, { b: true, c: green, a: lerp(S.k2, .5, 1), halo: "#fff" });
+          ctx.beginPath(); ctx.moveTo(X(100), Yp(1000)); ctx.lineTo(X(100 - (100 - bk) * S.k2), Yp(1000)); ctx.stroke();
+          text("never touched: USD 1,150", X(bk) + 8, Yp(1000) - 22, { b: true, c: green, a: lerp(S.k2, .5, 1), halo: "#fff" });
         }
         if (S.k3 > 0) {
           // three stocks: lowest → final level of each this year; any touch counts, but the worst one is paid out
@@ -382,11 +394,11 @@
           // the worst stock's final level decides: shares worth 1,000 × 80% = 800
           const t = lerp(S.k3, .7, 1);
           if (t > 0) {
-            const wx = X(EX_WORST * 100), wy = Y(EX_SHARES), y0 = rowY(0);
+            const wx = X(EX_WORST * 100), wy = Yp(EX_SHARES), y0 = rowY(0);
             ctx.save(); ctx.globalAlpha = t; ctx.setLineDash([6, 6]); ctx.strokeStyle = orange; ctx.lineWidth = 2.5;
             ctx.beginPath(); ctx.moveTo(wx, y0 - 12); ctx.lineTo(wx, y0 - 12 + (wy - y0 + 12) * t); ctx.stroke(); ctx.setLineDash([]);
             ctx.fillStyle = orange; ctx.beginPath(); ctx.arc(wx, wy, 11, 0, 7); ctx.fill(); ctx.restore();
-            text("shares worth USD " + f0(EX_SHARES), wx + 24, wy + 3, { b: true, c: oink, a: t, halo: "#fff" });   // level with its dot (not on the 750 gridline), under the payoff line
+            text("shares " + f0(EX_SHARES) + " + coupons " + CPN + " = USD " + f0(EX_SHARES + CPN), wx + 24, wy + 3, { b: true, c: oink, a: t, halo: "#fff" });   // level with its dot (not on the 750 gridline), under the payoff line
           }
         }
       }
