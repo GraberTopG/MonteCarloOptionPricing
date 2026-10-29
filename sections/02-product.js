@@ -245,8 +245,8 @@
     .prd-mc .wm-row.dep .v{color:var(--ink)}
     .prd-mc .wm-diff{margin:0;font:22px/1.3 var(--f-body);color:var(--ink)}
     .prd-mc .wm-diff b{color:var(--ink)}
-    .prd-mc .wm-mc{margin:18px 0 0;padding-top:18px;border-top:3px solid var(--green);font:700 24px/1.3 var(--f-body);color:var(--green)}
-    .prd-mc .wm-mc b{color:var(--green)}
+    .prd-mc .wm-mc{margin:18px 0 0;padding-top:18px;border-top:3px solid var(--green);font:400 24px/1.35 var(--f-body);color:var(--ink)}
+    .prd-mc .wm-mc b{color:var(--green);white-space:nowrap}
     .prd-mc>.term{position:absolute;left:0;right:0;top:36px;height:704px;transition:opacity .45s ease,transform .45s ease}
     .prd-mc .term-stats{gap:40px}
     .prd-mc .term-stats .k{font-size:16px}
@@ -771,7 +771,7 @@
                 <p class="v">USD ${f0(red1000 + CPN)}</p>
               </div>
               <p class="wm-diff">Same final prices, <b>USD ${f0(NOM - red1000)} less</b></p>
-              <p class="wm-mc" data-step="5" style="--d:4">→ No closed-form solution, and a tree that's too big: so we simulate. That's <b>Monte Carlo</b>.</p>
+              <p class="wm-mc" data-step="5" style="--d:4">No closed-form solution, and a tree that's too big → <b>Monte Carlo simulation applies</b></p>
             </aside>
           </div>
           <p class="wm-cap">Illustrative price developments of three underlyings during ${n} trading days, a strike of ${Math.round(B.strike * 100)}% and a barrier of ${KI}</p>
