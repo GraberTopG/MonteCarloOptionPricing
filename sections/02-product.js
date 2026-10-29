@@ -206,6 +206,9 @@
     .prd-f small{display:block;font:24px/1.25 var(--f-body);color:var(--muted);margin-top:6px}
     .prd-same{grid-column:1;grid-row:2;align-self:stretch;display:flex;align-items:center;gap:22px;font:28px/1.3 var(--f-body)}
     .prd-same b{display:block;font:700 32px/1.2 var(--f-body)}
+    .prd-same{font-size:22px}
+    .prd-same .badge svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .prd-dec{position:relative} .prd-wdef{position:absolute;left:0;top:640px;width:560px;margin:0;font:italic 22px/1.3 var(--f-body);color:var(--muted)}   /* outside the grid */
     .prd-vd{grid-row:2;align-self:stretch;border-radius:10px;padding:32px 28px;display:flex;gap:24px;align-items:center}
     .prd-vd.easy{grid-column:3;background:var(--green-light);border-left:8px solid var(--green)}
     .prd-vd.hard{grid-column:5;background:var(--orange-light);border-left:8px solid var(--red-ink)}
@@ -631,8 +634,8 @@
           <div class="prd-box gray">
             <span class="chip ink">THE PRODUCT</span>
             <h4>Multi-BRC</h4>
-            <p>Pay USD 1,000 today. Get USD ${CPN} in coupons, then USD 1,000 or shares of the worst stock (final level W).</p>
-            <div class="prd-f">${M_BRC}<small>after a kick-in (else USD ${f0(NOM + CPN)})</small></div>
+            <p>Pay USD 1,000 today. Get USD ${CPN} in coupons, then USD 1,000 or shares of the worst stock.</p>
+            <div class="prd-f">${M_BRC}<small>if a kick-in occurred; otherwise USD ${f0(NOM + CPN)}</small></div>
           </div>
           <div class="prd-op" data-step="1">=</div>
           <div class="prd-box green" data-step="1">
@@ -648,9 +651,10 @@
             <p>You sold it: after a kick-in, you bear the loss.</p>
             <div class="prd-f">${M_PUT}<small>only after a kick-in</small></div>
           </div>
-          <div class="card prd-same" data-step="2" style="--d:3"><span class="badge">${U.icon("book")}</span><div><b>The law of one price</b>Same payoffs, same price</div></div>
+          <div class="card prd-same" data-step="2" style="--d:3"><span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 21h14"/><path d="M4 7h16"/><path d="M7 7l-3 7a3 3 0 0 0 6 0z"/><path d="M17 7l-3 7a3 3 0 0 0 6 0z"/></svg></span><div><b>The law of one price</b>Price(Multi-BRC) = Price(bond) − Price(put)</div></div>
           <div class="prd-vd easy" data-step="3"><span class="badge">${U.icon("check")}</span><div><h4>Bond: Easy to price</h4><p>just discount it</p></div></div>
           <div class="prd-vd hard" data-step="3" style="--d:3"><span class="badge">${U.icon("warn")}</span><div><h4>Put: Hard to price</h4><p>barrier + three stocks</p></div></div>
+          <p class="prd-wdef">W = worst stock at maturity ÷ its starting price</p>
           <p class="prd-mcgo" data-step="3" style="--d:6">→ that's where Monte Carlo comes in</p>
         </div>`;
       return {};
