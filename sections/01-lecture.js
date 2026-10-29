@@ -25,8 +25,7 @@
     .lec-intp p{margin:0 0 12px;font:22px/1.35 var(--f-body);color:var(--ink)}
     .lec-intp p:last-child{margin:0}
     .lec-intp b{display:block;font:700 italic 26px/1.2 var(--f-math);color:var(--green-ink)}
-    .lec-panel{padding:40px 30px 20px}
-    .lec-panel .icard{padding:12px 20px 12px 16px}
+    .lec-panel{padding:44px 30px 22px}
     .lec-smile{margin-top:14px;background:#fff;border-radius:10px}
     .lec-smile svg{display:block;width:100%;height:auto}
     .lec-smile .ax{fill:none;stroke:var(--rule);stroke-width:2}
@@ -35,8 +34,6 @@
     .lec-smile text{font:700 18px var(--f-body)} .lec-smile .tm{fill:var(--ink)} .lec-smile .tb{fill:var(--green)} .lec-smile .ta{fill:var(--muted);font-weight:400;font-size:16px}
     .lec-int{margin:8px 0 0;font:20px/1.3 var(--f-body);color:var(--ink);text-align:left}
     .lec-int b{font-family:var(--f-math);font-style:italic}
-    .lec-no{display:flex;align-items:center;gap:16px;margin-top:16px;padding:14px 20px;border-radius:10px;background:var(--red-ink);color:#fff;font:700 26px/1.2 var(--f-head)}
-    .lec-no .x{flex:none;width:44px;height:44px;border-radius:50%;background:#fff;color:var(--red-ink);display:grid;place-items:center;font:800 26px/1 var(--f-body)}
     .lec-why{margin:22px 0 0;font:24px/1.35 var(--f-body);color:var(--ink)} .lec-why b{color:var(--green)}
     .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:18px}
     .lec-panel .icard .num{width:46px;height:46px;font-size:22px}
@@ -52,12 +49,12 @@
   const v = (sym, txt) => `<div class="vars"><span><math>${sym}</math></span><span>${txt}</span></div>`;
 
   Deck.addSlide({
-    id: "bs-recap", section: "why", steps: 2, secs: 14,
+    id: "bs-recap", section: "why", steps: 1, secs: 10,
     title: "Recap: Where Black-Scholes can be applied",
     subtitle: "An exact formula for vanilla options, but only for one underlying and path-independent payoffs",
     lecture: "Lecture 4, slide 7",
     sources: "Arnold (2026); Black & Scholes (1973); Merton (1973)",
-    notes: `So why not just use Black-Scholes? It gives an exact price for a call or a put. [→] But it only works for one stock, and only when the final price matters. Our Multi-BRC has three stocks and a barrier. [→] So Black-Scholes can't price it.`,
+    notes: `So why not just use Black-Scholes? [→] It's a great formula, but it only works for one stock, and only when the final price matters.`,
     render(body) {
       body.innerHTML = `
         <div class="lec">
@@ -95,10 +92,10 @@
           <section class="panel lec-panel" data-step="1">
             <h3 class="panel-title">Why it doesn't fit a Multi-BRC</h3>
             <ul>
-              <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>ours has three underlyings</span></li>
-              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>our barrier watches the whole path</span></li>
+              <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>the formula prices an option on a single underlying</span></li>
+              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>European payoff: the path along the way is ignored</span></li>
             </ul>
-            <div class="lec-no" data-step="2"><span class="x">✕</span><span>Black-Scholes cannot price our Multi-BRC</span></div>
+            <p class="lec-why" data-step="1" style="--d:6">Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path</p>
           </section>
           </div>
         </div>`;
