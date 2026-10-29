@@ -94,7 +94,7 @@
     .hk-cr{display:block;font-size:16px;letter-spacing:.02em;margin:-2px 0 2px}
     .hk-ring{position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 4px var(--orange);pointer-events:none}
     .slide .hk-ring[data-step]{transform:none}
-    .hk-cpn{position:absolute;left:0;right:0;top:220px;height:180px;background:var(--card);border-radius:10px;border-left:10px solid var(--orange);display:flex;align-items:center;padding:0 30px;gap:30px}
+    .hk-cpn{position:absolute;left:0;right:0;top:236px;height:180px;background:var(--card);border-radius:10px;border-left:10px solid var(--orange);display:flex;align-items:center;padding:0 30px;gap:30px}
     /* "15% p.a.": the rate big, "p.a." small on the same baseline; the box is wide enough for the 1.2× beat of click 1 */
     .hk-big{width:480px;flex:none;text-align:center;font:800 120px/1 var(--f-head);color:var(--orange);white-space:nowrap;font-variant-numeric:lining-nums;transition:transform .8s cubic-bezier(.3,1.5,.5,1)}
     .hk-big .pa{font-size:46px}
@@ -108,9 +108,9 @@
     .hk-rf{flex:1;min-width:0}
     .hk-rf .n{font:700 76px/1 var(--f-head);color:var(--green-ink);margin:0 0 8px;font-variant-numeric:lining-nums}
     .hk-rf p{font-size:26px;color:var(--muted)}
-    .hk-q{position:absolute;left:0;right:0;top:684px;margin:0;font:700 46px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}
+    .hk-q{position:absolute;left:0;right:0;top:714px;margin:0;font:700 46px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}
     /* the Swiss Derivative Map in one row: families as small boxes, the yield-enhancement categories as chips, ours highlighted */
-    .hk-fam{position:absolute;left:0;right:0;top:424px;height:240px}
+    .hk-fam{position:absolute;left:0;right:0;top:456px;height:240px}
     .hk-fam-h{margin:0 0 8px;font:700 20px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink);display:flex;align-items:baseline}
     .hk-fam-h .pop{margin-left:auto;font:700 21px/1 var(--f-body);letter-spacing:0;text-transform:none;color:var(--green)}
     .hk-fam-r{display:grid;grid-template-columns:170px 1fr 170px 200px 170px;gap:14px;height:206px}
