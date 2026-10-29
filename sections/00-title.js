@@ -181,11 +181,13 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(layer, 0, 0);
       ctx.restore();
       // the strike (grey) and the kick-in level (black), dashed over the fan, labelled on the left like an axis
-      const level = (v, colr, wdt) => { ctx.setLineDash([10, 8]); ctx.strokeStyle = colr; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(X0, Y(v)); ctx.lineTo(XR, Y(v)); ctx.stroke(); ctx.setLineDash([]); };
+      const level = (v, colr, wdt) => { ctx.setLineDash([10, 8]); ctx.strokeStyle = colr; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(X0, Y(v)); ctx.lineTo(o.labelsRight ? XR - 150 : XR, Y(v)); ctx.stroke(); ctx.setLineDash([]); };
       level(B.strike, col.rule, 2); level(B.kickIn, col.ink, 2.5);
-      ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-      ctx.fillStyle = col.muted; ctx.fillText("STRIKE " + Math.round(B.strike * 100) + "%", X0 - 18, Y(B.strike));
-      ctx.fillStyle = col.ink; ctx.fillText("KICK-IN " + KI + "%", X0 - 18, Y(B.kickIn));
+      // the level labels: left of the chart like an axis, or (o.labelsRight) at the right end of each dashed line
+      ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
+      [["STRIKE " + Math.round(B.strike * 100) + "%", B.strike, col.muted], ["KICK-IN " + KI + "%", B.kickIn, col.ink]].forEach(([t, v, cl]) => {
+        ctx.textAlign = "right"; ctx.fillStyle = cl; ctx.fillText(t, o.labelsRight ? XR : X0 - 18, Y(v));
+      });
       ctx.letterSpacing = "0px";
       // the highlighted years, each on a thin white edge so it stands clear of the fan
       const path = (f, colr) => {
@@ -235,7 +237,9 @@
           items.forEach((it, i) => item(it, x, LY - 36 * (items.length - 1 - i)));
         }
         ctx.font = "700 18px " + U.F.body; ctx.fillStyle = col.muted; ctx.textAlign = "right";
-        ctx.fillText("EACH LINE = ONE SIMULATED YEAR", XR, LY + 36);
+        const CAP = ["EACH LINE = ONE SIMULATED YEAR", "HIGHLIGHTED LINES = EXAMPLE YEARS OF THE THREE PAYOFF SCENARIOS"];
+        if (o.full) ctx.fillText(CAP.join(" · "), XR, LY + 36);
+        else CAP.forEach((t, i) => ctx.fillText(t, XR, LY + 36 * (i + 1)));
         ctx.globalAlpha = 1;
       }
       ctx.letterSpacing = "0px";
@@ -262,7 +266,7 @@
           <p class="tt-uni">University of St.Gallen · Corporate Finance (7,107)</p>
           <p class="tt-meta"><b>Group III</b> · Ali Bozan Can, Benjamin Marco Bolliger, Cédric Anwar El Soda, Ivan Kissinger, Joaquim Graber, Leandro Broccucci, Mirko Cirantineo</p>
         </div>`;
-      return pathsArt(root, 7, { full: true, title: "Monte Carlo: simulated paths of the worst underlying until redemption", titleX: 120, titleY: 318, X0: 330, X1: 1780, XR: 1800, Y1: 580, SC: 410, LY: 885 });
+      return pathsArt(root, 7, { full: true, labelsRight: true, X0: 120, X1: 1600, XR: 1800, Y1: 572, SC: 430, LY: 885 });
     }
   });
 
@@ -456,7 +460,7 @@
           <h1 class="tt-title">Thank you<br>for watching</h1>
           <p class="tt-sub">Next time you see a <span class="hl">${CPN}% coupon</span>, ask yourself what it really costs you.</p>
         </div>`;
-      return pathsArt(root, 9);
+      return pathsArt(root, 9, { LY: 950 });
     }
   });
 })();
