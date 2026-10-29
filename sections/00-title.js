@@ -372,7 +372,7 @@
           ctx.fillText(txt, x + (al === "right" ? 6 : al === "left" ? -6 : 0), f.y - 14);
         };
         vline(xt, "Today, " + dayTxt(H.dates[LAST]), "center", true);
-        vline(xe, "Consensus 12M target price", "right", false);
+        vline(xe, "", "right", false);
         ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 20px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
         ctx.letterSpacing = "1px"; ctx.fillText("INVESTMENT HORIZON: 1 YEAR", (xt + xe) / 2, f.y + 12); ctx.letterSpacing = "0px";
         // the history (first 75% of the time), then the consensus paths (dashed)
@@ -405,6 +405,10 @@
         }
         if (lab > 0) {
           ctx.globalAlpha = lab; ctx.textAlign = "left";
+          // the heading of the column: what the prices under it are
+          ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 24px " + U.F.body; ctx.textBaseline = "top";
+          ctx.fillText("Consensus 12M", xe + 20, f.y - 50); ctx.fillText("target price", xe + 20, f.y - 22);
+          ctx.fillStyle = U.css("--green"); ctx.fillRect(xe + 20, f.y + 12, 64, 4);
           H.px.forEach((p, s) => {
             const y = Y(consPath(s, FUT)), x = xe + 20;
             ctx.fillStyle = U.css(COL[s]); ctx.font = "700 26px " + U.F.body; ctx.textBaseline = "bottom";
