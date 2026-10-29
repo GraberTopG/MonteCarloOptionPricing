@@ -125,10 +125,10 @@
   Deck.addSlide({
     id: "bt-recap", section: "why", after: "bs-recap", steps: 1, secs: 14,
     title: "Recap: The binomial tree and why it can't price a Multi-BRC",
-    subtitle: "Handles any payoff and early exercise, but the tree grows with every step and every extra stock",
+    subtitle: `The curse of dimensionality: 1 stock needs ${U.fmt(BT_ONE, 0)} nodes, 3 stocks need ${U.fmt(BT_BN, 1)} billion`,
     lecture: "Lecture 4, slide 10",
     sources: "Arnold (2026); Cox, Ross & Rubinstein (1979)",
-    notes: `What about the binomial tree from the lecture? It moves the stock up or down each step and works backwards to today. [→] In theory, it could price our product too. But with three stocks, the tree grows in three dimensions, and with 252 trading days it reaches about ${U.fmt(BT_BN, 1)} billion nodes. Far too big to compute, let alone in Excel.`,
+    notes: `What about the binomial tree from the lecture? It moves the stock up or down each step and works backwards to today, and it handles any payoff, even early exercise. [→] In theory, it could price our product too. But with three stocks, the tree grows in three dimensions, and with 252 trading days it reaches about ${U.fmt(BT_BN, 1)} billion nodes. Far too big to compute, let alone in Excel.`,
     render(body) {
       body.innerHTML = `
         <div class="lec v2 bt">
