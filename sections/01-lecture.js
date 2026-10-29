@@ -35,6 +35,19 @@
     .lec-int{margin:8px 0 0;font:20px/1.3 var(--f-body);color:var(--ink);text-align:left}
     .lec-int b{font-family:var(--f-math);font-style:italic}
     .lec-why{margin:22px 0 0;font:24px/1.35 var(--f-body);color:var(--ink)} .lec-why b{color:var(--green)}
+    /* v2: formulas left, all variables right, the reasons in one wide box underneath */
+    .lec.v2{grid-template-columns:1fr 560px;grid-template-rows:auto 1fr;gap:28px 40px}
+    .lec.v2 .lec-l .label{margin-bottom:16px}
+    .lec.v2 .lec-cp{gap:34px} .lec.v2 .fbox{padding:22px 24px 18px} .lec.v2 .fbox math{font-size:40px}
+    .lec.v2 .lec-d{margin-top:28px} .lec.v2 .lec-d .fbox{padding:14px 18px} .lec.v2 .lec-d .fbox math{font-size:36px}
+    .lec.v2 .lec-intp{margin-top:16px;padding:34px 26px 16px;align-self:start}
+    .lec-vars1 .vars{display:grid;grid-template-columns:100px 1fr;gap:0 12px;font:22px/1.3 var(--f-body);margin:0 0 9px;align-items:center}
+    .lec-vars1 .vars math{font-size:24px}
+    .lec-bot{grid-column:1/3;align-self:start;margin-top:30px;padding:36px 30px 18px}
+    .lec-bot ul{grid-template-columns:1fr 1fr;gap:24px}
+    .lec-bot .icard{font:22px/1.3 var(--f-body);padding:12px 20px 12px 16px}
+    .lec-bot .icard b{font-size:27px}
+    .lec-bot .lec-why{margin:14px 0 0;font-size:24px} .lec-why b.no{color:var(--red-ink)}
     .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:18px}
     .lec-panel .icard .num{width:46px;height:46px;font-size:22px}
     .lec-panel .icard{font:24px/1.3 var(--f-body);padding:16px 22px 16px 16px}
@@ -57,47 +70,37 @@
     notes: `So why not just use Black-Scholes? [→] It's a great formula, but it only works for one stock, and only when the final price matters.`,
     render(body) {
       body.innerHTML = `
-        <div class="lec">
+        <div class="lec v2">
           <div class="lec-l">
             <p class="label">Black-Scholes-Merton formula for European options</p>
             <div class="lec-cp">
               <div class="fbox"><span class="chip">CALL</span>${C0}</div>
               <div class="fbox"><span class="chip">PUT</span>${P0}</div>
             </div>
-            <div class="lec-d"><div class="fbox gray">${D1}</div>
-              <div class="fbox gray">${D2}</div></div>
-            <div class="lec-in">
-              <p class="minor">Where</p>
-              <div class="lec-vars">
-                <div>
-                  ${v("<msub><mi>C</mi><mn>0</mn></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub>", "call / put value today")}
-                  ${v("<msub><mi>S</mi><mn>0</mn></msub>", "share price today")}
-                  ${v("<mi>K</mi>", "strike price")}
-                  ${v("<mi>N</mi><mo stretchy='false'>(</mo><mo>·</mo><mo stretchy='false'>)</mo>", "cumulative standard normal distribution")}
-                </div>
-                <div>
-                  ${v("<mi>r</mi>", "risk-free rate (continuous)")}
-                  ${v("<mi>T</mi>", "time to maturity in years")}
-                  ${v("<mi>σ</mi>", "volatility per year")}
-                </div>
-              </div>
-            </div>
+            <div class="lec-d"><div class="fbox gray">${D1}</div><div class="fbox gray">${D2}</div></div>
           </div>
-          <div class="lec-r">
           <section class="panel lec-intp">
-            <h3 class="panel-title">How to read it</h3>
-            <p><b>N(d<sub>1</sub>)</b>the call's delta: shares held to hedge it</p>
-            <p><b>N(d<sub>2</sub>)</b>risk-neutral probability that the call ends in the money</p>
+            <h3 class="panel-title">Where</h3>
+            <div class="lec-vars1">
+              ${v("<msub><mi>C</mi><mn>0</mn></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub>", "call / put value today")}
+              ${v("<msub><mi>S</mi><mn>0</mn></msub>", "share price today")}
+              ${v("<mi>K</mi>", "strike price")}
+              ${v("<mi>r</mi>", "risk-free rate (continuous)")}
+              ${v("<mi>T</mi>", "time to maturity in years")}
+              ${v("<mi>σ</mi>", "volatility per year")}
+              ${v("<mi>N</mi><mo stretchy='false'>(</mo><mo>·</mo><mo stretchy='false'>)</mo>", "cumulative standard normal")}
+              ${v("<mi>N</mi><mo stretchy='false'>(</mo><msub><mi>d</mi><mn>1</mn></msub><mo stretchy='false'>)</mo>", "the call's delta")}
+              ${v("<mi>N</mi><mo stretchy='false'>(</mo><msub><mi>d</mi><mn>2</mn></msub><mo stretchy='false'>)</mo>", "risk-neutral probability that the call ends in the money")}
+            </div>
           </section>
-          <section class="panel lec-panel" data-step="1">
+          <section class="panel lec-panel lec-bot" data-step="1">
             <h3 class="panel-title">Why it doesn't fit a Multi-BRC</h3>
             <ul>
               <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>the formula prices an option on a single underlying</span></li>
               <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>European payoff: the path along the way is ignored</span></li>
             </ul>
-            <p class="lec-why" data-step="1" style="--d:6">Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path</p>
+            <p class="lec-why" data-step="1" style="--d:6">Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path → Black-Scholes <b class="no">can't be applied</b></p>
           </section>
-          </div>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
     }
