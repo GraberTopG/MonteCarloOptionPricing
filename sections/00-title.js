@@ -553,7 +553,7 @@
             ${tile("Underlyings", "Worst of 3", `<span class="hk-cr">Conversion ratio (shares per note)</span>` + B.names.map((n, s) => `<span class="hk-stk"><span class="hk-dot ${DOT[s]}"></span>${n}<b>${U.fmt(B.nominal / XL.S0[s], 4)}</b></span>`).join(""), 5)}
             ${tile("Maturity", B.T + " year", `<span class="hk-ln">Issue date: 6 Oct 2026</span><span class="hk-ln">Maturity date: 6 Oct 2027</span>`)}
             ${tile("Strike", "100%", `<span class="hk-cr">of the starting price, USD</span>` + B.names.map((n, s) => `<span class="hk-stk"><span class="hk-dot ${DOT[s]}"></span>${n}<b>${U.fmt(XL.S0[s], 2)}</b></span>`).join(""))}
-            ${tile("Kick-in barrier", KI + "%", "of the starting price; if touched: shares of the worst stock instead of USD " + NOM, 3)}
+            ${tile("Kick-in barrier", KI + "%", "of the starting price; if touched, the product turns into a worst‑of reverse convertible", 3)}
             ${tile("Issuer", "UBS", "hypothetical issue; issuer credit risk applies")}
           </div>
           <div class="hk-cpn">
