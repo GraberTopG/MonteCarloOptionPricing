@@ -1,17 +1,5 @@
 {
-  "name": "cf-monte-carlo",
+  "name": "monte-carlo-option-pricing",
   "private": true,
-  "type": "module",
-  "description": "Corporate Finance group video: Monte Carlo web app",
-  "scripts": {
-    "build": "node scripts/build.js",
-    "pdf": "node scripts/pdf.mjs"
-  },
-  "devDependencies": {
-    "esbuild": "^0.28.2",
-    "javascript-obfuscator": "^5.9.0"
-  },
-  "dependencies": {
-    "@vercel/functions": "^3.9.11"
-  }
+  "description": "Corporate Finance group video: pricing a Worst-Of Multi Barrier Reverse Convertible with Monte Carlo simulation"
 }
