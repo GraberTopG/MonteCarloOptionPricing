@@ -151,10 +151,10 @@
     .mc-pi-chart{margin:0;min-height:0;display:flex;flex-direction:column}
     .mc-pi-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
     .mc-pi-chart figcaption{margin-top:4px;font:21px var(--f-body);color:var(--muted)}
-    .mc-pi-r{display:flex;flex-direction:column;justify-content:space-between;gap:30px;min-width:0;padding-top:14px}
-    .mc-pi-f{padding:32px 20px 16px}
+    .mc-pi-r{display:flex;flex-direction:column;gap:36px;min-width:0;padding-top:14px}
+    .mc-pi-f{flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px 20px 16px}
     .mc-pi-f math{font-size:28px}
-    .mc-pi-lo{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}
+    .mc-pi-lo{flex:1.4;min-height:0;display:grid;grid-template-columns:1fr 1fr;column-gap:24px}
     .mc-pi-t{padding:32px 22px 14px;display:flex;flex-direction:column;justify-content:center}
     .mc-pi-t table{width:100%;border-collapse:collapse;font:22px var(--f-body);color:var(--ink)}
     .mc-pi-t th{text-align:left;font-weight:700;color:var(--muted);font-size:18px;padding:0 0 6px;border-bottom:1px solid var(--green-soft)}
@@ -168,7 +168,7 @@
     .mc-pi-our .v{margin-top:8px;font:800 34px var(--f-body);color:var(--green-ink);white-space:nowrap}
     .mc-pi-our .v span{color:var(--green)}
     .mc-pi-our .s{margin-top:8px;font:19px/1.35 var(--f-body);color:var(--muted)}
-    .mc-pi-ci{padding:32px 20px 14px}
+    .mc-pi-ci{flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px 20px 14px}
     .mc-pi-ci math{font-size:30px}
     .mc-pi-ci .mc-cap{margin-top:12px}
     .mc-pi-ci .mc-cap math{font-size:24px}
@@ -643,6 +643,7 @@
       const cv = body.querySelector("canvas");
       // st.n: darts on the board; st.t: ms into the flight of the first five (Infinity: all landed)
       let st = { n: 0, t: Infinity }, a = null, cur = 0;
+      const fiveA = () => st.t === Infinity && st.n > DART.few ? Math.max(0, 1 - (st.n - DART.few) / (DART.n * .3)) : 1;   // the first five fade as the many come in
       function landed() { if (st.t === Infinity) return st.n; let k = 0; while (k < DART.few && landAt(k) <= st.t) k++; return k; }
       function draw() {
         const n = landed();
@@ -670,13 +671,14 @@
             const k = since / DART.ringMs; ctx.strokeStyle = col; ctx.globalAlpha = 1 - k; ctx.lineWidth = 3;
             ctx.beginPath(); ctx.arc(x, y, 9 + 26 * k, 0, 7); ctx.stroke(); ctx.globalAlpha = 1;
           }
-          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 9, 0, 7); ctx.fill();
-          ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.5; ctx.stroke();   // a white ring sets the five apart from the many
+          const fa = fiveA(); if (!fa) continue;
+          ctx.globalAlpha = fa; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 9, 0, 7); ctx.fill();
+          ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.5; ctx.stroke(); ctx.globalAlpha = 1;   // a white ring sets the five apart from the many
         }
         // labels on white boxes: side 2 under the square, radius 1 from the centre
         // the running estimate above the board
         ctx.font = "700 26px " + U.F.body; ctx.textBaseline = "middle"; ctx.textAlign = "center";
-        if (n) { ctx.fillStyle = n === DART.n ? green : text; ctx.fillText(`${fmt(n, 0)} dart${n > 1 ? "s" : ""}: π ≈ 4 × ${fmt(darts.cum[n], 0)}/${fmt(n, 0)} = ${piTxt(n)}`, cx, 28); }
+        if (n) { ctx.fillStyle = n === DART.n ? green : text; ctx.fillText(n === DART.n ? `${fmt(n, 0)} darts: π ≈ ${piTxt(n)}` : `${fmt(n, 0)} dart${n > 1 ? "s" : ""}: π ≈ 4 × ${fmt(darts.cum[n], 0)}/${fmt(n, 0)} = ${piTxt(n)}`, cx, 28); }
         ctx.font = "700 20px " + U.F.body;
         const yb = Y(-1) + 26;
         ctx.strokeStyle = text; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(-1), yb); ctx.lineTo(X(1), yb); ctx.moveTo(X(-1), yb - 7); ctx.lineTo(X(-1), yb + 7); ctx.moveTo(X(1), yb - 7); ctx.lineTo(X(1), yb + 7); ctx.stroke();
