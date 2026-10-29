@@ -484,7 +484,7 @@
   const NOTES_CH = "So how would you invest? [→] Shares? You take the full downside. [→] A government bond? Safe, but only about four and a half percent. [→] A call option? You pay for a big jump you don't expect. None of them fits a quiet year.";
   Deck.addSlide({
     id: "hook-choices", section: "hook", steps: 3, secs: secsFor(NOTES_CH, 3),
-    title: "Which product expresses the market view adequately?",
+    title: "Which financial instrument lets us express the market view best?",
     subtitle: `Three ways to invest USD ${NOM} for one year · Consensus: HOLD`,
     sources: "Bloomberg (2026) (USD 1-year rate); own Excel model, sheet 2; own illustration",
     notes: NOTES_CH,
