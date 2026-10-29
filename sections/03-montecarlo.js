@@ -655,7 +655,7 @@
     subtitle: `${NDAY} daily moves on each of three stocks, ${fmt(DIMS, 0)} random numbers per path`,
     lecture: "Lecture 4, slide 15",
     sources: "Boyle (1977); Arnold (2026), slide 15; own simulation",
-    notes: "In 1977, Phelim Boyle brought Monte Carlo to option pricing. For us, each dart becomes a whole year: 252 random daily moves, on three stocks at once. [→] The lecture calls this geometric Brownian motion. [→] Now, what do we want to price?",
+    notes: "In 1977, Phelim Boyle brought Monte Carlo to option pricing. For us, each dart becomes a whole year: 252 random daily moves, on three stocks at once. [→] The lecture calls this geometric Brownian motion. [→] Now, let's build it in Excel.",
     render(body) {
       twoLines(body);
       body.innerHTML = `

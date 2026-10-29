@@ -222,7 +222,7 @@
 
   Deck.addSlide({
     id: "brc-family", section: "product", steps: 2, secs: 15,
-    title: "Worst-Of Multi-Barrier Reverse Convertible",
+    title: "What is a Multi-BRC?",
     subtitle: "BRCs are part of Yield Enhancement products",
     sources: "Swiss Structured Products Association (2026); UBS AG (2018); Bloomberg (2026); own Excel model, sheets 1–2; own illustration",
     notes: `Our product belongs to the yield-enhancement family: [→] you give up upside for a high, fixed coupon. In Swiss terms, it's category 1230, [→] a barrier reverse convertible, modelled on a real UBS note from 2018.`,
@@ -241,10 +241,10 @@
           <div class="prd-fam-g g1">Investment Products</div><div class="prd-fam-g g2">Leverage products</div>
           ${FAM.map(col).join("")}
           <section class="prd-key" data-step="2">
-            <p class="prd-key-h">Worst-of multi barrier reverse convertible <span class="g">(Multi-BRC)</span></p>
+            <p class="prd-key-h"><span class="g">Multi-BRC</span></p>
             <div class="prd-key-t">
               ${tile("NOMINAL", "USD " + f0(NOM), "(=Issue price)")}
-              ${tile("MATURITY", B.T + " year", "<i>Initial fixing date: 6/10/26</i><i>Expiration: 6/10/27</i>")}
+              ${tile("MATURITY", B.T + " year", "<i>Initial fixing date: 6 Oct 2026</i><i>Expiration: 6 Oct 2027</i>")}
               ${tile("KICK-IN BARRIER", KI, "of underlying’s reference price")}
               ${tile("UNDERLYINGS", "Worst of " + B.names.length, stocks)}
               ${tile("ISSUER", "UBS", "simulated with UBS as the issuer")}
@@ -270,7 +270,7 @@
   Deck.addSlide({
     id: "brc-payoff", section: "product", steps: 3, secs: 60,
     title: "The Multi-BRC Explained",
-    subtitle: "From a BRC to a Worst-Of Multi-BRC",
+    subtitle: "From a BRC to a Multi-BRC",
     sources: "Arnold (2026), slide 14; adapted from UBS AG (2018); own illustration",
     notes: `Let's build it in three steps. [→] Step one: a reverse convertible on one stock. The catch: if the stock ends below its starting price, you're paid back in shares, not cash. In option terms, you own a bond and have sold a put; the part of the coupon above normal interest is what the bank pays you for it. [→] Step two: the barrier. Now the put only kicks in if the stock touches 65 percent of its starting price. It becomes a down-and-in put. If the stock never gets there, you get your thousand back. [→] Step three: three stocks, and the worst-of principle. One touch by any of them is enough, and you get shares of the worst one, which isn't always the one that touched. So three stocks don't make it safer. They give you three chances to hit a barrier.`,
     render(body) {
@@ -576,10 +576,10 @@
   const NODES = treeNodes(B.steps, DIM), NODES_BN = NODES / 1e9;
   Deck.addSlide({
     id: "brc-why-mc", section: "why", after: "bs-recap", steps: 6, secs: 54,
-    title: "Why Monte Carlo is used for the Worst-Of Multi-BRC",
+    title: "Why Monte Carlo is used for the Multi-BRC",
     subtitle: "A barrier alone has a formula. Three stocks alone have a formula. Both together do not.",
     sources: "Arnold (2026), slides 9–10; Rubinstein & Reiner (1991); Stulz (1982); Johnson (1987); own simulation",
-    notes: `(Clicks 1–3: one simulated year, no narration.) [→] [→] [→] Our product breaks both. [→] First, the barrier: one touch at any moment changes everything, so the whole path matters. [→] Second, three stocks: the less they move together, the more likely one of them falls through its barrier on its own. There are formulas for a barrier on one stock, and for the worst of two stocks, but none for our product. [→] And the binomial tree from the lecture? With three stocks and ${B.steps} trading days, it grows to about a billion nodes. Far too big for Excel: that's the curse of dimensionality. Monte Carlo avoids it, as we saw. So let's build it in Excel.`,
+    notes: `(Clicks 1–3: one simulated year, no narration.) [→] [→] [→] Our product breaks both. [→] First, the barrier: one touch at any moment changes everything, so the whole path matters. [→] Second, three stocks: the less they move together, the more likely one of them falls through its barrier on its own. There are formulas for a barrier on one stock, and for the worst of two stocks, but none for our product. [→] And the binomial tree from the lecture? With three stocks and ${B.steps} trading days, it grows to about a billion nodes. Far too big for Excel: that's the curse of dimensionality. Monte Carlo avoids it. So what is Monte Carlo?`,
     render(body) {
       const sc = SC;
       const n = B.steps, red1000 = Math.round(sc.redemption * NOM);

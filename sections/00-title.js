@@ -214,7 +214,7 @@
           <p class="tt-uni">University of St.Gallen · Corporate Finance (7,107)</p>
           <div class="tt-rule"></div>
           <h1 class="tt-title">Monte Carlo<br>Option Pricing</h1>
-          <p class="tt-sub">Pricing a Worst-Of Multi Barrier Reverse Convertible on Adobe, Apple and Microsoft</p>
+          <p class="tt-sub">Pricing a Multi-BRC on Adobe, Apple and Microsoft</p>
           <p class="tt-meta"><b>Group III</b> · Ali Bozan Can, Benjamin Marco Bolliger, Cédric Anwar El Soda, Ivan Kissinger, Joaquim Graber, Leandro Broccucci, Mirko Cirantineo</p>
         </div>`;
       return pathsArt(root, 7);
@@ -230,8 +230,8 @@
   const NOTES_PX = "Hi everyone. It's October 2026, and you have a thousand dollars to invest for one year. Adobe trades at 238 dollars, Apple at 333 and Microsoft at 534. [→] After a rough year for Adobe, you expect a quiet one: no crash, no big rally.";
   Deck.addSlide({
     id: "hook-prices", section: "hook", steps: 1, secs: secsFor(NOTES_PX, 1),
-    title: "The starting point: 1000$ to invest for an expected sideways or slightly down year",
-    subtitle: "Daily closing prices of Adobe, Apple and Microsoft from 10/25 to 10/26",
+    title: "The starting point: USD 1,000 to invest for an expected sideways or slightly down year",
+    subtitle: "Daily closing prices of Adobe, Apple and Microsoft from 6 Oct 2025 to 6 Oct 2026",
     sources: "Bloomberg (2026); own Excel model, sheet 3",
     notes: NOTES_PX,
     render(body) {
@@ -353,11 +353,11 @@
   });
 
   // ================= hook 3: the product =================
-  const NOTES_PR = "But banks sell a product for exactly this view: a worst-of multi barrier reverse convertible, or Multi-BRC. You get a fifteen percent coupon whatever happens, but never more. As long as no stock touches 65 percent of its starting price, you get your thousand back. If one does, you may get shares instead. [→] Fifteen percent: more than three times the risk-free rate. [→] But is it enough for the risk you take? Let's find out, with Monte Carlo.";
+  const NOTES_PR = "But banks sell a product for exactly this view: a worst-of multi barrier reverse convertible, or Multi-BRC. You get a fifteen percent coupon whatever happens, but never more. As long as no stock touches 65 percent of its starting price, you get your thousand back. If one does, you may get shares instead. [→] Fifteen percent: more than three times the risk-free rate. [→] But is it enough for the risk you take? Let's take a closer look at the product.";
   const QUESTION = "But is it fair for the risk you take on?";
   Deck.addSlide({
     id: "hook-product", section: "hook", steps: 2, secs: secsFor(NOTES_PR, 2),
-    title: "Banks' solution: A Worst-of Multi-BRC",
+    title: "Banks' solution: A Multi-BRC",
     subtitle: "Banks created a product for this exact market view",
     sources: "UBS AG (2018) (model for the structure); Bloomberg (2026); own Excel model, sheets 1–2",
     notes: NOTES_PR,
@@ -366,10 +366,10 @@
       const tile = (k, v, s, ring) => `<div class="card hk-t"><span class="k">${k}</span><span class="v">${v}</span><span class="s">${s}</span>${ring ? `<span class="hk-ring" data-step="2" style="--d:${ring}"></span>` : ""}</div>`;
       body.innerHTML = `
         <div class="hk-pr">
-          <p class="hk-name">The product: A worst-of <span class="g">Multi-BRC</span> on ${B.tickers.map(t => "$" + t).join(", ")}</p>
+          <p class="hk-name">The product: A <span class="g">Multi-BRC</span> on ${B.tickers.map(t => "$" + t).join(", ")}</p>
           <div class="hk-terms">
             ${tile("Nominal", "USD " + NOM, "(=Issue price)")}
-            ${tile("Maturity", B.T + " year", `<span class="hk-ln">Initial fixing date: 6/10/26</span><span class="hk-ln">Expiration: 6/10/27</span>`)}
+            ${tile("Maturity", B.T + " year", `<span class="hk-ln">Initial fixing date: 6 Oct 2026</span><span class="hk-ln">Expiration: 6 Oct 2027</span>`)}
             ${tile("Kick-in barrier", KI + "%", "of underlying’s reference price", 3)}
             ${tile("Underlyings", "Worst of 3", B.names.map((n, s) => `<span class="hk-stk"><span class="hk-dot ${DOT[s]}"></span>${n}</span>`).join(""), 5)}
             ${tile("Issuer", "UBS", "simulated with UBS as the issuer")}

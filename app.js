@@ -8,9 +8,9 @@
   // the order of the video script; the tab names follow the group's feedback (27 Oct 2026): the hook slides got a tab
   const TABS = [
     { id: "hook", label: "A QUIET YEAR" },
-    { id: "mc", label: "MONTE CARLO" },
-    { id: "product", label: "THE WORST-OF MULTI-BRC" },
+    { id: "product", label: "THE MULTI-BRC" },
     { id: "why", label: "WHY MONTE CARLO" },
+    { id: "mc", label: "MONTE CARLO" },
     { id: "excel", label: "PRICING IN EXCEL" },
     { id: "conclusion", label: "CONCLUSION" }
   ];

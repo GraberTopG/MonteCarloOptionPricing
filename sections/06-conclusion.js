@@ -105,20 +105,12 @@
     title: "Summary of the video",
     subtitle: "The whole video in four lines",
     sources: "Arnold (2026), slides 7, 10 and 15; own Excel model",
-    notes: "So, to sum up. Monte Carlo prices an option by simulating many futures and averaging the discounted payoffs. [→] Our product is a bond minus a put on the worst of three stocks. [→] Black-Scholes can't price it and a binomial tree is far too big, but Monte Carlo can. [→] And in Excel, the recipe is simple: inputs, random shocks, paths, payoff, average.",
+    notes: "So, to sum up. Our product is a bond minus a put on the worst of three stocks. [→] Black-Scholes can't price it and a binomial tree is far too big. [→] Monte Carlo can: it prices an option by simulating many futures and averaging the discounted payoffs. [→] And in Excel, the recipe is simple: inputs, random shocks, paths, payoff, average.",
     render(body) {
       body.innerHTML = `
         <div class="cc-sum">
           <div class="cc-srow" data-step="0">
             <div class="num">1</div>
-            <div><h3>Monte Carlo</h3><p>Simulate many futures, average the discounted payoffs</p></div>
-            <div class="cc-sfig">
-              <svg class="cc-fan" viewBox="0 0 300 132" aria-hidden="true">${FAN1.map((p, k) => `<path pathLength="1" style="--k:${k}" d="${p.d}"/>`).join("")}${FAN1.map(p => `<circle cx="${p.end[0].toFixed(1)}" cy="${p.end[1].toFixed(1)}" r="4.5"/>`).join("")}</svg>
-              <div class="cc-mcf">${MC_PRICE}</div>
-            </div>
-          </div>
-          <div class="cc-srow" data-step="1">
-            <div class="num">2</div>
             <div><h3>The Multi-BRC</h3><p>A bond minus a put on the worst of three stocks</p></div>
             <div class="cc-sfig">
               <div class="cc-box bond"><b>Bond</b><em>coupons + ${fmt(NOMINAL, 0)}</em></div>
@@ -126,13 +118,21 @@
               <div class="cc-box put"><b>Put</b><em>on the worst of</em><span class="cc-tks">${TK.map((t, k) => `<span style="color:var(${LIGHT[k]})">${t}</span>`).join("")}</span></div>
             </div>
           </div>
-          <div class="cc-srow" data-step="2">
-            <div class="num">3</div>
+          <div class="cc-srow" data-step="1">
+            <div class="num">2</div>
             <div><h3>Why Monte Carlo</h3><p>Black-Scholes can't price it, a binomial tree is far too big</p></div>
             <div class="cc-sfig cc-tiles">
               <div class="cc-tile no" style="--k:0"><div class="cc-tg"><math><mi>N</mi><mo>(</mo><msub><mi>d</mi><mn>1</mn></msub><mo>)</mo></math></div><b>Black-Scholes</b>${MARK(false)}</div>
               <div class="cc-tile no" style="--k:1"><div class="cc-tg">${TREE}</div><b>Binomial tree</b>${MARK(false)}</div>
               <div class="cc-tile ok" style="--k:2"><div class="cc-tg"><svg class="cc-mfan" viewBox="0 0 132 62" aria-hidden="true">${FAN_MC.map(p => `<path d="${p.d}"/>`).join("")}</svg></div><b>Monte Carlo</b>${MARK(true)}</div>
+            </div>
+          </div>
+          <div class="cc-srow" data-step="2">
+            <div class="num">3</div>
+            <div><h3>Monte Carlo</h3><p>Simulate many futures, average the discounted payoffs</p></div>
+            <div class="cc-sfig">
+              <svg class="cc-fan" viewBox="0 0 300 132" aria-hidden="true">${FAN1.map((p, k) => `<path pathLength="1" style="--k:${k}" d="${p.d}"/>`).join("")}${FAN1.map(p => `<circle cx="${p.end[0].toFixed(1)}" cy="${p.end[1].toFixed(1)}" r="4.5"/>`).join("")}</svg>
+              <div class="cc-mcf">${MC_PRICE}</div>
             </div>
           </div>
           <div class="cc-srow recipe" data-step="3">
