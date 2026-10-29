@@ -580,26 +580,26 @@
     bank: '<path d="M3 10l9-6 9 6"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 20h18"/>'
   };
   Deck.addSlide({
-    id: "brc-suits", section: "product", steps: 1, secs: 17,
+    id: "brc-suits", section: "product", steps: 2, secs: 17,
     title: "Advantages and risks of the Multi-BRC",
     subtitle: "A high, fixed coupon in exchange for capped upside and downside risk",
     sources: "UBS (2026); own illustration",
-    notes: `It suits stocks that go sideways or fall a little. [→] The risks: after a kick-in you lose like a shareholder, your gain is capped at ${f0(XL.coupon * 100)} percent, you get no dividends, and if UBS goes bankrupt, your money is at risk.`,
+    notes: `[→] It suits stocks that go sideways or fall a little. [→] The risks: after a kick-in you lose like a shareholder, your gain is capped at ${f0(XL.coupon * 100)} percent, you get no dividends, and if UBS goes bankrupt, your money is at risk.`,
     render(body) {
-      // one item: the term in bold, the line under it; the risks build in at step 1
-      const item = (ic, h, p, d) => `<li class="icard"${d ? ` data-step="1" style="--d:${d}"` : ""}><span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[ic]}</svg></span><div><h4>${h}</h4><p>${p}</p></div></li>`;
+      // one item: the term in bold, the line under it; the advantages build in at step 1, the risks at step 2
+      const item = (ic, h, p, d, st) => `<li class="icard"${d ? ` data-step="${st || 2}" style="--d:${d}"` : ""}><span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[ic]}</svg></span><div><h4>${h}</h4><p>${p}</p></div></li>`;
       body.innerHTML = `
         <div class="prd-su">
-          <section class="panel prd-su-ok">
+          <section class="panel prd-su-ok" data-step="1">
             <h3 class="panel-title">Advantages</h3>
             <ul>
-              ${item("pct", "Fixed coupon, generally above the market interest rate", "You get a fixed coupon, generally above the market interest rate.")}
-              ${item("cal", "Coupon paid without conditions", "Coupon independent of underlying’s performance")}
-              ${item("shield", "Conditional capital protection through the barrier", "As long as no stock touches it, you get the full denomination back, even if the stocks have fallen")}
-              ${item("cushion", "Lower risk of loss than a direct investment", "Coupon cushion provides a fixed payment you don’t have when buying the underlyings")}
+              ${item("pct", "Fixed coupon, generally above the market interest rate", "You get a fixed coupon, generally above the market interest rate.", 1, 1)}
+              ${item("cal", "Coupon paid without conditions", "Coupon independent of underlying’s performance", 2, 1)}
+              ${item("shield", "Conditional capital protection through the barrier", "As long as no stock touches it, you get the full denomination back, even if the stocks have fallen", 3, 1)}
+              ${item("cushion", "Lower risk of loss than a direct investment", "Coupon cushion provides a fixed payment you don’t have when buying the underlyings", 4, 1)}
             </ul>
           </section>
-          <section class="panel prd-su-risk" data-step="1">
+          <section class="panel prd-su-risk" data-step="2">
             <h3 class="panel-title">Risks</h3>
             <ul>
               ${item("loss", "Loss possible after a barrier event", "after a kick-in you take the worst stock’s loss", 1)}
