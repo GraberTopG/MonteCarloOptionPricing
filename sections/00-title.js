@@ -540,7 +540,7 @@
   Deck.addSlide({
     id: "hook-product", section: "product", steps: 2, secs: secsFor(NOTES_PR, 2),
     title: "Banks' solution: A Multi‑BRC on $ADBE, $AAPL, $MSFT",   // non-breaking hyphen: "Multi-BRC" stays on one line
-    subtitle: "Banks offer this highly popular product to enhance your yield in sideways to slightly down markets",
+    subtitle: "A bestseller among Swiss structured products: extra yield in sideways to slightly down markets",
     sources: "Bloomberg (2026); Swiss Structured Products Association (2026)",
     notes: NOTES_PR,
     render(body) {
