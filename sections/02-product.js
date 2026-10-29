@@ -229,6 +229,21 @@
     /* the title runs over two lines (balanced, never broken inside "Multi-BRC"): the panel starts lower, under the subtitle */
     .slide[data-id="brc-why-mc"] .s-title{font-size:50px;white-space:nowrap}
     .prd-mc{position:relative;height:100%}
+    .prd-mc .wm{position:absolute;left:0;right:0;top:-40px;bottom:40px;display:grid;grid-template-columns:1fr 420px;gap:24px}
+    .prd-mc .wm-chart{position:relative}
+    .prd-mc .wm-chart canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+    .prd-mc .wm-cap{position:absolute;left:0;right:0;bottom:4px;margin:0;font:400 21px var(--f-body);color:var(--muted)}
+    .prd-mc .wm-side{align-self:center;display:flex;flex-direction:column;gap:14px}
+    .prd-mc .wm-h{margin:0;font:700 20px var(--f-body);color:var(--ink)}
+    .prd-mc .wm-row{border-radius:8px;padding:14px 18px 16px;background:var(--card)}
+    .prd-mc .wm-row.dep{background:#fff;border:3px solid var(--ink)}
+    .prd-mc .wm-row p{margin:0}
+    .prd-mc .wm-row .k{font:700 22px var(--f-body);color:var(--ink)}
+    .prd-mc .wm-row .s{margin-top:6px;font:19px/1.3 var(--f-body);color:var(--muted)}
+    .prd-mc .wm-row .v{margin-top:8px;font:700 32px var(--f-body);color:var(--green)}
+    .prd-mc .wm-row.dep .v{color:var(--ink)}
+    .prd-mc .wm-diff{margin:0;font:22px/1.3 var(--f-body);color:var(--ink)}
+    .prd-mc .wm-diff b{color:var(--ink)}
     .prd-mc>.term{position:absolute;left:0;right:0;top:36px;height:704px;transition:opacity .45s ease,transform .45s ease}
     .prd-mc .term-stats{gap:40px}
     .prd-mc .term-stats .k{font-size:16px}
@@ -249,8 +264,8 @@
     .prd-call .t{margin:8px 0 0 44px;font:24px/1.3 var(--f-body);color:var(--ink)}
     .prd-call .t b{color:var(--ct)}
     .prd-call .t+.t{margin-top:8px}
-    .prd-call.c1{max-width:560px}
-    .prd-call.c2{max-width:640px}
+    .prd-call.c1{max-width:470px}
+    .prd-call.c2{max-width:540px}
     /* step 6: the simulated year makes way for reason 3, the binomial tree, on a card of its own (never over the chart) */
     .prd-mc.verdict>.term{opacity:0;transform:scale(.985)}
     .prd-tree{position:absolute;left:0;right:0;top:78px;height:620px;background:#fff;border:2px solid var(--green);border-radius:12px;padding:24px 44px 30px;display:flex;flex-direction:column}
@@ -684,11 +699,12 @@
   Deck.addSlide({
     id: "brc-why-mc", section: "why", after: "bt-recap", steps: 5, secs: 44,
     title: "The Multi-BRC is path-dependent: other formulas don't apply",
-    subtitle: "A barrier alone has a formula. Three stocks alone have a formula. Both together do not.",
+    subtitle: "A barrier alone and three stocks alone have a formula, while both together do not",
     sources: "Rubinstein & Reiner (1991); Stulz (1982); Johnson (1987); own illustration",
     notes: `(Clicks 1–3: one simulated year, no narration.) [→] [→] [→] Here is one possible year of our product, and it shows the two problems. [→] First, the barrier: one touch at any moment changes everything, so the whole path matters. [→] Second, three stocks: the less they move together, the more likely one of them falls through its barrier on its own. There are formulas for a barrier on one stock, and for the worst of two stocks, but none for our product. No formula, and a tree that's too big: so we simulate. That's Monte Carlo.`,
     render(body) {
       const sc = SC;
+      const pct = v => U.fmt(v * 100, 1) + "%";
       const n = B.steps, red1000 = Math.round(sc.redemption * NOM);
       const stat = (k, cls, style) => `<div><div class="k">${k}</div><div class="v ${cls || ""}" style="${style || ""}">–</div></div>`;
       // the reasons, written from this scenario's numbers (they follow the inputs if the Excel team changes them)
@@ -698,7 +714,7 @@
       const kDay = sc.ki ? sc.kiDay : lowDay, kAsset = sc.ki ? sc.kiAsset : sc.worstAsset;
       const kt = B.tickers[kAsset].toLowerCase(), KCOL = `var(--c-${kt})`, KTXT = `var(--c-${kt}-light)`;   // line colour · text colour
       const why1 = sc.ki
-        ? `One touch on <b>day ${sc.kiDay}</b> cut the payout from USD ${f0(NOM + CPN)} to USD ${f0(red1000 + CPN)}: the <b>whole path</b> matters.`
+        ? `One touch on <b>day ${sc.kiDay}</b> is enough: the <b>whole path</b> matters.`
         : `The ${KI} barrier is watched every day: the <b>whole path</b> matters.`;
       const why2 = `<div class="t">The less they move together, the more likely one falls through its barrier <b>on its own</b>.</div>
         <div class="t">Formulas exist for a barrier on one stock (Rubinstein &amp; Reiner, 1991) and the worst of two (Stulz, 1982): <b>none for ours</b>.</div>`;
@@ -740,20 +756,29 @@
         </div>`;
       body.innerHTML = `
         <div class="prd-mc">
-          ${U.term({
-            fn: "SCEN", title: "ONE POSSIBLE YEAR · WORST OF ADBE / AAPL / MSFT",
-            meta: `VOL ${B.sigma.map(v => Math.round(v * 100)).join("/")}% · CORR ${U.fmt(Math.min(B.rho[0][1], B.rho[0][2], B.rho[1][2]), 2)}–${U.fmt(Math.max(B.rho[0][1], B.rho[0][2], B.rho[1][2]), 2)} · OUR EXCEL'S INPUTS`,
-            body: `<canvas></canvas>${callouts}`,
-            stats: stat("Trading day", "d") + B.tickers.map((t, k) => stat(t, "s" + k, `color:var(--c-${t.toLowerCase()}-light)`)).join("") + stat("Kick-in", "ki") + stat("Payout per USD 1,000", "pay")
-          })}
+          <div class="wm">
+            <div class="wm-chart"><canvas></canvas>${callouts}</div>
+            <aside class="wm-side" data-step="3">
+              <p class="wm-h">Payout per USD 1,000 at maturity</p>
+              <div class="wm-row ind">
+                <p class="k">Path-<u>in</u>dependent</p>
+                <p class="s">Only the final price counts: the worst stock ends at ${pct(sc.worst)}, above the ${KI} kick-in</p>
+                <p class="v">USD ${f0(NOM + CPN)}</p>
+              </div>
+              <div class="wm-row dep">
+                <p class="k">Path-dependent: our Multi-BRC</p>
+                <p class="s">The whole path counts: ${B.tickers[sc.kiAsset]} touched ${KI} on day ${sc.kiDay}</p>
+                <p class="v">USD ${f0(red1000 + CPN)}</p>
+              </div>
+              <p class="wm-diff">Same final prices, <b>USD ${f0(NOM - red1000)} less</b></p>
+            </aside>
+          </div>
+          <p class="wm-cap">Illustrative price developments of three underlyings during ${n} trading days, a strike of ${Math.round(B.strike * 100)}% and a barrier of ${KI}</p>
         </div>`;
       const wrap = body.querySelector(".prd-mc"), cv = body.querySelector("canvas"), big = body.querySelector(".prd-tree .big");
-      const el = s => body.querySelector(".term-stats .v." + s);
-      const vD = el("d"), vS = [0, 1, 2].map(k => el("s" + k)), vKI = el("ki"), vPay = el("pay");
       const S = { upto: 0, ki: false, flash: false, mat: 0, lab: true, two: 0 };
       let anims = [], raf = 0, active = false, pulse = 0;
-      const pct = v => U.fmt(v * 100, 1) + "%";
-
+      
       const CO = body.querySelector(".prd-co"), CALL = [1, 2].map(k => CO.querySelector(".c" + k));
       // the chart's frame and scales: draw() draws them with U.axes, place() also needs them before the first draw
       const AX = { xMin: 0, xMax: n, yMin: 0.4, yMax: 1.3 };
@@ -857,15 +882,7 @@
         link(1, spot(CALL[0], a1[0] + 24 + CALL[0].offsetWidth / 2, a1[1] + 14 + CALL[0].offsetHeight / 2, a1[0], a1[1], 15), a1[0], a1[1], 15);
         link(2, spot(CALL[1], a2[0] + 36 + CALL[1].offsetWidth / 2, a2[1], a2[0], a2[1], 0), a2[0], a2[1], 0);   // the nib meets the bracket's spine
       }
-      function stats() {
-        vD.textContent = String(S.upto);
-        vS.forEach((e, k) => e.textContent = pct(sc.paths[k][S.upto]));
-        vKI.textContent = S.ki ? "DAY " + sc.kiDay + " · " + B.tickers[sc.kiAsset] : "–";
-        vKI.classList.toggle("hit", !!S.ki);
-        vPay.textContent = S.mat > 0 ? `${red1000} + ${CPN} = USD ${f0(red1000 + CPN)}` : "–";
-      }
       function draw() {
-        stats();
         const c = U.canvas(cv); if (!c) return;
         const { ctx, w, h } = c;
         const amber = U.css("--amber"), tred = U.css("--term-red"), text = U.css("--term-text"), grey = U.css("--muted");
@@ -873,7 +890,7 @@
         const { f } = frame(w, h);
         const { X, Y } = U.axes(ctx, f, Object.assign({
           xTicks: [0, 63, 126, 189, 252], yTicks: [0.6, 0.8, 1, 1.2],
-          yFmt: v => Math.round(v * 100) + "%", xLabel: "TRADING DAY", yLabel: "% OF INITIAL LEVEL"
+          yFmt: v => Math.round(v * 100) + "%", xLabel: "Trading days", yLabel: "Share price (% of initial level)"
         }, AX));
         place(f, X, Y);
         const hline = (v, col, lab, below) => {
@@ -943,10 +960,6 @@
           ctx.fillStyle = "rgba(255,255,255,.78)"; ctx.fillRect(bx - 10 - wtw - 6, wyy - 15, wtw + 12, 30);
           ctx.lineJoin = "round"; ctx.lineWidth = 6; ctx.strokeStyle = "rgba(255,255,255,.92)"; ctx.strokeText(wl, bx - 10, wyy);
           ctx.fillStyle = tred; ctx.fillText(wl, bx - 10, wyy);
-          ctx.fillStyle = amber; ctx.font = "700 19px " + U.F.mono; ctx.textAlign = "left"; ctx.textBaseline = "middle";
-          const ls = [`PAYS ${red1000} + ${CPN}`, `= USD ${f0(red1000 + CPN)}`, "PER USD 1,000"];
-          const lx = Math.min(x + 22, w - 20 - Math.max(...ls.map(l => ctx.measureText(l).width)));   // inside the panel, clear of its edge
-          ls.forEach((l, j) => ctx.fillText(l, lx, wy + 28 + 24 * j));
           ctx.globalAlpha = 1;
         }
         ctx.fillStyle = text; ctx.beginPath(); ctx.arc(X(0), Y(1), 5, 0, 7); ctx.fill();
