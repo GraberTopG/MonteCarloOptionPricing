@@ -62,7 +62,7 @@
             <p class="label">Black-Scholes-Merton formula for European options</p>
             <div class="lec-cp">
               <div class="fbox"><span class="chip">CALL</span>${C0}</div>
-              <div class="fbox orange"><span class="chip orange">PUT</span>${P0}</div>
+              <div class="fbox"><span class="chip">PUT</span>${P0}</div>
             </div>
             <div class="lec-d"><div class="fbox gray">${D1}</div>
               <div class="fbox gray">${D2}</div></div>
