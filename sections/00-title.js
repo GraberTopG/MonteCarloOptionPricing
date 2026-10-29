@@ -320,7 +320,7 @@
     }
   });
   const consPath = (s, j) => CPATH[s][j];
-  const NOTES_PX = "Hi everyone. It's October 2026, and you have a thousand dollars to invest for one year. You expect a quiet year: 86 percent of analysts rate our three stocks HOLD. [→] Here is the past: Adobe now trades at 238 dollars, Apple at 333 and Microsoft at 534. And looking ahead to October 2027, the consensus sees them moving sideways or slightly down.";
+  const NOTES_PX = "Hi everyone. It's October 2026, and you have a thousand dollars to invest for one year. Here are the last two years: Adobe now trades at 238 dollars, Apple at 333 and Microsoft at 534. You expect a quiet year: 86 percent of analysts rate our three stocks HOLD. So what happens next? [→] Looking ahead to October 2027, the consensus sees them moving sideways or slightly down.";
   Deck.addSlide({
     id: "hook-prices", section: "hook", steps: 1, secs: secsFor(NOTES_PX, 1),
     title: "Assumption: USD 1,000 to invest and sideways or slightly down year expected",
@@ -340,12 +340,11 @@
         </div>`;
       const cv = body.querySelector("canvas");
       const COL = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];
-      let k = 0, a = null;   // k: 0 = only the card (before the click), 0..1 the chart drawing in, 1 = all
+      let k = 0, a = null;   // k: 0 = history and a question mark (before the click), 0..1 the year ahead drawing in, 1 = all
       function draw() {
         const c = U.canvas(cv); if (!c) return;
         const { ctx, w, h } = c;
         ctx.clearRect(0, 0, w, h);
-        if (k <= 0) return;
         ctx.globalAlpha = 1;
         const f = { x: 96, y: 50, w: w - 96 - 300, h: h - 50 - 46 };
         const { X, Y } = U.axes(ctx, f, {
@@ -375,6 +374,13 @@
         vline(xe, "", "right", false);
         ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 20px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
         ctx.letterSpacing = "1px"; ctx.fillText("INVESTMENT HORIZON: 1 YEAR", (xt + xe) / 2, f.y + 12); ctx.letterSpacing = "0px";
+        // before the click: a question mark in the investment horizon; it fades as the year ahead draws in
+        const qa = 1 - Math.min(1, k * 4);
+        if (qa > 0) {
+          ctx.globalAlpha = qa; ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 220px " + U.F.body;
+          ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("?", (xt + xe) / 2, f.y + f.h / 2 + 10);
+          ctx.globalAlpha = 1;
+        }
         // the history (first 75% of the time), then the consensus paths (dashed)
         const kh = 1, kf = k;   // the history is there at once; only the year ahead draws in
         const upto = Math.max(1, Math.round(LAST * kh));
@@ -396,8 +402,8 @@
         });
         // labels: today's price next to each dot, and at the right end the name and the (illustrative) 12M target price
         const lab = Math.max(0, Math.min(1, (kf - .6) / .4));
-        if (kf > 0) {
-          ctx.globalAlpha = Math.min(1, kf * 4); ctx.textAlign = "left"; ctx.textBaseline = "bottom"; ctx.font = "700 20px " + U.F.body;
+        {
+          ctx.globalAlpha = 1; ctx.textAlign = "left"; ctx.textBaseline = "bottom"; ctx.font = "700 20px " + U.F.body;
           H.px.forEach((p, s) => {   // on a white halo over the start of the paths
             const t = U.fmt(XL.S0[s], 2), y = Y(p[LAST]) - 12;
             ctx.strokeStyle = "#fff"; ctx.lineWidth = 7; ctx.lineJoin = "round"; ctx.strokeText(t, xt + 12, y);
@@ -441,7 +447,7 @@
         step(i, o) {
           if (a) a.cancel(); a = null;
           if (i === 0) { k = 0; draw(); return; }
-          // after the click: the chart with the history appears, the year ahead draws in 2 s
+          // the history is there when the slide opens; the click draws the year ahead in 2 s
           if (!o.instant) a = U.anim(2000, t => { k = Math.max(.001, t); draw(); }, { ease: U.ease.inOut });
           else { k = 1; draw(); }
         },
