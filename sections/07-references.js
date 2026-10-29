@@ -34,7 +34,8 @@
     "Swiss Structured Products Association. (2026). <i>Swiss Derivative Map©</i> [Product classification]. <a class=\"ext\" href=\"https://sspa.ch/wp-content/uploads/2026/01/en_sspaswissmap_2026.pdf\" target=\"_blank\" rel=\"noopener\">https://sspa.ch/wp-content/uploads/2026/01/en_sspaswissmap_2026.pdf</a>",
     "The Synthetic Mind. (2026, January 30). <i>Monte Carlo simulation explained visually</i> [Video]. YouTube. <a class=\"ext\" href=\"https://www.youtube.com/watch?v=WjmNedsX1T0\" target=\"_blank\" rel=\"noopener\">https://www.youtube.com/watch?v=WjmNedsX1T0</a>",
     "UBS. (2026). <i>Barrier reverse convertibles</i> [Investment guide]. <a class=\"ext\" href=\"https://www.ubs.com/ch/en/services/guide/investments/articles/barrier-reverse-convertibles.html\" target=\"_blank\" rel=\"noopener\">https://www.ubs.com/ch/en/services/guide/investments/articles/barrier-reverse-convertibles.html</a>",
-    "Vontobel. (2026). <i>Barrier Reverse Convertibles: Funktionsweise</i> [Know-how article]. <a class=\"ext\" href=\"https://markets.vontobel.com/de-ch/know-how/40292/barrier-reverse-convertibles-funktionsweise\" target=\"_blank\" rel=\"noopener\">https://markets.vontobel.com/de-ch/know-how/40292/barrier-reverse-convertibles-funktionsweise</a>"
+    "Vontobel. (2026). <i>Barrier Reverse Convertibles: Funktionsweise</i> [Know-how article]. <a class=\"ext\" href=\"https://markets.vontobel.com/de-ch/know-how/40292/barrier-reverse-convertibles-funktionsweise\" target=\"_blank\" rel=\"noopener\">https://markets.vontobel.com/de-ch/know-how/40292/barrier-reverse-convertibles-funktionsweise</a>",
+    "Wallmeier, M., &amp; Diethelm, M. (2009). Market pricing of exotic structured products: The case of multi-asset barrier reverse convertibles in Switzerland. <i>The Journal of Derivatives, 17</i>(2), 59. <a class=\"ext\" href=\"https://jod.pm-research.com/content/17/2/59\" target=\"_blank\" rel=\"noopener\">https://jod.pm-research.com/content/17/2/59</a>"
   ];
 
   Deck.addStyle(`
@@ -42,7 +43,7 @@
     .rf-list{columns:2;column-gap:44px;margin:0;padding:0;list-style:none;font:18px/1.28 var(--f-body);color:var(--ink)}
     .rf-list a{overflow-wrap:anywhere}
     .rf-list a.ext::after{content:"\\00a0\\2197"}
-    .rf-list li{break-inside:avoid;padding-left:30px;text-indent:-30px;margin:0 0 9px}
+    .rf-list li{break-inside:avoid;padding-left:30px;text-indent:-30px;margin:0 0 6px}
     .rf-list i{font-style:italic}
     .rf-style{margin:6px 0 0;padding-top:10px;border-top:1px solid #B9D3C1;font:17px/1.3 var(--f-body);color:#3D4A43}
     .rf-style b{color:var(--green-ink)}
@@ -65,7 +66,7 @@
         ${pdf ? `<a class="ui-btn rf-pdf${pdf.old ? " old" : ""}" href="${pdf.href}" download="Monte-Carlo-Option-Pricing-slides.pdf" title="${pdf.title}"><span class="ic">↓</span>Download presentation as PDF${pdf.old ? " (older version)" : ""}</a>` : ""}
         <div class="rf-box">
           <ul class="rf-list">${REFS.map(r => `<li>${r.replace(/>(https?:\/\/[^<]+)<\/a>/g, (m, u) => ">" + u.replace(/\//g, "/<wbr>") + "</a>")}</li>`).join("")}</ul>
-          <p class="rf-style"><b>Where we use them:</b> Lecture 4 (Arnold, 2026), slides 7 (Black-Scholes), 9–10 (binomial tree), 11–13 (risk-neutral valuation), 14 (replication) and 15 (Monte Carlo and geometric Brownian motion). Hull (2022), chapter 21, and Glasserman (2003), chapters 1–3: Monte Carlo error and correlated random numbers. Stulz (1982) and Johnson (1987): formulas for options on the worst of two stocks and of several stocks. Swiss Structured Products Association (2026): category 1230, barrier reverse convertible. The explanation in section 4 of the video (\u201cWhat is Monte Carlo?\u201d) is adapted from The Synthetic Mind (2026), whose visual style also inspired the web app; all drawings and animations are our own. Vontobel (2026) and Swissquote (2026) inspired our payoff diagram of the Multi-BRC; UBS (2026) underlies the advantages and risks.</p>
+          <p class="rf-style"><b>Where we use them:</b> Lecture 4 (Arnold, 2026), slides 7 (Black-Scholes), 9–10 (binomial tree), 11–13 (risk-neutral valuation), 14 (replication) and 15 (Monte Carlo and geometric Brownian motion). Hull (2022), chapter 21, and Glasserman (2003), chapters 1–3: Monte Carlo error and correlated random numbers. Stulz (1982) and Johnson (1987): formulas for options on the worst of two stocks and of several stocks. Swiss Structured Products Association (2026): category 1230, barrier reverse convertible. The explanation in section 4 of the video (\u201cWhat is Monte Carlo?\u201d) is adapted from The Synthetic Mind (2026), whose visual style also inspired the web app; all drawings and animations are our own. Vontobel (2026) and Swissquote (2026) inspired our payoff diagram of the Multi-BRC; UBS (2026) underlies the advantages and risks. Wallmeier and Diethelm (2009): the multi-BRC as a bond minus a down-and-in put.</p>
         </div>`;
       return {};
     }
