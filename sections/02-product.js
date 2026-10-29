@@ -140,6 +140,7 @@
     .prd-when>div:not(.ax)::before{content:"";position:absolute;left:-24px;top:50%;width:15px;height:15px;margin-top:-7.5px;border-radius:50%;background:var(--green-ink)}
     .prd-when b{font:700 20px/1.2 var(--f-body);color:var(--ink)}
     .slide .prd-when [data-step]{transform:none}
+    .slide .prd-cpl[data-step]{transform:none}
     .prd-cpl{position:absolute;background:var(--green);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:22px;font:700 26px/1 var(--f-body)}
     .prd-cpl .k{text-transform:uppercase;letter-spacing:.06em;font-size:22px;background:#fff;color:var(--green);padding:6px 12px;border-radius:6px}
     .prd-cpl .v{font-size:30px} .prd-cpl .s{font-weight:400;font-size:24px;opacity:.95}
@@ -516,7 +517,7 @@
               <span>${U.fmt(FRAC, 4)} share paid in cash</span><span class="r">+ ${fx(FRAC * ST)}</span>
               <span class="c">Coupons 2 × ${HALF}</span><span class="r c">+ ${fx(CPN)}</span>
               <span class="t">Total value</span><span class="r t">USD ${fx(RATIO_W * ST + CPN)}</span></div></div></div>
-          <div class="prd-cpl" style="${pos(CP)}">
+          <div class="prd-cpl" style="${pos(CP)}" data-step="1">
             ${[A1, B1, C1].map(r => `<span class="up" style="left:${cxs(r)}px">▲</span>`).join("")}
             <span class="k">Semi-annual coupons</span><span class="v">USD ${CPN} = ${N_CPN} × ${HALF}</span>
           </div>
