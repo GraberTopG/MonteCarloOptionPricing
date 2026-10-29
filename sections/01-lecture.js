@@ -19,9 +19,15 @@
     .lec-vars{display:grid;grid-template-columns:auto 1fr;gap:6px 48px}   /* the left column as wide as its longest line */
     .lec-vars .vars{grid-template-columns:96px 1fr;font-size:26px;gap:0 14px}
     .lec-vars .vars math{font-size:28px}
-    .lec-panel{align-self:start;margin-top:16px;padding:56px 30px 30px}
+    .lec-panel{align-self:start;margin-top:16px;padding:48px 30px 20px}
+    .lec-smile{margin-top:14px;background:#fff;border-radius:10px}
+    .lec-smile svg{display:block;width:100%;height:auto}
+    .lec-smile .ax{fill:none;stroke:var(--rule);stroke-width:2}
+    .lec-smile .mkt{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+    .lec-smile .bs{fill:none;stroke:var(--green);stroke-width:4;stroke-dasharray:10 7}
+    .lec-smile text{font:700 18px var(--f-body)} .lec-smile .tm{fill:var(--ink)} .lec-smile .tb{fill:var(--green)} .lec-smile .ta{fill:var(--muted);font-weight:400;font-size:16px}
     .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:20px}
-    .lec-panel .icard{font:28px/1.3 var(--f-body);padding:18px 24px 18px 16px}
+    .lec-panel .icard{font:26px/1.3 var(--f-body);padding:14px 22px 14px 16px}
     .lec-panel .icard b{display:block;font:700 32px/1.2 var(--f-head);color:var(--ink)}
   `);
 
@@ -37,13 +43,13 @@
     title: "Recap: Where Black-Scholes can be applied",
     subtitle: "For a vanilla call or put on one stock, there is an exact formula",
     lecture: "Lecture 4, slide 7",
-    sources: "Arnold (2026), slide 7; Black & Scholes (1973)",
+    sources: "Arnold (2026); Black & Scholes (1973); Merton (1973)",
     notes: `So why not just use Black-Scholes? [→] It's a great formula, but it only works for one stock, and only when the final price matters.`,
     render(body) {
       body.innerHTML = `
         <div class="lec">
           <div class="lec-l">
-            <p class="label">Black-Scholes(-Merton) formula for European options</p>
+            <p class="label">Black-Scholes-Merton formula for European options</p>
             <div class="lec-cp">
               <div class="fbox"><span class="chip">CALL</span>${C0}</div>
               <div class="fbox orange"><span class="chip orange">PUT</span>${P0}</div>
@@ -71,8 +77,19 @@
             <ul>
               <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>a single underlying</span></li>
               <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>the payoff ignores what happened along the way</span></li>
-              <li class="icard" data-step="1" style="--d:5"><span class="num">3</span><span><b>Constant volatility and rate</b>σ and r stay fixed all year</span></li>
+              <li class="icard" data-step="1" style="--d:5"><span class="num">3</span><span><b>Constant volatility and rate</b>one implied σ for all strikes and dates, r fixed</span></li>
             </ul>
+            <div class="lec-smile" data-step="1" style="--d:7">
+              <svg viewBox="0 0 520 150" aria-hidden="true">
+                <path class="ax" d="M40 8V122H510"/>
+                <path class="mkt" d="M60 34 C150 90, 230 110, 290 108 S420 92, 500 70"/>
+                <path class="bs" d="M60 96H500"/>
+                <path class="mkt" d="M250 20h30"/><text x="290" y="26" class="tm">market: smile / surface</text>
+                <path class="bs" d="M250 46h30"/><text x="290" y="52" class="tb">Black-Scholes: one σ</text>
+                <text x="275" y="144" text-anchor="middle" class="ta">strike K</text>
+                <text x="18" y="66" text-anchor="middle" class="ta" transform="rotate(-90 18 66)">implied σ</text>
+              </svg>
+            </div>
           </section>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
