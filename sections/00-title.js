@@ -117,15 +117,15 @@
     .hk-fb{background:var(--card);border-radius:8px;padding:10px 12px;opacity:.55}
     .hk-fb b{display:block;font:800 32px/1 var(--f-head);color:var(--green-ink)}
     .hk-fb span{display:block;font:20px/1.2 var(--f-body);color:var(--ink);margin-top:6px}
-    .hk-fb.y{opacity:1;background:var(--green-light);box-shadow:inset 0 0 0 3px var(--green)}
+    .hk-fb.y{opacity:1;background:var(--green-light)}
     .hk-fb.y .hd{display:flex;align-items:baseline;gap:10px}
     .hk-fb.y .hd b{color:var(--green)} .hk-fb.y .hd span{font:700 26px/1 var(--f-head);margin:0}
     .hk-fb.y .hd span.tg{margin-left:auto;font:700 22px/1 var(--f-body);color:var(--green)}
     .hk-chips{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:12px}
     .hk-chips i{font:700 19px/1 var(--f-mono);font-style:normal;color:var(--muted);background:#fff;border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:12px;white-space:nowrap}
     .hk-chips i em{font:400 20px/1 var(--f-body);font-style:normal;color:var(--muted)}
-    .hk-chips i.me{color:var(--green-ink);background:#fff;box-shadow:inset 0 0 0 3px var(--green)}
-    .hk-chips i.me em{font-weight:700;color:var(--ink)}
+    .hk-chips i.me{color:#fff;background:var(--green);box-shadow:0 3px 10px rgba(0,128,47,.35)}   /* our category: filled green */
+    .hk-chips i.me em{font-weight:700;color:#fff}
     .hk-q .cur{display:inline-block;width:5px;height:50px;background:var(--orange);margin-left:6px;vertical-align:-6px;opacity:0}
     .hk-q.typing .cur{opacity:1}
 
