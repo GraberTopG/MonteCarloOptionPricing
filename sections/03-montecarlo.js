@@ -92,7 +92,8 @@
     .mc-sa{display:grid;grid-template-rows:96px minmax(0,1fr);row-gap:26px;height:100%}
     .mc-sa .n{width:36px;height:36px;border-radius:50%;background:var(--green-ink);color:#fff;display:inline-grid;place-items:center;font:800 20px/1 var(--f-body);flex:none}
     .mc-sa-lo{display:grid;grid-template-columns:minmax(0,1fr) 700px;column-gap:32px;min-height:0}
-    .mc-sa-chart{margin:0;min-height:0;display:flex;flex-direction:column}
+    .mc-sa-chart{position:relative;margin:0;min-height:0;display:flex;flex-direction:column}
+    .mc-sa .mc-sa-n{position:absolute;left:0;top:0}
     .mc-sa-h{display:flex;align-items:center;gap:12px;margin:0 0 6px;font:700 24px var(--f-body);color:var(--green-ink)}
     .mc-sa-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
     .mc-sa-chart figcaption{margin-top:6px;font:21px var(--f-body);color:var(--muted)}
@@ -304,16 +305,23 @@
       <munder><munder><mrow><mspace width="0.2em"></mspace><msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup><mspace width="0.2em"></mspace><mpadded width="0"><mphantom>${EQ}</mphantom></mpadded></mrow><mo>⏟</mo></munder>${UL("discounted at", "the risk-free rate")}</munder>
       <mo>·</mo>
       <munder><munder><mrow>${EQ}</mrow><mo>⏟</mo></munder>${UL("expected payoff", "in a risk-neutral world")}</munder></math>`;
-  const LLN = `<math display="block"><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mtext>payoff</mtext><mi>i</mi></msub>
-      <mspace width="0.3em"></mspace><mover><mo stretchy="true">⟶</mo><mrow><mi mathsize="0.85em">n</mi><mo mathsize="0.85em">→</mo><mi mathsize="0.85em">∞</mi></mrow></mover><mspace width="0.3em"></mspace>${EQ}</math>`;
+  const PI = `<msub><mtext>payoff</mtext><mi>i</mi></msub>`, VI = `<msub><mi>V</mi><mi>i</mi></msub>`, DF = `<msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup>`;
+  // step 2: one simulated path, one discounted payoff (braces at the same depth, as in PRICE)
+  const DPAY = `<math display="block">${VI}<mo>=</mo>
+      <munder><munder><mrow><mspace width="0.2em"></mspace>${DF}<mspace width="0.2em"></mspace><mpadded width="0"><mphantom>${PI}</mphantom></mpadded></mrow><mo>⏟</mo></munder>${UL("discounted at", "the risk-free rate")}</munder>
+      <mo>·</mo>
+      <munder><munder><mrow>${PI}</mrow><mo>⏟</mo></munder>${UL("payoff of", "simulated path i")}</munder></math>`;
+  // step 3: the average of the n discounted payoffs converges to the lecture's risk-neutral price
+  const LLN = `<math display="block"><mtext>price</mtext><mo>≈</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover>${VI}
+      <mspace width="0.3em"></mspace><mover><mo stretchy="true">⟶</mo><mrow><mi mathsize="0.85em">n</mi><mo mathsize="0.85em">→</mo><mi mathsize="0.85em">∞</mi></mrow></mover><mspace width="0.3em"></mspace>${DF}<mo>·</mo>${EQ}</math>`;
 
   Deck.addSlide({
     id: "mc-sample", section: "mc", steps: 3, secs: 36,
     title: "Monte Carlo pricing: simulate paths, discount payoffs, average them",
     subtitle: "Instead of rolling a die, we simulate a whole year of share prices, 2,000 times",
-    lecture: "Lecture 4, slide 15",
-    sources: "Arnold (2026), slides 11 and 15; explanation adapted from The Synthetic Mind (2026); own simulation",
-    notes: "How do we apply this to an option? In three steps. [→] Step one: sample a random path, a whole year of daily share prices. We do that 2,000 times. [→] Step two: compute each path's payoff and discount it at the risk-free rate. That's how our lecture prices an option: its expected payoff in a risk-neutral world, discounted. [→] Step three: average them all. By the law of large numbers, the average converges to the true price.",
+    lecture: "Lecture 4, slides 11 and 15",
+    sources: "Arnold (2026), slides 11 and 15; own illustration",
+    notes: "How do we apply this to an option? In three steps. [→] Step one: sample a random path, a whole year of daily share prices. We do that 2,000 times. [→] Step two: for each path, compute the payoff and discount it at the risk-free rate. One path, one number. [→] Step three: average them all. By the law of large numbers, this average converges to the discounted expected payoff in a risk-neutral world, which is exactly how our lecture prices an option.",
     render(body) {
       const box = (k, icon, txt) => `<div class="box" data-step="${k}"><span class="n">${k}</span><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
       body.innerHTML = `
@@ -321,13 +329,13 @@
           <div class="mc-flow">${box(1, "dice", "Sample a random path")}<span class="ar" data-step="2">→</span>${box(2, "check", "Compute its discounted payoff")}<span class="ar" data-step="3">→</span>${box(3, "avg", "Average them all")}</div>
           <div class="mc-sa-lo">
             <figure class="mc-sa-chart">
-              <p class="mc-sa-h" data-step="1"><span class="n">1</span>Sample random paths</p>
+              <span class="n mc-sa-n" data-step="1">1</span>
               <canvas></canvas>
               <figcaption>${fmt(FAN.n, 0)} simulated years of one stock (volatility ${fmt(M.sigma * 100, 0)}%, like Apple; risk-free rate ${fmt(M.r * 100, 2)}%): each line is one year</figcaption>
             </figure>
             <div class="mc-sa-r">
-              <div class="fbox mc-sa-f" data-step="2"><span class="n">2</span><span class="chip">RISK-NEUTRAL VALUATION OF A PAYOFF</span><div class="mc-sa-fw">${PRICE}</div></div>
-              <div class="fbox mc-lln" data-step="3"><span class="n">3</span><span class="chip">LAW OF LARGE NUMBERS</span>${LLN}<p>the average converges to the true value</p></div>
+              <div class="fbox mc-sa-f" data-step="2"><span class="n">2</span><span class="chip">ONE PATH: DISCOUNTED PAYOFF</span><div class="mc-sa-fw">${DPAY}</div></div>
+              <div class="fbox mc-lln" data-step="3"><span class="n">3</span><span class="chip">RISK-NEUTRAL VALUATION OF A PAYOFF</span>${LLN}<p>by the law of large numbers, the average converges to the risk-neutral price</p></div>
             </div>
           </div>
         </div>`;
