@@ -56,6 +56,7 @@
     .mc-o-h b::before{content:"";display:block;width:56px;height:4px;background:var(--green);margin-bottom:12px}
     .mc-o-h p{margin:10px 0 0;font:23px/1.36 var(--f-body);color:var(--ink)}
     .mc-o-h p em{font-style:normal;font-weight:700}
+    .mc-o-h p.mc-o-lab{margin:0 0 -12px;font:700 24px var(--f-head);text-transform:uppercase;color:var(--ink)}
     .mc-o-h small{display:block;margin-top:6px;font:16px var(--f-body);color:var(--muted)}
     .mc-o-m{display:flex;flex-direction:column;gap:34px;min-width:0}
     .mc-o-ev{flex:none;padding:36px 28px 18px}
@@ -202,15 +203,15 @@
     id: "mc-origin", section: "mc", steps: 2, secs: 40,
     title: "Monte Carlo: averaging random draws to estimate an expected value",
     subtitle: "1,000 random rolls of a die average 3.5: exactly its expected value, by the law of large numbers",
-    sources: "Eckhardt (1987), p. 131; Metropolis (1987), p. 127; Haigh et al. (2014); dice example adapted from The Synthetic Mind (2026), about 1:20; own simulation",
-    notes: "In 1946, Stanislaw Ulam was recovering from an illness and playing solitaire. Instead of calculating his chances, he asked: why not play a hundred games and count the wins? With John von Neumann, he used the idea for neutrons in atomic bombs at Los Alamos, and their colleague Nicholas Metropolis named it: Ulam had an uncle who just had to go to Monte Carlo. Here's the idea with a die. What's the average roll? Instead of calculating it, let's roll. [→] A thousand rolls: at first the average jumps around, then it settles at about 3.5. [→] Now the calculation: one to six, each with probability one sixth, gives exactly 3.5. The simulation got it right. That's the law of large numbers, and that's Monte Carlo: when we can't calculate an expected value, we estimate it by averaging random draws. For our Multi-BRC there's no closed-form solution, so that's exactly what we'll do.",
+    sources: "Eckhardt (1987), p. 131; Metropolis (1987), p. 127; dice example adapted from The Synthetic Mind (2026), about 1:20; own simulation",
+    notes: "In 1946, Stanislaw Ulam was recovering from an illness and playing solitaire. Instead of calculating his chances, he asked: why not play a hundred games and count the wins? His colleague Nicholas Metropolis named it after the casino: Ulam had an uncle who just had to go to Monte Carlo. Here's the idea with a die. What's the average roll? Instead of calculating it, let's roll. [→] A thousand rolls: at first the average jumps around, then it settles at about 3.5. [→] Now the calculation: one to six, each with probability one sixth, gives exactly 3.5. The simulation got it right. That's the law of large numbers, and that's Monte Carlo: when we can't calculate an expected value, we estimate it by averaging random draws. For our Multi-BRC there's no closed-form solution, so that's exactly what we'll do.",
     render(body) {
       body.innerHTML = `
         <div class="mc-o">
           <aside class="mc-o-h">
+            <p class="label mc-o-lab">Origin</p>
             <div><b>1946</b><p>Stanislaw Ulam, recovering from an illness, plays solitaire: why not play <em>100 games</em> and <em>count the wins</em>?</p></div>
-            <div><b>1947</b><p>With John von Neumann: neutrons in atomic bombs, for Los Alamos</p></div>
-            <div><b>The name</b><p>Their colleague Nicholas Metropolis suggests it: Ulam had an uncle who “just had to go to Monte Carlo”</p><small>Metropolis (1987), p. 127</small></div>
+            <div><b>The name</b><p>His colleague Nicholas Metropolis suggests it: Ulam had an uncle who “just had to go to Monte Carlo”</p></div>
           </aside>
           <div class="mc-o-m">
             <div class="fbox mc-o-ev"><span class="chip">A FAIR DIE</span>

@@ -2,7 +2,7 @@
    Every entry except Arnold (2026) was checked twice by independent agents on 3 Oct 2026 (Crossref, publisher
    and official pages); Arnold (2026) was checked against the Lecture 4 PDF (title slide) on 4 Oct 2026.
    Every link was tested on 4 Oct 2026.
-   Eckhardt (1987), Haigh, Priestley & Rope (2014) and Metropolis (1987) were checked against the original sources. Bloomberg (2026) is the data source of our
+   Eckhardt (1987) and Metropolis (1987) were checked against the original sources. Bloomberg (2026) is the data source of our
    Excel (sheet 0 lists it); Swiss Structured Products Association (2026) gives the product category (1230).
    24 Oct 2026 (rebuild to the final video script): the list is now exactly the script's 15 sources. The Synthetic
    Mind (2026) moved into the list, because part 2 of the video adapts its explanation ("adapted from" on the
@@ -25,7 +25,6 @@
     "Cox, J. C., Ross, S. A., &amp; Rubinstein, M. (1979). Option pricing: A simplified approach. <i>Journal of Financial Economics, 7</i>(3), 229–263. <a class=\"ext\" href=\"https://doi.org/10.1016/0304-405X(79)90015-1\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1016/0304-405X(79)90015-1</a>",
     "Eckhardt, R. (1987). Stan Ulam, John von Neumann, and the Monte Carlo method. <i>Los Alamos Science</i>, (15), 131–141. <a class=\"ext\" href=\"https://permalink.lanl.gov/object/tr?what=info:lanl-repo/lareport/LA-UR-88-9068\" target=\"_blank\" rel=\"noopener\">https://permalink.lanl.gov/object/tr?what=info:lanl-repo/lareport/LA-UR-88-9068</a>",
     "Glasserman, P. (2003). <i>Monte Carlo methods in financial engineering</i>. Springer. <a class=\"ext\" href=\"https://doi.org/10.1007/978-0-387-21617-1\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1007/978-0-387-21617-1</a>",
-    "Haigh, T., Priestley, M., &amp; Rope, C. (2014). Los Alamos bets on ENIAC: Nuclear Monte Carlo simulations, 1947–1948. <i>IEEE Annals of the History of Computing, 36</i>(3), 42–63. <a class=\"ext\" href=\"https://doi.org/10.1109/MAHC.2014.40\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1109/MAHC.2014.40</a>",
     "Hull, J. C. (2022). <i>Options, futures, and other derivatives</i> (11th ed.). Pearson. <a class=\"ext\" href=\"https://www.pearson.com/en-us/subject-catalog/p/options-futures-and-other-derivatives/P200000005938/9780136939979\" target=\"_blank\" rel=\"noopener\">https://www.pearson.com/en-us/subject-catalog/p/options-futures-and-other-derivatives/P200000005938/9780136939979</a>",
     "Johnson, H. (1987). Options on the maximum or the minimum of several assets. <i>Journal of Financial and Quantitative Analysis, 22</i>(3), 277–283. <a class=\"ext\" href=\"https://doi.org/10.2307/2330963\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.2307/2330963</a>",
     "Merton, R. C. (1973). Theory of rational option pricing. <i>The Bell Journal of Economics and Management Science, 4</i>(1), 141–183. <a class=\"ext\" href=\"https://doi.org/10.2307/3003143\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.2307/3003143</a>",
