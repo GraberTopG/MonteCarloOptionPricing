@@ -622,7 +622,7 @@
   Deck.addSlide({
     id: "brc-decompose", section: "product", steps: 3, secs: 18,
     title: "The Multi-BRC is a bond minus a put",
-    subtitle: "You lend the issuer USD 1,000 and sell them a down-and-in put on the worst of three. The coupon is what they pay you for it.",
+    subtitle: "You lend UBS USD 1,000 and sell a down-and-in put on the worst of three: the put finances the high coupon",
     sources: "Arnold (2026), slide 14 (same payoffs, same price); own illustration",
     notes: `To price it, we split it in two: [→] a UBS bond that pays the coupons and the thousand, [→] minus the put you sold. [→] The bond is easy. The put is the hard part, and that's where Monte Carlo comes in.`,
     render(body) {
