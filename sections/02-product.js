@@ -229,11 +229,12 @@
     /* the title runs over two lines (balanced, never broken inside "Multi-BRC"): the panel starts lower, under the subtitle */
     .slide[data-id="brc-why-mc"] .s-title{font-size:50px;white-space:nowrap}
     .prd-mc{position:relative;height:100%}
-    .prd-mc .wm{position:absolute;left:0;right:0;top:-40px;bottom:40px;display:grid;grid-template-columns:1fr 420px;gap:24px}
-    .prd-mc .wm-chart{position:relative}
+    .prd-mc .wm{position:absolute;left:0;right:0;top:-40px;bottom:40px}
+    .prd-mc .wm-chart{position:absolute;left:0;top:0;bottom:0;right:0;transition:right .7s ease}
+    .prd-mc .wm.split .wm-chart{right:444px}
     .prd-mc .wm-chart canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
     .prd-mc .wm-cap{position:absolute;left:0;right:0;bottom:4px;margin:0;font:400 21px var(--f-body);color:var(--muted)}
-    .prd-mc .wm-side{align-self:center;display:flex;flex-direction:column;gap:14px}
+    .prd-mc .wm-side{position:absolute;right:0;top:0;bottom:60px;width:420px;display:flex;flex-direction:column;justify-content:center;gap:14px}
     .prd-mc .wm-h{margin:0;font:700 20px var(--f-body);color:var(--ink)}
     .prd-mc .wm-row{border-radius:8px;padding:14px 18px 16px;background:var(--card)}
     .prd-mc .wm-row.dep{background:#fff;border:3px solid var(--ink)}
@@ -758,7 +759,7 @@
         <div class="prd-mc">
           <div class="wm">
             <div class="wm-chart"><canvas></canvas>${callouts}</div>
-            <aside class="wm-side" data-step="3">
+            <aside class="wm-side" data-step="3" style="--d:6">
               <p class="wm-h">Payout per USD 1,000 at maturity</p>
               <div class="wm-row ind">
                 <p class="k">Path-<u>in</u>dependent</p>
@@ -767,7 +768,7 @@
               </div>
               <div class="wm-row dep">
                 <p class="k">Path-dependent: our Multi-BRC</p>
-                <p class="s">The whole path counts: ${B.tickers[sc.kiAsset]} touched ${KI} on day ${sc.kiDay}</p>
+                <p class="s">The whole path counts: $${B.tickers[sc.kiAsset]} touched ${KI} on day ${sc.kiDay}</p>
                 <p class="v">USD ${f0(red1000 + CPN)}</p>
               </div>
               <p class="wm-diff">Same final prices, <b>USD ${f0(NOM - red1000)} less</b></p>
@@ -777,7 +778,8 @@
         </div>`;
       const wrap = body.querySelector(".prd-mc"), cv = body.querySelector("canvas"), big = body.querySelector(".prd-tree .big");
       const S = { upto: 0, ki: false, flash: false, mat: 0, lab: true, two: 0 };
-      let anims = [], raf = 0, active = false, pulse = 0;
+      let anims = [], raf = 0, active = false, pulse = 0, sizing = false;
+      const WM = body.querySelector(".wm");
       
       const CO = body.querySelector(".prd-co"), CALL = [1, 2].map(k => CO.querySelector(".c" + k));
       // the chart's frame and scales: draw() draws them with U.axes, place() also needs them before the first draw
@@ -892,7 +894,7 @@
           xTicks: [0, 63, 126, 189, 252], yTicks: [0.6, 0.8, 1, 1.2],
           yFmt: v => Math.round(v * 100) + "%", xLabel: "Trading days", yLabel: "Share price (% of initial level)"
         }, AX));
-        place(f, X, Y);
+        if (!sizing) place(f, X, Y);   // not while the chart narrows (placed once it has its final size)
         const hline = (v, col, lab, below) => {
           ctx.setLineDash([9, 7]); ctx.strokeStyle = col; ctx.lineWidth = 2;
           ctx.beginPath(); ctx.moveTo(f.x, Y(v)); ctx.lineTo(f.x + f.w, Y(v)); ctx.stroke(); ctx.setLineDash([]);
@@ -905,7 +907,7 @@
         ctx.setLineDash([3, 5]); ctx.strokeStyle = grey; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(X(n), f.y - 4); ctx.lineTo(X(n), f.y + f.h); ctx.stroke(); ctx.setLineDash([]);
         ctx.fillStyle = text; ctx.font = "700 21px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
-        ctx.fillText("Maturity, 6 Oct 2027", X(n), f.y - 8);
+        ctx.fillText("Maturity: day " + n, X(n), f.y - 8);
         // paths: the worst one on top; dim the others at maturity, except the stock that touched while reason 2 is about it
         // (on the white panel the dimmed lines keep 45%, their labels 67%, so the light greens stay readable)
         const dim = k => k === sc.worstAsset ? 1 : 1 - .55 * S.mat * (k === kAsset ? 1 - S.two : 1), dimT = k => 1 - (1 - dim(k)) * .6;
@@ -931,7 +933,7 @@
           ctx.fillStyle = cols[hd.k]; ctx.beginPath(); ctx.arc(x, y, 5, 0, 7); ctx.fill();
           ctx.globalAlpha = dimT(hd.k); ctx.fillStyle = tcols[hd.k];
           ctx.font = "700 19px " + U.F.mono; ctx.textAlign = "left"; ctx.textBaseline = "middle";
-          ctx.fillText(B.tickers[hd.k] + " " + pct(v), x + 22, hd.y);
+          ctx.fillText("$" + B.tickers[hd.k] + " " + pct(v), x + 22, hd.y);
         });
         ctx.globalAlpha = 1;
         // kick-in marker (flashes while the slide is shown)
@@ -941,7 +943,7 @@
           ctx.fillStyle = tred; ctx.beginPath(); ctx.arc(x, y, 8, 0, 7); ctx.fill();
           ctx.setLineDash([3, 5]); ctx.strokeStyle = tred; ctx.lineWidth = 1.5;
           ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, f.y + f.h); ctx.stroke(); ctx.setLineDash([]);
-          const lab = "KICK-IN · DAY " + sc.kiDay + " · " + B.tickers[sc.kiAsset];
+          const lab = "KICK-IN · DAY " + sc.kiDay + " · $" + B.tickers[sc.kiAsset];
           if (S.lab) {
             ctx.font = "700 20px " + U.F.mono; const tw = ctx.measureText(lab).width;
             // right of the dot, clear of the axis labels (left of it only if it would leave the plot)
@@ -975,7 +977,7 @@
       function loop(t) { pulse = (t % 1100) / 1100; draw(); raf = requestAnimationFrame(loop); }
       function startLoop() { if (!raf && active && !U.reduced && S.flash) raf = requestAnimationFrame(loop); }
       function stopLoop() { cancelAnimationFrame(raf); raf = 0; }
-      function cancelAll() { anims.forEach(x => x.cancel()); anims = []; }
+      function cancelAll() { anims.forEach(x => x.cancel()); anims = []; sizing = false; }
       return {
         resize: draw,
         enter() { active = true; startLoop(); },
@@ -987,6 +989,9 @@
           S.lab = i < 4; S.two = i >= 5 ? 1 : 0;
           wrap.classList.toggle("verdict", i >= 6);
           if (!S.flash) stopLoop();
+          // from click 3 the chart makes room for the payout panel (a CSS transition); redraw the canvas while it narrows
+          const split = i >= 3;
+          if (WM.classList.contains("split") !== split) { WM.classList.toggle("split", split); anims.push(U.anim(720, t => { sizing = t < 1; draw(); }, { ease: U.ease.lin })); }
           draw();
           if (i === 1) anims.push(U.anim(5200, t => { S.upto = Math.round(n * t); draw(); }, { ease: U.ease.lin }));
           if (i === 3) anims.push(U.anim(900, t => { S.mat = Math.max(.001, t); draw(); }));
