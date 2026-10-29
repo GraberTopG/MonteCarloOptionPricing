@@ -22,6 +22,16 @@
     /* the group and its members: mixed case, two lines that end left of the diagonal */
     .tt-meta{font:400 20px/1.45 var(--f-head);color:var(--ink);letter-spacing:.01em;margin:50px 0 0;max-width:700px}
     .tt-meta b{font-weight:700;color:var(--green-ink)}
+    /* title slide: title on top, the chart across the slide, university and group at the bottom */
+    .tt-top{position:absolute;left:120px;right:120px;top:70px}
+    .tt-top .tt-rule{margin-bottom:22px}
+    .tt-top .tt-title{font-size:96px;line-height:1.05}
+    .tt-top .tt-sub{margin-top:10px;max-width:none;font-size:38px}
+    .tt-chart{position:absolute;inset:0}
+    .tt-chart canvas{position:absolute;inset:0;width:1920px;height:1080px}
+    .tt-foot{position:absolute;left:120px;right:120px;bottom:44px;border-top:2px solid var(--rule);padding-top:16px}
+    .tt-foot .tt-uni{margin:0 0 8px;font-size:20px}
+    .tt-foot .tt-meta{margin:0;max-width:none}
     .tt-right{position:absolute;inset:0;clip-path:polygon(1130px 0,1920px 0,1920px 1080px,770px 1080px);background:#fff}
     .tt-right canvas{position:absolute;inset:0;width:1920px;height:1080px}
     .tt-edge{position:absolute;inset:0;pointer-events:none}
@@ -107,15 +117,16 @@
   // the first 160, one year that never comes near the kick-in level (green), one that touches it (black, with a ring at
   // the touch), and at the right where the worst stock ends after one year: 1,000 back (green) or shares (black).
   // Art from our own model, no results quoted.
-  function pathsArt(root, seed) {
-    root.insertAdjacentHTML("beforeend", `
+  // o.full: the chart across the whole slide (title); otherwise right of the green diagonal (end card)
+  function pathsArt(root, seed, o = {}) {
+    root.insertAdjacentHTML("beforeend", o.full ? `<div class="tt-chart"><canvas></canvas></div>` : `
       <div class="tt-right"><canvas></canvas></div>
       <svg class="tt-edge" viewBox="0 0 1920 1080"><line x1="1130" y1="0" x2="770" y2="1080" style="stroke:var(--green)" stroke-width="4"/></svg>`);
-    const cv = root.querySelector(".tt-right canvas");
+    const cv = root.querySelector(o.full ? ".tt-chart canvas" : ".tt-right canvas");
     const n = B.steps, FAN = 160;
-    // the chart in stage pixels: days from X0 to X1, levels on Y (100% at y 540)
-    const X0 = 1130, X1 = 1840, XR = 1860;
-    const X = i => X0 + i / n * (X1 - X0), Y = v => 540 - (v - 1) * 560;
+    // the chart in stage pixels: days from X0 to X1, levels on Y (100% at y Y1, SC px per 100%), the legend at y LY
+    const X0 = o.X0 || 1130, X1 = o.X1 || 1840, XR = o.XR || 1860, Y1 = o.Y1 || 540, SC = o.SC || 560, LY = o.LY || 1000;
+    const X = i => X0 + i / n * (X1 - X0), Y = v => Y1 - (v - 1) * SC;
 
     let sim = null;   // simulated on the first draw (the end card only when it is shown)
     function simulate() {
@@ -182,7 +193,7 @@
       ctx.textAlign = "left";
       if (lg > 0) {
         ctx.globalAlpha = lg;
-        const ly = 1000, items = [["PAYOFF:", null], ["COUPONS + USD 1,000", col.green], ["COUPONS + SHARES OF THE WORST", col.ink]];
+        const ly = LY, items = [["PAYOFF:", null], ["COUPONS + USD 1,000", col.green], ["COUPONS + SHARES OF THE WORST", col.ink]];
         const w = items.map(([t, c]) => ctx.measureText(t).width + (c ? 46 : 0));
         let x = XR - w.reduce((s, v) => s + v, 0) - 28 * (items.length - 1);
         items.forEach(([t, c], i) => {
@@ -209,14 +220,16 @@
     notes: "(No narration: about two seconds on screen, then click.)",
     render(root) {
       root.innerHTML = `
-        <div class="tt-left">
-          <p class="tt-uni">University of St.Gallen · Corporate Finance (7,107)</p>
+        <div class="tt-top">
           <div class="tt-rule"></div>
-          <h1 class="tt-title">Monte Carlo<br>Option Pricing</h1>
+          <h1 class="tt-title">Monte Carlo Option Pricing</h1>
           <p class="tt-sub">Pricing a Multi-BRC on Adobe, Apple and Microsoft</p>
+        </div>
+        <div class="tt-foot">
+          <p class="tt-uni">University of St.Gallen · Corporate Finance (7,107)</p>
           <p class="tt-meta"><b>Group III</b> · Ali Bozan Can, Benjamin Marco Bolliger, Cédric Anwar El Soda, Ivan Kissinger, Joaquim Graber, Leandro Broccucci, Mirko Cirantineo</p>
         </div>`;
-      return pathsArt(root, 7);
+      return pathsArt(root, 7, { full: true, X0: 330, X1: 1780, XR: 1800, Y1: 580, SC: 410, LY: 885 });
     }
   });
 
