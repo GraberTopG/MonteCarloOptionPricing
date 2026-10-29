@@ -49,6 +49,7 @@
     .mc-key .hl{color:var(--green-ink)}
 
     /* ---------- 1) mc-origin ---------- */
+    .slide[data-id="mc-origin"] .s-title{font-size:43px;white-space:nowrap}
     .mc-o{display:grid;grid-template-columns:400px minmax(0,1fr);column-gap:48px;height:100%}
     .mc-o-h{display:flex;flex-direction:column;gap:32px;padding:4px 40px 0 0;border-right:2px solid var(--rule-light);min-width:0}
     .mc-o-h b{display:block;font:800 32px/1 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums}
@@ -189,8 +190,8 @@
 
   Deck.addSlide({
     id: "mc-origin", section: "mc", steps: 2, secs: 27,
-    title: "What is Monte Carlo?",
-    subtitle: "At its core, Monte Carlo computes expected values",
+    title: "Monte Carlo: averaging random draws to estimate an expected value",
+    subtitle: "The exact expected value of a die is 3.5; by the law of large numbers, 1,000 random rolls get there too",
     sources: "Eckhardt (1987), p. 131; Metropolis (1987), p. 127; Haigh et al. (2014); dice example adapted from The Synthetic Mind (2026), about 1:20; own simulation",
     notes: "In 1946, Stanislaw Ulam was recovering from an illness and playing solitaire. Instead of calculating his chances, he asked: why not play a hundred games and count the wins? [→] With John von Neumann, he applied the trick to neutrons in atomic bombs, for Los Alamos. [→] Their colleague Nicholas Metropolis suggested the name: Ulam had an uncle who just had to go to Monte Carlo.",
     render(body) {
