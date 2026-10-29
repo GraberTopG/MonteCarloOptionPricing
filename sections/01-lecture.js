@@ -48,8 +48,10 @@
     .lec-bot ul{grid-template-columns:1fr 1fr;gap:24px}
     .lec-bot .icard{font:22px/1.3 var(--f-body);padding:12px 20px 12px 16px}
     .lec-bot .icard b{font-size:27px}
-    .lec-why2{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:18px;padding:0 4px;font:25px/1.3 var(--f-body);color:var(--ink)}
+    .lec-why2{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px;padding:0 4px;font:25px/1.3 var(--f-body);color:var(--ink)}
     .lec-why2 b{color:var(--green)}
+    .lec-why2 .ar{flex:1;min-width:60px;height:3px;background:var(--ink);position:relative;margin:0 4px}
+    .lec-why2 .ar::after{content:"";position:absolute;right:-2px;top:-7px;border:8.5px solid transparent;border-left:13px solid var(--ink);border-right:0}
     .lec-why2 .no{flex:none;display:flex;align-items:center;gap:12px;color:var(--ink);font:700 27px/1 var(--f-head)}
     .lec-why2 .x{width:40px;height:40px;border-radius:50%;background:var(--red-ink);color:#fff;display:grid;place-items:center;font:800 22px/1 var(--f-body)}
     .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:18px}
@@ -103,7 +105,7 @@
               <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>the formula prices an option on a single underlying</span></li>
               <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>European payoff: the path along the way is ignored</span></li>
             </ul>
-            <div class="lec-why2" data-step="1" style="--d:6"><span>Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path</span><span class="no"><span class="x">✕</span>Black-Scholes can't be applied</span></div>
+            <div class="lec-why2" data-step="1" style="--d:6"><span>Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path</span><span class="ar" aria-hidden="true"></span><span class="no"><span class="x">✕</span>Black-Scholes can't be applied</span></div>
           </section>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
