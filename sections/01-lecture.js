@@ -155,10 +155,10 @@
             </div>
           </section>
           <section class="panel lec-panel lec-bot" data-step="1">
-            <h3 class="panel-title">Why it doesn't fit a Multi-BRC</h3>
+            <h3 class="panel-title">Why it's impractical for a Multi-BRC</h3>
             <ul>
               <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>Three correlated stocks</b>each node branches into 2³ = 8 moves, with the correlations built in</span></li>
-              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Path-dependent barrier</b>daily steps, and every node must track whether the barrier was hit</span></li>
+              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Daily barrier</b>one step per trading day, or it misses touches in between</span></li>
             </ul>
             <div class="lec-why2" data-step="1" style="--d:6"><span>Our Multi-BRC: <b>three stocks</b> × <b>${BT_N} days</b> ≈ <b>${U.fmt(BT_BN, 1)} billion nodes</b></span><span class="ar" aria-hidden="true"></span><span class="no"><span class="x">✕</span>Works in theory, but too big to compute</span></div>
           </section>
