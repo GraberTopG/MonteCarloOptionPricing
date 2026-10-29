@@ -82,7 +82,7 @@
     /* ---------- hook 3: the product ---------- */
     .hk-pr{position:relative;height:100%}
     .hk-name{margin:0;font:700 42px/1.15 var(--f-head);color:var(--green-ink)}
-    .hk-terms{position:absolute;left:0;right:0;top:66px;height:186px;display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
+    .hk-terms{position:absolute;left:0;right:0;top:0;height:200px;display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
     .hk-t{position:relative;padding:12px 20px;display:flex;flex-direction:column;font-size:24px}
     .hk-t .k{font:700 20px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink)}
     .hk-t .v{font:700 46px/1.1 var(--f-head);color:var(--ink);margin:6px 0 4px;white-space:nowrap;font-variant-numeric:lining-nums}
@@ -93,10 +93,10 @@
     .hk-stk{display:block;white-space:nowrap}
     .hk-ring{position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 4px var(--orange);pointer-events:none}
     .slide .hk-ring[data-step]{transform:none}
-    .hk-cpn{position:absolute;left:0;right:0;top:268px;height:158px;background:var(--card);border-radius:10px;border-left:10px solid var(--orange);display:flex;align-items:center;padding:0 30px;gap:30px}
+    .hk-cpn{position:absolute;left:0;right:0;top:220px;height:180px;background:var(--card);border-radius:10px;border-left:10px solid var(--orange);display:flex;align-items:center;padding:0 30px;gap:30px}
     /* "15% p.a.": the rate big, "p.a." small on the same baseline; the box is wide enough for the 1.2× beat of click 1 */
-    .hk-big{width:480px;flex:none;text-align:center;font:800 108px/1 var(--f-head);color:var(--orange);white-space:nowrap;font-variant-numeric:lining-nums;transition:transform .8s cubic-bezier(.3,1.5,.5,1)}
-    .hk-big .pa{font-size:42px}
+    .hk-big{width:480px;flex:none;text-align:center;font:800 120px/1 var(--f-head);color:var(--orange);white-space:nowrap;font-variant-numeric:lining-nums;transition:transform .8s cubic-bezier(.3,1.5,.5,1)}
+    .hk-big .pa{font-size:46px}
     .hk-pr.beat .hk-big{transform:scale(1.2)}
     .hk-ct{width:440px;flex:none}
     .hk-ct .k,.hk-rf .k{font:700 20px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink);margin:0 0 8px}
@@ -104,14 +104,14 @@
     .hk-gt{width:160px;flex:none;text-align:center;font:800 84px/1 var(--f-head);color:var(--orange);white-space:nowrap}
     .hk-gt .x{font:700 64px/1 var(--f-body);vertical-align:-.06em;margin-left:4px}   /* centred on the digits: "times", not an exponent */
     .hk-rf{flex:1;min-width:0}
-    .hk-rf .n{font:700 64px/1 var(--f-head);color:var(--green-ink);margin:0 0 8px;font-variant-numeric:lining-nums}
+    .hk-rf .n{font:700 76px/1 var(--f-head);color:var(--green-ink);margin:0 0 8px;font-variant-numeric:lining-nums}
     .hk-rf p{font-size:26px;color:var(--muted)}
     .hk-q{position:absolute;left:0;right:0;top:684px;margin:0;font:700 46px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}
     /* the Swiss Derivative Map in one row: families as small boxes, the yield-enhancement categories as chips, ours highlighted */
-    .hk-fam{position:absolute;left:0;right:0;top:442px;height:226px}
+    .hk-fam{position:absolute;left:0;right:0;top:424px;height:240px}
     .hk-fam-h{margin:0 0 8px;font:700 20px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink);display:flex;align-items:baseline}
     .hk-fam-h .pop{margin-left:auto;font:700 21px/1 var(--f-body);letter-spacing:0;text-transform:none;color:var(--green)}
-    .hk-fam-r{display:grid;grid-template-columns:170px 1fr 170px 200px 170px;gap:14px;height:196px}
+    .hk-fam-r{display:grid;grid-template-columns:170px 1fr 170px 200px 170px;gap:14px;height:206px}
     .hk-fb{background:var(--card);border-radius:8px;padding:10px 12px;opacity:.55}
     .hk-fb b{display:block;font:800 32px/1 var(--f-head);color:var(--green-ink)}
     .hk-fb span{display:block;font:20px/1.2 var(--f-body);color:var(--ink);margin-top:6px}
@@ -128,7 +128,8 @@
     .hk-q.typing .cur{opacity:1}
 
     /* the two long titles of the hook wrap onto two even lines */
-    .slide[data-id="hook-prices"] .s-title,.slide[data-id="hook-choices"] .s-title,.slide[data-id="hook-product"] .s-title{text-wrap:balance}
+    .slide[data-id="hook-prices"] .s-title,.slide[data-id="hook-choices"] .s-title{text-wrap:balance}
+    .slide[data-id="hook-product"] .s-title{font-size:52px;white-space:nowrap}   /* the long title on one line */
   `);
 
   // ---------- the right half of the title and the end card: a Monte Carlo picture of our product ----------
@@ -538,7 +539,7 @@
     id: "hook-product", section: "product", steps: 2, secs: secsFor(NOTES_PR, 2),
     title: "Banks' solution: A Multi‑BRC on $ADBE, $AAPL, $MSFT",   // non-breaking hyphen: "Multi-BRC" stays on one line
     subtitle: "Banks offer this product to enhance your yield in sideways to slightly down markets",
-    sources: "Bloomberg (2026); Swiss Structured Products Association (2026); own Excel model, sheets 1–2",
+    sources: "Bloomberg (2026); Swiss Structured Products Association (2026)",
     notes: NOTES_PR,
     render(body) {
       // click 1: the 15% grows and holds for about a second, then the risk-free rate (after 0.99 s) and "> 3×" (1.26 s) fade in
@@ -554,7 +555,7 @@
           </div>
           <div class="hk-cpn">
             <div class="hk-big">${CPN}%<span class="pa"> p.a.</span></div>
-            <div class="hk-ct"><p class="k">Semi-annual coupon</p><p><b>2 × ${HALF}</b> per USD ${NOM}, paid whatever happens, but never more</p></div>
+            <div class="hk-ct"><p class="k">Semi-annual coupon</p><p><b>2 × ${HALF}</b> per USD ${NOM}</p></div>
             <div class="hk-gt" data-step="1" style="--d:14">&gt; ${RATIO}<span class="x">×</span></div>
             <div class="hk-rf" data-step="1" style="--d:11"><p class="k">Risk-free rate</p><p class="n">${R_TXT}%</p><p>continuously compounded ≈ ${R_YEAR}% a year</p></div>
           </div>
