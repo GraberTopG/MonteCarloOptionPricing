@@ -204,9 +204,11 @@
       const lg = o.steps ? 0 : Math.max(0, Math.min(1, (k - .72) / .2));                // then the legend fades in
       ctx.clearRect(0, 0, c.w, c.h);
       // the fan, revealed up to the day shown
-      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, X(upto), c.h); ctx.clip();
-      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(layer, 0, 0);
-      ctx.restore();
+      if (!o.steps) {   // (the scenario-paths slide shows only its three years)
+        ctx.save(); ctx.beginPath(); ctx.rect(0, 0, X(upto), c.h); ctx.clip();
+        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(layer, 0, 0);
+        ctx.restore();
+      }
       // the strike (grey) and the kick-in level (black), dashed over the fan, labelled on the left like an axis
       const level = (v, colr, wdt) => { ctx.setLineDash([10, 8]); ctx.strokeStyle = colr; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(X0, Y(v)); ctx.lineTo(XR, Y(v)); ctx.stroke(); ctx.setLineDash([]); };
       level(B.strike, col.rule, 2); level(B.kickIn, col.ink, 2.5);
@@ -270,16 +272,10 @@
           if (sub) { ctx.font = "19px " + U.F.body; ctx.fillStyle = col.ink; ctx.fillText(sub, x + 18, y + 39); }
           ctx.restore();
         };
-        const pct = v => (v >= 1 ? "+" : "−") + U.fmt(Math.abs(v - 1) * 100, 1) + "%";
         const ends = SCN.map(([f, cl]) => ({ f, cl, y: Y(f.w[n]), num: NUM(f), p: prog[[sim.good, sim.mid, sim.bad].indexOf(f)] }))
           .filter(e => e.p >= 1).sort((p, q) => p.y - q.y);
-        for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 84);
-        ends.forEach(e => {
-          badge(X(n) + 4, e.y, e.num, e.cl);
-          const above = e.f.end >= B.strike;
-          card(X(n) + 30, e.y - 36, XR - X(n) - 30, 72, (above ? "Ended above strike " : "Ended below strike ") + pct(e.f.end),
-            above ? "→ USD 1,000 + coupons = USD 1,150" : "→ shares of the worst + coupons", e.cl, 1);
-        });
+        for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 38);
+        ends.forEach(e => badge(X(n) + 22, e.y, e.num, e.cl));   // the outcome cards are under the chart (HTML)
         SCN.forEach(([f, cl]) => {
           if (!f.ki || upF(f) < f.kiDay) return;
           const x = X(f.kiDay), y = Y(B.kickIn);   // left of the touch, just under the barrier, where only the faint fan runs
@@ -326,6 +322,7 @@
     }
     if (o.steps) return {
       resize: draw,
+      scen() { if (!sim) sim = simulate(); return sim; },
       step(i, st) {   // click i draws year i (1, then 2a, then 2b); the years before it are complete
         if (a) a.cancel(); a = null;
         for (let j = 0; j < 3; j++) prog[j] = j < i - 1 ? 1 : 0;

@@ -163,6 +163,19 @@
     .prd-calc .tot{border-top:2px solid var(--ink);padding-top:4px;margin-top:4px;font-weight:700}
     .prd-calc .tot.r{font-size:38px;line-height:1.1;color:var(--orange-ink)}
 
+    /* ---------- brc-paths: the three simulated years, the outcome cards under the chart ---------- */
+    .pa-chart{position:absolute;left:0;right:0;top:0;height:500px}
+    .pa-cards{position:absolute;left:0;right:0;top:516px;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+    .pa-card{border-radius:12px;padding:16px 28px 14px;display:flex;flex-direction:column}
+    .slide .pa-card[data-step]{transform:none}
+    .pa-card.g{background:var(--green-light);box-shadow:inset 0 6px 0 var(--green)} .pa-card.k{background:var(--red-soft);box-shadow:inset 0 6px 0 var(--red-ink)}
+    .pa-card .hd{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+    .pa-card .hd b{font:700 28px/1.1 var(--f-body)} .pa-card.g .hd b{color:var(--green)} .pa-card.k .hd b{color:var(--red-ink)}
+    .pa-card .num{width:48px;height:48px;font-size:22px} .pa-card .num.g{background:var(--green)} .pa-card .num.k{background:var(--red-ink)}
+    .pa-card .eg{display:grid;grid-template-columns:1fr auto;column-gap:16px;font:24px/1.45 var(--f-body);color:var(--ink);margin-top:auto}
+    .pa-card .eg .r{text-align:right;font-variant-numeric:tabular-nums}
+    .pa-card .eg .c{color:var(--green);font-weight:700}
+    .pa-card .eg .t{font-weight:700;border-top:1.5px solid var(--ink);margin-top:2px}
     /* ---------- brc-suits: advantages (green icons) and risks (black icons), four each ---------- */
     .prd-su{display:grid;grid-template-columns:1fr 1fr;gap:40px;height:722px;margin-top:18px}
     .prd-su .panel{height:100%;padding:46px 26px 24px;display:flex;flex-direction:column}
@@ -528,7 +541,7 @@
 
   // ================= brc-paths: the title slide's simulated years again, the three scenarios one per click =================
   // (the same seed as the title slide, so the same three years; drawn after the payoff chart)
-  const NOTES_PA = "Remember the picture from the start? Each grey line is one simulated year of the worst of our three stocks. [→] In this year, no stock ever touches 65 percent. Scenario one: you get your thousand back, plus the coupons. [→] In this one, a stock touches the barrier, that's a kick-in, but it recovers and ends above its starting price. Scenario 2a: again your thousand plus the coupons. [→] And here, after the kick-in, the worst stock ends below its starting price. Scenario 2b: you get shares of the worst stock, plus the coupons.";
+  const NOTES_PA = "Remember the picture from the start? Here are its three highlighted years, each one simulated path of the worst of our three stocks. [→] In this year, no stock ever touches 65 percent. Scenario one: you get your thousand back, plus the coupons. [→] In this one, a stock touches the barrier, that's a kick-in, but it recovers and ends above its starting price. Scenario 2a: again your thousand plus the coupons. [→] And here, after the kick-in, the worst stock ends below its starting price. Scenario 2b: you get shares of the worst stock, plus the coupons.";
   Deck.addSlide({
     id: "brc-paths", section: "product", steps: 3, secs: 40,
     title: "The three scenarios in simulated years",
@@ -536,8 +549,20 @@
     sources: "Own simulation",
     notes: NOTES_PA,
     render(body) {
-      return U.pathsArt(body, 7, { inBody: true, steps: true, labelsIn: true, X0: 0, X1: 1250, XR: 1744, Y1: 370, SC: 520, LY: 2000,
-        dates: { issue: "ISSUE DATE: 6 OCT 2026", expiry: "MATURITY: 6 OCT 2027", y: [14, 720] } });
+      // the chart over the top of the body, the three outcome cards in a row under it (each appears when its year has ended)
+      body.innerHTML = `<div class="pa-chart"></div><div class="pa-cards"></div>`;
+      const api = U.pathsArt(body.querySelector(".pa-chart"), 7, { inBody: true, steps: true, labelsIn: true, X0: 0, X1: 1690, XR: 1690,
+        Y1: 250, SC: 400, LY: 2000, dates: { issue: "ISSUE DATE: 6 OCT 2026", expiry: "MATURITY: 6 OCT 2027", y: [8, 492] } });
+      const sc = api.scen(), fx = v => U.fmt(v, 2), NOMv = B.nominal, CPNv = Math.round(XL.coupon * NOMv), HALFv = U.fmt(CPNv / 2, 0);
+      const cash = (num, head) => `<div class="pa-card g" data-step="${num === "1" ? 1 : 2}" style="--d:39"><div class="hd"><span class="num g">${num}</span><b>${head}</b></div>
+        <div class="eg"><span>Nominal</span><span class="r">${fx(NOMv)}</span><span class="c">Coupons 2 × ${HALFv}</span><span class="r c">+ ${fx(CPNv)}</span>
+        <span class="t">Total value</span><span class="r t">USD ${fx(NOMv + CPNv)}</span></div></div>`;
+      const shv = NOMv * sc.bad.end;
+      body.querySelector(".pa-cards").innerHTML = cash("1", "No kick-in, ended above strike") + cash("2a", "Kick-in, but ended above strike")
+        + `<div class="pa-card k" data-step="3" style="--d:39"><div class="hd"><span class="num k">2b</span><b>Kick-in, ended below strike</b></div>
+        <div class="eg"><span>Shares of the worst stock</span><span class="r">${fx(shv)}</span><span class="c">Coupons 2 × ${HALFv}</span><span class="r c">+ ${fx(CPNv)}</span>
+        <span class="t">Total value</span><span class="r t">USD ${fx(shv + CPNv)}</span></div></div>`;
+      return api;
     }
   });
 
