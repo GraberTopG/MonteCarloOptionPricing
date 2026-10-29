@@ -324,7 +324,7 @@
             <div class="badge">${U.icon("avg")}</div>
             <p class="hk-gk">USD ${NOM} · ${B.T} year</p>
             <span class="sep"></span>
-            <p class="hk-gv">Consensus: 86% of analysts issue a <b>HOLD</b> rating for the three underlyings; no growth catalyst ahead and some downside risk remaining</p>
+            <p class="hk-gv">Consensus: <b>86%</b> of analysts issue a <b>HOLD</b> rating for the three underlyings; <b>no growth</b> catalyst ahead and some <b>downside risk</b> remaining</p>
           </div>
           <canvas></canvas>
           <p class="hk-cap">Daily closing prices from 7 Oct 2024 to 6 Oct 2026, and an illustrative consensus path to the 12M target price</p>
