@@ -128,7 +128,7 @@
     subtitle: "Handles any payoff and early exercise, but the tree grows with every step and every extra stock",
     lecture: "Lecture 4, slide 10",
     sources: "Arnold (2026); Cox, Ross & Rubinstein (1979)",
-    notes: `What about the binomial tree from the lecture? It moves the stock up or down each step and works backwards to today. [→] For one stock that's easy. But with three stocks, the tree grows in three dimensions, and with 252 trading days it reaches about ${U.fmt(BT_BN, 1)} billion nodes. Far too big for Excel.`,
+    notes: `What about the binomial tree from the lecture? It moves the stock up or down each step and works backwards to today. [→] In theory, it could price our product too. But with three stocks, the tree grows in three dimensions, and with 252 trading days it reaches about ${U.fmt(BT_BN, 1)} billion nodes. Far too big to compute, let alone in Excel.`,
     render(body) {
       body.innerHTML = `
         <div class="lec v2 bt">
@@ -160,7 +160,7 @@
               <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>Three stocks</b>the tree grows in three dimensions: (k + 1)³ nodes after k steps</span></li>
               <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Daily barrier</b>${BT_N} steps needed: ${U.fmt(BT_ONE, 0)} nodes for one stock</span></li>
             </ul>
-            <div class="lec-why2" data-step="1" style="--d:6"><span>Our Multi-BRC: <b>three stocks</b> × <b>${BT_N} days</b> ≈ <b>${U.fmt(BT_BN, 1)} billion nodes</b></span><span class="ar" aria-hidden="true"></span><span class="no"><span class="x">✕</span>Binomial tree too big to compute</span></div>
+            <div class="lec-why2" data-step="1" style="--d:6"><span>Our Multi-BRC: <b>three stocks</b> × <b>${BT_N} days</b> ≈ <b>${U.fmt(BT_BN, 1)} billion nodes</b></span><span class="ar" aria-hidden="true"></span><span class="no"><span class="x">✕</span>Works in theory, but too big to compute</span></div>
           </section>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
