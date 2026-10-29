@@ -126,15 +126,17 @@
     .prd-tr.tree .prd-tb.cash,.prd-tr.tree .prd-tb.shr{flex-direction:column;align-items:stretch;justify-content:flex-start;padding:18px 30px 16px;border-left:none;border-radius:12px}
     .prd-tr.tree .prd-tb.cash{box-shadow:inset 0 6px 0 var(--green)} .prd-tr.tree .prd-tb.shr{box-shadow:inset 0 6px 0 var(--red-ink)}
     .prd-tr.tree .prd-tb>div{flex:none}
-    .prd-tr.tree .prd-tb .hd{display:flex;align-items:center;gap:18px;margin-bottom:12px}
+    .prd-tr.tree .prd-tb .hd{display:flex;align-items:center;gap:18px;margin-bottom:6px}
     .prd-tr.tree .prd-tb .hd b{font:700 32px/1.1 var(--f-body)}
     .prd-tr.tree .prd-tb.cash .eg.cash{font-size:24px;line-height:1.45;margin-top:auto;padding-top:10px;border-top:2px dashed #B9D3C1}
-    .prd-tr.tree .prd-tb .sm{display:block;margin:0;font-size:23px;line-height:1.35;color:var(--ink)}
-    .prd-tr.tree .prd-tb.shr .exl{font-size:21px;line-height:1.3;margin-top:auto;padding-top:8px}
-    .prd-cpl{position:absolute;background:#3B8A5A;border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:22px;font:700 28px/1 var(--f-body)}
+    .prd-tr.tree .prd-tb .sm{display:block;margin:0;font-size:22px;line-height:1.35;color:var(--ink)}
+    .prd-tr.tree .prd-tb.shr .exl{font-size:24px;line-height:1.45;margin-top:auto;padding-top:10px}
+    .prd-tr.tree .prd-tb.shr .exl .eh{font-weight:700;margin:0 0 2px}
+    .prd-tr.tree .prd-tb.shr .exl .eg>span:nth-child(-n+2){color:var(--muted)}
+    .prd-cpl{position:absolute;background:#3B8A5A;border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:22px;font:700 26px/1 var(--f-body)}
     .prd-cpl .k{text-transform:uppercase;letter-spacing:.06em;font-size:22px;background:#fff;color:#2F7A4C;padding:6px 12px;border-radius:6px}
-    .prd-cpl .v{font-size:34px} .prd-cpl .s{font-weight:400;font-size:24px;opacity:.95}
-    .prd-cpl .up{position:absolute;top:-22px;margin-left:-10px;color:#3B8A5A;font-size:20px;line-height:1}
+    .prd-cpl .v{font-size:30px} .prd-cpl .s{font-weight:400;font-size:24px;opacity:.95}
+    .prd-cpl .up{position:absolute;top:-17px;font-size:14px!important;margin-left:-10px;color:#3B8A5A;font-size:20px;line-height:1}
     .prd-tb .eg{display:grid;grid-template-columns:1fr auto;column-gap:16px}
     .prd-tb .eg .r{text-align:right;font-variant-numeric:tabular-nums}
     .prd-tb .eg .t{font-weight:700;border-top:1.5px solid var(--ink);margin-top:2px}
@@ -462,12 +464,12 @@
     render(body) {
       // a tree from top to bottom (the body is 1744 × 740): question 1, then question 2 over its two answers; the three
       // outcomes side by side; under them one layer for the coupons, paid in all three
-      const W3 = 560, G3 = 32, OY = 310, OH = 352;
-      const A1 = [0, OY, W3, OH], B1 = [W3 + G3, OY, W3, OH], C1 = [2 * (W3 + G3), OY, W3, OH];
+      const W3 = 506, WB = 668, G3 = 32, OY = 282, OH = 396;   // 2b wider for its example
+      const A1 = [0, OY, W3, OH], B1 = [W3 + G3, OY, W3, OH], C1 = [2 * (W3 + G3), OY, WB, OH];
       const cxs = r => r[0] + r[2] / 2;
       const Q2c = (cxs(B1) + cxs(C1)) / 2, Q1c = (cxs(A1) + Q2c) / 2;
-      const Q1 = [Q1c - 330, 0, 660, 70], Q2 = [Q2c - 360, 150, 720, 70];
-      const CP = [0, OY + OH + 24, 1744, 740 - (OY + OH + 24)];
+      const Q1 = [Q1c - 330, 0, 660, 70], Q2 = [Q2c - 360, 136, 720, 70];
+      const CP = [0, OY + OH + 18, 1744, 740 - (OY + OH + 18)];
       // the example: the worst stock (Adobe) ends 20% down; the note delivers its conversion ratio in shares, whole shares
       // in kind and the fraction in cash
       const S0w = XL.S0[0], ST = S0w * EX_WORST, RATIO_W = NOM / S0w, WHOLE = Math.floor(RATIO_W), FRAC = RATIO_W - WHOLE;
@@ -476,10 +478,10 @@
       const pill = (x, y, t, ok) => `<g class="pill ${ok ? "ok" : "ko"}" transform="translate(${x} ${y})"><rect x="-38" y="-21" width="76" height="42" rx="21"/><text>${t}</text></g>`;
       // a branch: down from a box to a level, across, then down into the target
       const branch = (from, x2, y2, lvl) => `<path d="M${cxs(from)} ${from[1] + from[3]}V${lvl}H${x2}V${y2 - 6}" marker-end="url(#prd-arr)"/>`;
-      const L1 = Q1[3] + 40, L2 = Q2[1] + Q2[3] + 45;
+      const L1 = Q1[3] + 33, L2 = Q2[1] + Q2[3] + 38;
       const cashBox = (r, n) => `<div class="prd-tb cash" style="${pos(r)};--d:2" data-step="${n === "1" ? 1 : 2}"><div class="hd"><span class="num g">${n}</span><b>Max return</b></div>
             <span class="sm">${n === "1" ? "No stock touched " + KI + ": your USD 1,000 back in cash" : "A stock touched " + KI + ", but all end at or above 100%: your USD 1,000 back in cash"}</span>
-            <div class="eg cash"><span>Nominal</span><span class="r">${fx(NOM)}</span><span class="c">Coupons 2 × ${HALF}</span><span class="r c">${fx(CPN)}</span><span class="t">Total value</span><span class="r t">USD ${fx(NOM + CPN)}</span></div></div>`;
+            <div class="eg cash"><span>Nominal</span><span class="r">${fx(NOM)}</span><span class="c">Coupons 2 × ${HALF}</span><span class="r c">+ ${fx(CPN)}</span><span class="t">Total value</span><span class="r t">USD ${fx(NOM + CPN)}</span></div></div>`;
       body.innerHTML = `
         <div class="prd-tr tree">
           <svg aria-hidden="true">
@@ -495,11 +497,11 @@
           ${cashBox(B1, "2a")}
           <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><div class="hd"><span class="num k">2b</span><b>Shares of the worst stock</b></div>
             <span class="sm">Whole shares delivered, the fraction paid in cash</span>
-            <div class="exl" data-step="4"><p class="eh">e.g. Adobe worst, −${f0((1 - EX_WORST) * 100)}%: ${fx(S0w)} × ${f0(EX_WORST * 100)}% = ${fx(ST)}</p>
-              <p class="ec">Conversion ratio: 1,000 ÷ ${fx(S0w)} = ${U.fmt(RATIO_W, 4)}</p>
-              <div class="eg"><span>${WHOLE} Adobe shares delivered</span><span class="r">${fx(WHOLE * ST)}</span>
-              <span>${U.fmt(FRAC, 4)} share paid in cash</span><span class="r">${fx(FRAC * ST)}</span>
-              <span class="c">Coupons 2 × ${HALF}</span><span class="r c">${fx(CPN)}</span>
+            <div class="exl" data-step="4"><p class="eh">Scenario: Adobe ends at USD ${fx(ST)} (−${f0((1 - EX_WORST) * 100)}%)</p>
+              <div class="eg"><span>Conversion ratio (nominal / starting price)</span><span class="r">${U.fmt(RATIO_W, 4)}</span>
+              <span>${WHOLE} Adobe shares delivered</span><span class="r">${fx(WHOLE * ST)}</span>
+              <span>${U.fmt(FRAC, 4)} share paid in cash</span><span class="r">+ ${fx(FRAC * ST)}</span>
+              <span class="c">Coupons 2 × ${HALF}</span><span class="r c">+ ${fx(CPN)}</span>
               <span class="t">Total value</span><span class="r t">USD ${fx(RATIO_W * ST + CPN)}</span></div></div></div>
           <div class="prd-cpl" style="${pos(CP)}">
             ${[A1, B1, C1].map(r => `<span class="up" style="left:${cxs(r)}px">▲</span>`).join("")}
