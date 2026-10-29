@@ -502,7 +502,7 @@
     title: "Step 1: the missing inputs",
     subtitle: "Black-Scholes needs five inputs, and we know four of them",
     lecture: "Lecture 4, slide 7",
-    sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg (2026); own Excel model, sheets 2, 5 and 6",
+    sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg; own Excel model, sheets 2, 5 and 6",
     // live Excel follows (sheets 5, 6 and 4): liveSecs = its narration (94 words) / 145 × 60 + 3 s per Excel screen (two)
     notes: "Step one: volatility. Remember the Black-Scholes formula. "
       + "[→] We know almost every input: the stock price, the strike, the maturity and the interest rate. "
