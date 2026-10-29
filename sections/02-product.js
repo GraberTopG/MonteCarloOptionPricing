@@ -62,6 +62,7 @@
     .prd-po-l{display:flex;flex-direction:column;min-width:0}
     .prd-po-h{font:700 26px/1.2 var(--f-body);margin:0 0 4px;color:var(--ink)}
     .prd-po-h span{font-weight:400;color:var(--muted)}
+    .prd-po-h .sc i.g{background:var(--green)} .prd-po-h .sc i.k{background:var(--red-ink)}
     .prd-po-hd{position:relative;height:96px;flex:none}
     .prd-po-hd .prd-po-h{position:absolute;left:0;top:0;right:0;transition:opacity .45s}
     .prd-po-h.br{display:grid;grid-template-columns:auto 1fr;column-gap:14px;row-gap:4px;font-size:21px;opacity:0}
@@ -233,11 +234,11 @@
         <div class="prd-po">
           <div class="prd-po-l">
             <div class="prd-po-hd">
-              <p class="prd-po-h rc">At maturity: <span class="sc"><i>1</i>Above strike → USD 1,000 + coupons</span><span class="sc"><i>2</i>Below strike → shares + coupons</span></p>
+              <p class="prd-po-h rc">At maturity: <span class="sc"><i class="g">1</i>Above strike → USD 1,000 + coupons</span><span class="sc"><i class="k">2</i>Below strike → shares + coupons</span></p>
               <div class="prd-po-h br"><b>At maturity:</b>
-                <span class="sc"><i>1</i>Barrier never touched → USD 1,000 + coupons</span>
-                <span class="sc"><i>2a</i>Barrier touched but above strike → USD 1,000 + coupons</span>
-                <span class="sc"><i>2b</i>Barrier touched and below strike → <span class="one">shares</span><span class="wo">shares of the underlying with the worst performance</span> + coupons</span></div>
+                <span class="sc"><i class="g">1</i>Barrier never touched → USD 1,000 + coupons</span>
+                <span class="sc"><i class="g">2a</i>Barrier touched but above strike → USD 1,000 + coupons</span>
+                <span class="sc"><i class="k">2b</i>Barrier touched and below strike → <span class="one">shares</span><span class="wo">shares of the underlying with the worst performance</span> + coupons</span></div>
             </div>
             <canvas></canvas>
           </div>
@@ -351,10 +352,10 @@
           ctx.beginPath(); ctx.moveTo(X(0), Yp(0)); ctx.lineTo(X(Math.min(xe, 100)), Yp(Math.min(xe, 100) * 10)); ctx.stroke();
           if (xe > 100) { ctx.strokeStyle = green; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(X(100), Yp(1000)); ctx.lineTo(X(xe), Yp(1000)); ctx.stroke(); }
           const la = lerp(S.k1, .55, 1);
-          text("USD 1,000 + 150 coupons", X(150), Yp(1000) - 22, { b: true, c: green, al: "right", a: la });
+          text("USD " + f0(NOM + CPN), X(150), Yp(1000) - 22, { b: true, c: green, al: "right", a: la });
           const lx = X(20), ly = Yp(200);
-          text("shares + coupons", lx + 12, ly + 14, { b: true, c: loss, al: "center", bl: "top", rot: slope, a: la * (1 - S.k2) });
-          text("touched: shares + coupons", lx + 12, ly + 14, { b: true, c: loss, al: "center", bl: "top", rot: slope, a: la * S.k2 });
+          text("Shares + USD " + CPN, lx + 12, ly + 14, { b: true, c: loss, al: "center", bl: "top", rot: slope, a: la * (1 - S.k2) });
+          text("Shares + USD " + CPN, lx + 12, ly + 14, { b: true, c: loss, al: "center", bl: "top", rot: slope, a: la * S.k2 });
         }
         if (S.k2 > 0) {
           // the barrier at 65%: between 65% and 100% two branches, never touched (1,000 in cash) or touched (shares)
@@ -363,7 +364,7 @@
           text("kick-in " + KI, X(bk) - 10, Y(1395), { b: true, c: loss, al: "right", bl: "top", a: S.k2 });
           ctx.strokeStyle = green; ctx.lineWidth = 7; ctx.lineCap = "round";
           ctx.beginPath(); ctx.moveTo(X(100), Yp(1000)); ctx.lineTo(X(100 - (100 - bk) * S.k2), Yp(1000)); ctx.stroke();
-          text("never touched: USD 1,150", X(bk) + 8, Yp(1000) - 22, { b: true, c: green, a: lerp(S.k2, .5, 1), halo: "#fff" });
+          
         }
         if (S.k3 > 0) {
           // three stocks: lowest → final level of each this year; any touch counts, but the worst one is paid out
