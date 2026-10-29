@@ -305,8 +305,8 @@
   const FUT_T = [1, 2, 3].map(q => ({ i: LAST + 63 * q, m: (9 + 3 * q) % 12, y: 2026 + Math.floor((9 + 3 * q) / 12) }));   // Jan, Apr, Jul 2027
   const ONE_YEAR_AGO = H.dates.indexOf("2025-10-06");
   const CHG = H.px.map(p => (p[LAST] / p[ONE_YEAR_AGO] - 1) * 100);   // past year: ADBE −31.9%, AAPL +29.7%, MSFT +1.1%
-  // illustrative consensus at expiry, % of today's price: sideways to slightly down (not real analyst targets)
-  const CONS = [-0.04, -0.02, -0.01];
+  // illustrative consensus in one year, change from today: sideways to slightly down overall (not real analyst targets)
+  const CONS = [0.023, -0.033, 0.002];
   const consPath = (s, j) => {   // a gentle path from today to the illustrative end value, with a little seeded wiggle
     const t = j / FUT, end = 1 + CONS[s];
     return H.px[s][LAST] * (1 + (end - 1) * t + 0.012 * Math.sin(t * Math.PI * (2 + s)) * Math.sin(t * Math.PI));
@@ -315,7 +315,7 @@
   Deck.addSlide({
     id: "hook-prices", section: "hook", steps: 1, secs: secsFor(NOTES_PX, 1),
     title: "Assumption: USD 1,000 to invest and sideways or slightly down year expected",
-    sources: "Bloomberg (2026); own Excel model, sheet 3; consensus path: own illustration, not analyst targets",
+    sources: "Bloomberg; Own illustration, not analyst targets",
     notes: NOTES_PX,
     render(body) {
       body.innerHTML = `
@@ -324,10 +324,10 @@
             <div class="badge">${U.icon("avg")}</div>
             <p class="hk-gk">USD ${NOM} · ${B.T} year</p>
             <span class="sep"></span>
-            <p class="hk-gv">Consensus: 86% of analysts issue a <b>HOLD</b> rating for the three underlyings; no growth catalyst ahead and downside risks already priced in</p>
+            <p class="hk-gv">Consensus: 86% of analysts issue a <b>HOLD</b> rating for the three underlyings; no growth catalyst ahead and some downside risk remaining</p>
           </div>
           <canvas></canvas>
-          <p class="hk-cap">Daily closing prices from 7 Oct 2024 to 6 Oct 2026, and an illustrative consensus path to the 12M target price at expiry. Sources: Bloomberg</p>
+          <p class="hk-cap">Daily closing prices from 7 Oct 2024 to 6 Oct 2026, and an illustrative consensus path to the 12M target price</p>
         </div>`;
       const cv = body.querySelector("canvas");
       const COL = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];
@@ -362,10 +362,10 @@
           ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 21px " + U.F.body; ctx.textAlign = al; ctx.textBaseline = "bottom";
           ctx.fillText(txt, x + (al === "right" ? 6 : al === "left" ? -6 : 0), f.y - 14);
         };
-        vline(xt, "Today: issue date, " + dayTxt(H.dates[LAST]), "center", true);
-        vline(xe, "Expiry, 6 Oct 2027", "right", false);
-        ctx.fillStyle = U.css("--muted"); ctx.font = "italic 19px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
-        ctx.fillText("consensus path to the 12M target price, illustrative", (xt + xe) / 2, f.y + 10);
+        vline(xt, "Today, " + dayTxt(H.dates[LAST]), "center", true);
+        vline(xe, "Consensus 12M target price", "right", false);
+        ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 20px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
+        ctx.letterSpacing = "1px"; ctx.fillText("INVESTMENT HORIZON: 1 YEAR", (xt + xe) / 2, f.y + 12); ctx.letterSpacing = "0px";
         // the history (first 75% of the time), then the consensus paths (dashed)
         const kh = Math.min(1, k / .75), kf = Math.max(0, (k - .75) / .25);
         const upto = Math.max(1, Math.round(LAST * kh));
@@ -396,9 +396,8 @@
             const y = Y(consPath(s, FUT)), x = xe + 20;
             ctx.fillStyle = U.css(COL[s]); ctx.font = "700 26px " + U.F.body; ctx.textBaseline = "bottom";
             ctx.fillText(B.names[s], x, y - 2);
-            ctx.font = "400 19px " + U.F.body; ctx.textBaseline = "top";
-            ctx.fillText("Consensus 12M target price", x, y + 6);
-            ctx.font = "700 21px " + U.F.body; ctx.fillText("USD " + U.fmt(consPath(s, FUT), 2), x, y + 30);
+            ctx.font = "700 22px " + U.F.body; ctx.textBaseline = "top";
+            ctx.fillText("USD " + U.fmt(consPath(s, FUT), 2) + " (" + (CONS[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CONS[s]) * 100, 1) + "%)", x, y + 6);
           });
         }
         ctx.globalAlpha = 1;
