@@ -544,8 +544,8 @@
   const NOTES_PA = "Remember the picture from the start? Here are its three highlighted years, each one simulated path of the worst of our three stocks. [→] In this year, no stock ever touches 65 percent. Scenario one: you get your thousand back, plus the coupons. [→] In this one, a stock touches the barrier, that's a kick-in, but it recovers and ends above its starting price. Scenario 2a: again your thousand plus the coupons. [→] And here, after the kick-in, the worst stock ends below its starting price. Scenario 2b: you get shares of the worst stock, plus the coupons.";
   Deck.addSlide({
     id: "brc-paths", section: "product", steps: 3, secs: 40,
-    title: "The three scenarios in simulated years",
-    subtitle: "Each line: one simulated path of the worst underlying until maturity",
+    title: "The three scenarios simulated",
+    subtitle: "Three simulated paths of the worst underlying, one per scenario",
     sources: "Own simulation",
     notes: NOTES_PA,
     render(body) {
