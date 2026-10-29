@@ -57,9 +57,9 @@
     .hk-slot{height:476px;border:3px dashed #BCC3C0;border-radius:10px}
     .hk-opt{position:relative;height:476px;padding:26px 34px 30px;display:flex;flex-direction:column}
     .slide .hk-opt[data-step]{transform:none}   /* fades in exactly over its slot (no slide-up, so no slot edge peeks out) */
-    /* a card is crossed out once its reason has been read: --xd per card (XD below) */
+    /* a card is crossed out on the click after it appears (its marker .hk-xon turns on) */
     .hk-art{width:480px;height:240px;display:block;flex:none;transition:opacity .45s ease var(--xd)}
-    .hk-opt.on .hk-art{opacity:.4}
+    .hk-opt:has(.hk-xon.on) .hk-art{opacity:.4}
     .hk-art .ax{fill:none;stroke:var(--rule);stroke-width:2}
     .hk-art .lv{fill:none;stroke:var(--rule);stroke-width:2;stroke-dasharray:6 6}
     .hk-art .ln{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
@@ -68,12 +68,12 @@
     .hk-art .t-red{fill:var(--red-ink)} .hk-art .t-grn{fill:var(--green)} .hk-art .t-mut{fill:var(--muted);font-weight:400}
     .hk-opt h3{align-self:flex-start;position:relative;font:700 44px/1.15 var(--f-head);color:var(--green-ink);margin:24px 0 12px}
     .hk-strike{position:absolute;left:-8px;right:-8px;top:calc(50% - 1px);height:6px;border-radius:3px;background:var(--red-ink);transform:scaleX(0);transform-origin:0 50%;transition:transform .35s ease var(--xd)}
-    .hk-opt.on .hk-strike{transform:none}
+    .hk-opt:has(.hk-xon.on) .hk-strike{transform:none}
     .hk-opt p{font-size:30px;line-height:1.3;margin:0;color:var(--ink)}
     .hk-x{position:absolute;left:34px;top:26px;width:480px;height:240px;pointer-events:none}
     .hk-x line{stroke:var(--red-ink);stroke-width:13;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .3s ease-in var(--xd)}
     .hk-x line+line{transition-delay:calc(var(--xd) + .25s)}
-    .hk-opt.on .hk-x line{stroke-dashoffset:0}
+    .hk-opt:has(.hk-xon.on) .hk-x line{stroke-dashoffset:0}
     /* the bottom line: empty until click 3, then the answer, when it is spoken (about 5 s after the click) */
     .hk-say{position:absolute;left:0;right:0;top:612px;height:80px;border-left:8px solid var(--orange)}
     .hk-say p{position:absolute;left:26px;top:12px;margin:0;font:700 46px/1.2 var(--f-head);color:var(--green-ink);white-space:nowrap}
@@ -481,9 +481,9 @@
     { art: ART.bond, t: "Government bond?", why: `Safe, but only ≈ ${R_YEAR}% a year` },
     { art: ART.call, t: "Call option?", why: "You are not expecting an increase in the share price" }
   ];
-  const NOTES_CH = "So how would you invest? [→] Shares? You take the full downside. [→] A government bond? Safe, but only about four and a half percent. [→] A call option? You pay for a big jump you don't expect. None of them fits a quiet year.";
+  const NOTES_CH = "So how would you invest? [→] Shares? You take the full downside. [→] [→] A government bond? Safe, but only about four and a half percent. [→] [→] A call option? You pay for a big jump you don't expect. [→] [→] So is there a better product for a sideways to slightly down market?";
   Deck.addSlide({
-    id: "hook-choices", section: "hook", steps: 3, secs: secsFor(NOTES_CH, 3),
+    id: "hook-choices", section: "hook", steps: 7, secs: secsFor(NOTES_CH, 7),
     title: "Which financial instrument lets us express the market view best?",
     subtitle: `Three ways to invest USD ${NOM} for a sideways to slightly down year`,
     sources: "Bloomberg (2026) (USD 1-year rate); own Excel model, sheet 2; own illustration",
@@ -492,19 +492,20 @@
       // the X ends above the bottom label band of the drawings (y 196 of 240)
       // when each card is crossed out (s after its click), at 145 words a minute: after "…the full downside" (2.5 s),
       // near the end of "…four and a half percent" (5.0 s) and of "…you don't expect" (5.0 s), just before the answer
-      const XD = [2.2, 4.3, 4.1];
+      const XD = [0, 0, 0];   // no delay: each X comes on its own click
       body.innerHTML = `
         <div class="hk-ch">
           <div class="hk-opts">${OPTS.map(() => `<div class="hk-slot"></div>`).join("")}</div>
           <div class="hk-opts">${OPTS.map((o, i) => `
-            <div class="card hk-opt" data-step="${i + 1}" style="--xd:${XD[i]}s">
+            <div class="card hk-opt" data-step="${2 * i + 1}" style="--xd:${XD[i]}s">
+              <i class="hk-xon" data-step="${2 * i + 2}" hidden></i>
               <svg class="hk-art" viewBox="0 0 300 150" aria-hidden="true">${o.art}</svg>
               <h3>${o.t}<span class="hk-strike"></span></h3>
               <p>${o.why}</p>
               <svg class="hk-x" viewBox="0 0 480 240" aria-hidden="true"><line x1="110" y1="22" x2="370" y2="196" pathLength="1"/><line x1="370" y1="22" x2="110" y2="196" pathLength="1"/></svg>
             </div>`).join("")}
           </div>
-          <div class="hk-say" data-step="3" style="--d:55"><p>None are suitable for a <span class="hl">sideways or slightly downward market</span></p></div>
+          <div class="hk-say" data-step="7"><p>Is there a better product for a <span class="hl">sideways to slightly down market</span>?</p></div>
         </div>`;
       return {};
     }
