@@ -134,7 +134,7 @@
     .prd-tr.tree .prd-tb.shr .exl .eh{font-weight:700;margin:0 0 2px}
     .prd-tr.tree .prd-tb.shr .exl .eg>span:nth-child(-n+2){color:var(--muted)}
     .prd-when{position:absolute;left:1510px;top:0;width:244px;height:0}
-    .prd-when .ax{position:absolute;left:0;top:-6px;height:226px;width:3px;background:var(--rule)}
+    .prd-when .ax{position:absolute;left:0;top:-6px;height:236px;width:3px;background:var(--rule)}
     .prd-when .ax::after{content:"";position:absolute;left:-7px;bottom:-4px;border:8.5px solid transparent;border-top:12px solid var(--rule);border-bottom:0}
     .prd-when>div:not(.ax){position:absolute;left:18px;right:0;display:flex;flex-direction:column;justify-content:center;font:18px/1.25 var(--f-body);color:var(--muted)}
     .prd-when>div:not(.ax)::before{content:"";position:absolute;left:-24px;top:50%;width:15px;height:15px;margin-top:-7.5px;border-radius:50%;background:var(--green-ink)}
@@ -471,12 +471,12 @@
     render(body) {
       // a tree from top to bottom (the body is 1744 × 740): question 1, then question 2 over its two answers; the three
       // outcomes side by side; under them one layer for the coupons, paid in all three
-      const W3 = 560, WB = 560, G3 = 32, OY = 268, OH = 414;   // three boxes of the same width
+      const W3 = 560, WB = 560, G3 = 32, OY = 290, OH = 414, BH = 764;   // the tree starts 24 px higher (BH: its height)   // three boxes of the same width
       const A1 = [0, OY, W3, OH], B1 = [W3 + G3, OY, W3, OH], C1 = [2 * (W3 + G3), OY, WB, OH];
       const cxs = r => r[0] + r[2] / 2;
       const Q2c = (cxs(B1) + cxs(C1)) / 2, Q1c = (cxs(A1) + Q2c) / 2;
-      const Q1 = [Q1c - 330, 0, 660, 70], Q2 = [Q2c - 305, 128, 610, 70];
-      const CP = [0, OY + OH + 16, 1744, 740 - (OY + OH + 16)];
+      const Q1 = [Q1c - 330, 0, 660, 62], Q2 = [Q2c - 305, 154, 610, 62];
+      const CP = [0, OY + OH + 16, 1744, BH - (OY + OH + 16)];
       // the example: the worst stock (Adobe) ends 20% down; the note delivers its conversion ratio in shares, whole shares
       // in kind and the fraction in cash
       const S0w = XL.S0[0], ST = S0w * EX_WORST, RATIO_W = NOM / S0w, WHOLE = Math.floor(RATIO_W), FRAC = RATIO_W - WHOLE;
@@ -485,12 +485,12 @@
       const pill = (x, y, t, ok) => `<g class="pill ${ok ? "ok" : "ko"}" transform="translate(${x} ${y})"><rect x="-38" y="-21" width="76" height="42" rx="21"/><text>${t}</text></g>`;
       // a branch: down from a box to a level, across, then down into the target
       const branch = (from, x2, y2, lvl) => `<path d="M${cxs(from)} ${from[1] + from[3]}V${lvl}H${x2}V${y2 - 6}" marker-end="url(#prd-arr)"/>`;
-      const L1 = Q1[3] + 29, L2 = Q2[1] + Q2[3] + 35;
+      const L1 = Q1[3] + 36, L2 = Q2[1] + Q2[3] + 36;
       const cashBox = (r, n) => `<div class="prd-tb cash" style="${pos(r)};--d:2" data-step="${n === "1" ? 1 : 2}"><div class="hd"><span class="num g">${n}</span><b>Max return</b></div>
             <span class="sm">${n === "1" ? "No barrier breached: USD 1,000 back in cash" : "Barrier breached, but all end at or above the strike: USD 1,000 back in cash"}</span>
             <div class="eg cash"><span>Nominal</span><span class="r">${fx(NOM)}</span><span class="c">Coupons 2 × ${HALF}</span><span class="r c">+ ${fx(CPN)}</span><span class="t">Total value</span><span class="r t">USD ${fx(NOM + CPN)}</span></div></div>`;
       body.innerHTML = `
-        <div class="prd-tr tree">
+        <div class="prd-tr tree" style="top:-24px;height:${BH}px">
           <svg aria-hidden="true">
             <defs><marker id="prd-arr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--rule);stroke:none"/></marker></defs>
             <g data-step="1"><path d="M${cxs(Q1)} ${Q1[3]}V${L1}H${cxs(A1)}V${A1[1] - 6}" marker-end="url(#prd-arr)"/>${pill((cxs(A1) + cxs(Q1)) / 2, L1, "No", true)}</g>
