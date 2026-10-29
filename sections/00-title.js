@@ -307,10 +307,19 @@
   const CHG = H.px.map(p => (p[LAST] / p[ONE_YEAR_AGO] - 1) * 100);   // past year: ADBE −31.9%, AAPL +29.7%, MSFT +1.1%
   // illustrative consensus in one year, change from today: sideways to slightly down overall (not real analyst targets)
   const CONS = [0.023, -0.033, 0.002];
-  const consPath = (s, j) => {   // a gentle path from today to the illustrative end value, with a little seeded wiggle
-    const t = j / FUT, end = 1 + CONS[s];
-    return H.px[s][LAST] * (1 + (end - 1) * t + 0.012 * Math.sin(t * Math.PI * (2 + s)) * Math.sin(t * Math.PI));
-  };
+  // one daily path per stock from today's price to the target: a seeded random walk pinned at both ends (Brownian bridge),
+  // with less volatility than the stock's own (45%) and a seed whose path never strays more than 7% from the straight line,
+  // so it looks like a real price but clearly stays sideways
+  const CPATH = H.px.map((p, s) => {
+    const l0 = Math.log(p[LAST]), l1 = Math.log(p[LAST] * (1 + CONS[s])), sd = B.sigma[s] * 0.45 / Math.sqrt(FUT);
+    for (let seed = 31 + 100 * s; ; seed++) {
+      const norm = U.normal(U.rng(seed)), w = [0];
+      for (let j = 1; j <= FUT; j++) w.push(w[j - 1] + sd * norm());
+      const b = w.map((x, j) => x - w[FUT] * j / FUT);
+      if (Math.max(...b.map(Math.abs)) < 0.07 || seed > 100 * s + 500) return b.map((x, j) => Math.exp(l0 + (l1 - l0) * j / FUT + x));
+    }
+  });
+  const consPath = (s, j) => CPATH[s][j];
   const NOTES_PX = "Hi everyone. It's October 2026, and you have a thousand dollars to invest for one year. You expect a quiet year: 86 percent of analysts rate our three stocks HOLD. [→] Here is the past: Adobe now trades at 238 dollars, Apple at 333 and Microsoft at 534. And looking ahead to October 2027, the consensus sees them moving sideways or slightly down.";
   Deck.addSlide({
     id: "hook-prices", section: "hook", steps: 1, secs: secsFor(NOTES_PX, 1),
@@ -377,10 +386,10 @@
           ctx.stroke();
           if (kf > 0) {
             const fu = Math.round(FUT * kf);
-            ctx.setLineDash([9, 7]); ctx.lineWidth = 3;
+            ctx.lineWidth = 2.6; ctx.globalAlpha *= .7;   // the illustrative future: the same colour, a little lighter
             ctx.beginPath(); ctx.moveTo(X(LAST), Y(p[LAST]));
             for (let j = 1; j <= fu; j++) ctx.lineTo(X(LAST + j), Y(consPath(s, j)));
-            ctx.stroke(); ctx.setLineDash([]);
+            ctx.stroke(); ctx.globalAlpha = Math.min(1, k * 8);
           }
           ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(upto), Y(p[upto]), 6.5, 0, 7); ctx.fill();
         });
@@ -388,7 +397,11 @@
         const lab = Math.max(0, Math.min(1, (kf - .6) / .4));
         if (kf > 0) {
           ctx.globalAlpha = Math.min(1, kf * 4); ctx.textAlign = "left"; ctx.textBaseline = "bottom"; ctx.font = "700 20px " + U.F.body;
-          H.px.forEach((p, s) => { ctx.fillStyle = U.css(COL[s]); ctx.fillText(U.fmt(XL.S0[s], 2), xt + 12, Y(p[LAST]) - 10); });
+          H.px.forEach((p, s) => {   // on a white halo over the start of the paths
+            const t = U.fmt(XL.S0[s], 2), y = Y(p[LAST]) - 12;
+            ctx.strokeStyle = "#fff"; ctx.lineWidth = 7; ctx.lineJoin = "round"; ctx.strokeText(t, xt + 12, y);
+            ctx.fillStyle = U.css(COL[s]); ctx.fillText(t, xt + 12, y);
+          });
         }
         if (lab > 0) {
           ctx.globalAlpha = lab; ctx.textAlign = "left";
@@ -407,8 +420,8 @@
         step(i, o) {
           if (a) a.cancel(); a = null;
           if (i === 0) { k = 0; draw(); return; }
-          // after the click: the history draws in 5 s, then the consensus paths
-          if (!o.instant) a = U.anim(6500, t => { k = Math.max(.001, t); draw(); }, { ease: U.ease.inOut });
+          // after the click: the history draws, then the consensus paths (3.25 s in all)
+          if (!o.instant) a = U.anim(3250, t => { k = Math.max(.001, t); draw(); }, { ease: U.ease.inOut });
           else { k = 1; draw(); }
         },
         leave() { if (a) a.cancel(); a = null; k = 0; }
