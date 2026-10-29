@@ -781,9 +781,9 @@
       
       const CO = body.querySelector(".prd-co"), CALL = [1, 2].map(k => CO.querySelector(".c" + k));
       // the chart's frame and scales: draw() draws them with U.axes, place() also needs them before the first draw
-      const AX = { xMin: 0, xMax: n, yMin: 0.4, yMax: 1.3 };
+      const AX = { xMin: 0, xMax: n, yMin: 0.4, yMax: 1.25 };
       const frame = (w, h) => {
-        const f = { x: 96, y: 26, w: w - 96 - 214, h: h - 26 - 72 };
+        const f = { x: 96, y: 56, w: w - 96 - 214, h: h - 56 - 72 };
         return { f, X: v => f.x + (v - AX.xMin) / (AX.xMax - AX.xMin) * f.w, Y: v => f.y + f.h - (v - AX.yMin) / (AX.yMax - AX.yMin) * f.h };
       };
       // places callouts 1-2 where they hide the least; computed once per canvas and box size (ahead of time, see warm() below)
@@ -901,6 +901,11 @@
         };
         hline(B.strike, grey, "STRIKE " + Math.round(B.strike * 100) + "%");   // grey: the three greens are the stocks, black the kick-in
         hline(B.kickIn, tred, "KICK-IN " + KI); // label above the line, clear of the 60% axis label
+        // the maturity date: a dotted vertical line at day 252, labelled above the plot (like "Today" on slide 2)
+        ctx.setLineDash([3, 5]); ctx.strokeStyle = grey; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(X(n), f.y - 4); ctx.lineTo(X(n), f.y + f.h); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = text; ctx.font = "700 21px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+        ctx.fillText("Maturity, 6 Oct 2027", X(n), f.y - 8);
         // paths: the worst one on top; dim the others at maturity, except the stock that touched while reason 2 is about it
         // (on the white panel the dimmed lines keep 45%, their labels 67%, so the light greens stay readable)
         const dim = k => k === sc.worstAsset ? 1 : 1 - .55 * S.mat * (k === kAsset ? 1 - S.two : 1), dimT = k => 1 - (1 - dim(k)) * .6;
