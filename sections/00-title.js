@@ -82,15 +82,16 @@
     /* ---------- hook 3: the product ---------- */
     .hk-pr{position:relative;height:100%}
     .hk-name{margin:0;font:700 42px/1.15 var(--f-head);color:var(--green-ink)}
-    .hk-terms{position:absolute;left:0;right:0;top:0;height:200px;display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
-    .hk-t{position:relative;padding:12px 20px;display:flex;flex-direction:column;font-size:24px}
+    .hk-terms{position:absolute;left:0;right:0;top:0;height:200px;display:grid;grid-template-columns:250px 300px 220px 340px 340px 234px;gap:12px}
+    .hk-t{position:relative;padding:12px 18px;display:flex;flex-direction:column;font-size:24px}
     .hk-t .k{font:700 20px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink)}
-    .hk-t .v{font:700 46px/1.1 var(--f-head);color:var(--ink);margin:6px 0 4px;white-space:nowrap;font-variant-numeric:lining-nums}
-    .hk-t .s{font-size:23px;line-height:1.25;color:var(--muted)}
+    .hk-t .v{font:700 42px/1.1 var(--f-head);color:var(--ink);margin:6px 0 4px;white-space:nowrap;font-variant-numeric:lining-nums}
+    .hk-t .s{font-size:20px;line-height:1.25;color:var(--muted)}
     .hk-ln{display:block;white-space:nowrap}   /* the two dates of the maturity card: one line each */
     .hk-dot{display:inline-block;width:16px;height:16px;border-radius:50%;margin:0 8px 0 0;vertical-align:1px}
     .hk-dot.adbe{background:var(--c-adbe-light)} .hk-dot.aapl{background:var(--c-aapl-light)} .hk-dot.msft{background:var(--c-msft-light)}
-    .hk-stk{display:block;white-space:nowrap}
+    .hk-stk{display:flex;align-items:center;white-space:nowrap} .hk-stk b{margin-left:auto;color:var(--ink);font-variant-numeric:tabular-nums}
+    .hk-cr{display:block;font-size:16px;letter-spacing:.02em;margin:-2px 0 2px}
     .hk-ring{position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 4px var(--orange);pointer-events:none}
     .slide .hk-ring[data-step]{transform:none}
     .hk-cpn{position:absolute;left:0;right:0;top:220px;height:180px;background:var(--card);border-radius:10px;border-left:10px solid var(--orange);display:flex;align-items:center;padding:0 30px;gap:30px}
@@ -101,7 +102,7 @@
     .hk-ct{width:440px;flex:none}
     .hk-ct .k,.hk-rf .k{font:700 20px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink);margin:0 0 8px}
     .hk-ct p,.hk-rf p{margin:0;font-size:28px;line-height:1.3}
-    .hk-ct .k{font-size:26px} .hk-ct p:not(.k){font-size:40px}   /* the coupon terms a little larger */
+    .hk-ct .k{font-size:26px} .hk-ct p:not(.k){font-size:40px} .hk-ct p.all{font-size:26px;color:var(--muted);margin-top:4px}   /* the coupon terms a little larger */
     .hk-gt{width:160px;flex:none;text-align:center;font:800 84px/1 var(--f-head);color:var(--orange);white-space:nowrap}
     .hk-gt .x{font:700 64px/1 var(--f-body);vertical-align:-.06em;margin-left:4px}   /* centred on the digits: "times", not an exponent */
     .hk-rf{flex:1;min-width:0}
@@ -548,15 +549,16 @@
       body.innerHTML = `
         <div class="hk-pr">
           <div class="hk-terms">
-            ${tile("Nominal", "USD " + NOM, "(=Issue price)")}
-            ${tile("Maturity", B.T + " year", `<span class="hk-ln">Initial fixing date: 6 Oct 2026</span><span class="hk-ln">Expiration: 6 Oct 2027</span>`)}
-            ${tile("Kick-in barrier", KI + "%", "of underlying’s reference price", 3)}
-            ${tile("Underlyings", "Worst of 3", B.names.map((n, s) => `<span class="hk-stk"><span class="hk-dot ${DOT[s]}"></span>${n}</span>`).join(""), 5)}
-            ${tile("Issuer", "UBS", "simulated with UBS as the issuer")}
+            ${tile("Nominal", "USD " + NOM, "(= issue price)")}
+            ${tile("Maturity", B.T + " year", `<span class="hk-ln">Issue date: 6 Oct 2026</span><span class="hk-ln">Maturity date: 6 Oct 2027</span>`)}
+            ${tile("Strike", "100%", "of the starting price")}
+            ${tile("Kick-in barrier", KI + "%", "of the starting price; if touched: shares of the worst stock instead of USD " + NOM, 3)}
+            ${tile("Underlyings", "Worst of 3", `<span class="hk-cr">Conversion ratio (shares per note)</span>` + B.names.map((n, s) => `<span class="hk-stk"><span class="hk-dot ${DOT[s]}"></span>${n}<b>${U.fmt(B.nominal / XL.S0[s], 4)}</b></span>`).join(""), 5)}
+            ${tile("Issuer", "UBS", "hypothetical issue; issuer credit risk applies")}
           </div>
           <div class="hk-cpn">
             <div class="hk-big">${CPN}%<span class="pa"> p.a.</span></div>
-            <div class="hk-ct"><p class="k">Semi-annual coupon</p><p><b>2 × ${HALF}</b> per USD ${NOM}</p></div>
+            <div class="hk-ct"><p class="k">Semi-annual coupon</p><p><b>2 × ${HALF}</b> per USD ${NOM}</p><p class="all">paid in all scenarios</p></div>
             <div class="hk-gt" data-step="1" style="--d:14">&gt; ${RATIO}<span class="x">×</span></div>
             <div class="hk-rf" data-step="1" style="--d:11"><p class="k">Risk-free rate</p><p class="n">${R_TXT}%</p><p>continuously compounded ≈ ${R_YEAR}% a year</p></div>
           </div>
