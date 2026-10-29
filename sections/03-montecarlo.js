@@ -181,6 +181,8 @@
     .mc-pa-g .mc-cap{margin-top:8px;font-size:19px;line-height:1.35;text-align:center}
     .mc-pa-g .mc-cap math{font-size:21px}
     .mc-pa-g .sep{margin:0 6px;color:var(--muted)}
+    .mc-pa-x{margin:10px 0 0;padding-top:8px;border-top:1px solid var(--green-soft);font:19px/1.4 var(--f-body);color:var(--ink);text-align:center}
+    .mc-pa-x math{font-size:27px}
     .mc-pa .dr{color:var(--green-ink)}
     .mc-pa .sh{color:var(--green)}
     .mc-pa .mc-bl{font-family:var(--f-body);font-size:.62em;font-weight:700}
@@ -701,6 +703,7 @@
   const GBMD = `<math display="block"><msub><mi>S</mi><mrow><mi>t</mi><mo>+</mo>${DT}</mrow></msub><mo>=</mo>${ST}<mo>+</mo>${BR(`${RFD}<mo>·</mo>${ST}<mo>·</mo>${DT}`, "drift", "dr")}<mo>+</mo>${BR(`<mi>σ</mi><mo>·</mo>${ST}<mo>·</mo><msqrt>${DT}</msqrt><mo>·</mo><mi>Z</mi>`, "shock", "sh")}</math>`;
   const DTN = `<math>${DT}<mo>=</mo><mfrac><mi>T</mi><mi>N</mi></mfrac><mo>=</mo><mfrac><mn>1</mn><mn>${NDAY}</mn></mfrac></math>`;
   const ZN = `<math><mi>Z</mi><mo>∼</mo><mi mathvariant="script">N</mi><mo stretchy="false">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false">)</mo></math>`;
+  const EXACT = `<math><msub><mi>S</mi><mrow><mi>t</mi><mo>+</mo>${DT}</mrow></msub><mo>=</mo>${ST}<mo>·</mo><msup><mi>e</mi><mrow>${RFD.replace('<mo stretchy="false">)</mo>', '')}<mo>−</mo><msup><mi>σ</mi><mn>2</mn></msup><mo>/</mo><mn>2</mn><mo stretchy="false">)</mo>${DT}<mo>+</mo><mi>σ</mi><msqrt>${DT}</msqrt><mi>Z</mi></mrow></msup></math>`;
   const WV = (sym, txt) => `<dt><math>${sym}</math></dt><dd>${txt}</dd>`;
 
   Deck.addSlide({
@@ -717,7 +720,7 @@
           <div class="mc-flow mc-pa-rm">${rb(1, "dice", "Sample a random path")}<span class="ar">→</span>${rb(2, "check", "Compute its discounted payoff")}<span class="ar">→</span>${rb(3, "avg", "Average them all")}</div>
           <div class="mc-pa-t">
             <div class="fbox mc-pa-g"><span class="chip">CONTINUOUS TIME</span>${GBM}<p class="mc-cap">the lecture's model for a share price</p></div>
-            <div class="fbox mc-pa-g mc-pa-d" data-step="1"><span class="chip">IN DAILY STEPS</span>${GBMD}<p class="mc-cap">${DTN} <span class="sep">·</span> ${ZN}, a new random number every day<br><math><msqrt>${DT}</msqrt></math> because the variance grows linearly with time</p></div>
+            <div class="fbox mc-pa-g mc-pa-d" data-step="1"><span class="chip">IN DAILY STEPS</span>${GBMD}<p class="mc-cap">${DTN} <span class="sep">·</span> ${ZN}, a new random number every day<br><math><msqrt>${DT}</msqrt></math> because the variance grows linearly with time</p><p class="mc-pa-x">In Excel: the exact form, which keeps prices positive<br>${EXACT}</p></div>
             <section class="panel mc-pa-w"><h3 class="panel-title">Where</h3><dl>
               ${WV(ST, "share price on day t")}${WV(`<msub><mi>r</mi><mi>f</mi></msub>`, "risk-free rate")}${WV("<mi>δ</mi>", "dividend yield")}${WV("<mi>σ</mi>", "volatility")}${WV("<mi>T</mi><mo>,</mo><mi>N</mi>", "1 year, 252 steps")}${WV(`<mi>d</mi><msub><mi>W</mi><mi>t</mi></msub>`, "Wiener process increment")}${WV("<mi>Z</mi>", "standard normal draw")}
             </dl></section>
