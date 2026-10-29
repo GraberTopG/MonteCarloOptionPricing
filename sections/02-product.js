@@ -58,11 +58,11 @@
     .prd-key-c .rf b{font:700 34px/1 var(--f-head);color:var(--green-ink);margin-right:6px;font-variant-numeric:lining-nums}
 
     /* ---------- brc-payoff ---------- */
-    .prd-po{display:grid;grid-template-columns:1fr 560px;gap:44px;height:100%}
+    .prd-po{display:grid;grid-template-columns:1fr 470px;gap:32px;height:calc(100% + 30px);margin-top:-30px}
     .prd-po-l{display:flex;flex-direction:column;min-width:0}
     .prd-po-h{font:700 26px/1.2 var(--f-body);margin:0 0 4px;color:var(--ink)}
     .prd-po-h span{font-weight:400;color:var(--muted)}
-    .prd-po-hd{position:relative;height:104px;flex:none}
+    .prd-po-hd{position:relative;height:96px;flex:none}
     .prd-po-hd .prd-po-h{position:absolute;left:0;top:0;right:0;transition:opacity .45s}
     .prd-po-h.br{display:grid;grid-template-columns:auto 1fr;column-gap:14px;row-gap:4px;font-size:21px;opacity:0}
     .prd-po-h.br b{grid-row:1/4;font-size:26px;line-height:1.2;white-space:nowrap} .prd-po-h.br .sc{white-space:nowrap}
@@ -82,7 +82,7 @@
     .slide .prd-po-c[data-step]{transform:none}   /* fades in exactly over its slot (no slide-up, so no slot edge or number peeks out) */
     .prd-po-c.cur{background:var(--green-light);border-color:var(--green)}
     .prd-po-c h4{margin:0 0 8px;font:700 30px/1.15 var(--f-head);color:var(--ink);font-variant-numeric:lining-nums}
-    .prd-po-c p{margin:0;font:26px/1.3 var(--f-body);color:var(--muted)}
+    .prd-po-c p{margin:0;font:24px/1.3 var(--f-body);color:var(--muted)}
     .prd-po-c p b{color:var(--ink)}
 
     /* ---------- brc-tree ---------- */
@@ -258,9 +258,9 @@
         ctx.lineCap = "butt";   // the payoff line below sets round caps; the next frame's axes must not inherit them
         const green = U.css("--green"), muted = U.css("--muted"), oink = U.css("--orange-ink"), orange = U.css("--orange");
         const loss = U.css("--red-ink"), ink = U.css("--ink"), grey = U.css("--rule");   // kick-in and shares black, the put grey
-        const f = { x: 100, y: 52, w: w - 100 - 34, h: h - 52 - 190 };   // room under the x axis for the two payout bars
+        const f = { x: 100, y: 40, w: w - 100 - 34, h: h - 40 - 172 };   // room under the x axis for the two payout bars
         const { X, Y: Ya } = U.axes(ctx, f, {
-          theme: "light", xMin: 0, xMax: 150, yMin: 0, yMax: 1420,
+          theme: "light", xMin: 0, xMax: 150, yMin: 0, yMax: 1400,
           xTicks: [0, 25, 50, 75, 100, 125, 150], yTicks: [0, 250, 500, 750, 1000, 1250], xFmt: v => v + "%", yFmt: v => f0(v)
         });
         const Y = Ya, Yp = v => Ya(v + CPN);   // the payoff is drawn as the total received: repayment + USD 150 coupons
@@ -270,7 +270,7 @@
         // line down to the x axis (only its % positions count); the barrier and the bars are drawn on top of it
         if (S.k1 > 0) {   // the strike at 100%: above it USD 1,000 in cash, below it shares (under the example box of step 3)
           ctx.save(); ctx.globalAlpha = lerp(S.k1, .3, .8); ctx.setLineDash([8, 6]); ctx.strokeStyle = U.css("--green-ink"); ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(X(100), f.y + f.h); ctx.lineTo(X(100), Y(1410)); ctx.stroke(); ctx.restore();
+          ctx.beginPath(); ctx.moveTo(X(100), f.y + f.h); ctx.lineTo(X(100), Y(1395)); ctx.stroke(); ctx.restore();
         }
         if (S.k1 > 0) {   // what you paid: USD 1,000; below it you lose money. With the coupons, that only happens below 85%
           const ra = lerp(S.k1, .5, 1), be = (NOM - CPN) / NOM * 100;
@@ -301,7 +301,7 @@
         const xt = f.y + f.h + 48, xc = f.x + f.w / 2;
         // under the axis: what you are paid back, by where the (worst) stock ends; and the coupons, paid in every case
         if (S.k1 > 0) {
-          const by = f.y + f.h + 80, bh = 38, gap = 6, bkx = B.kickIn * 100;
+          const by = f.y + f.h + 74, bh = 34, gap = 5, bkx = B.kickIn * 100;
           const seg = (x0, x1, fill, txt, col, al) => {
             ctx.save(); ctx.globalAlpha = al; ctx.fillStyle = fill;
             ctx.beginPath(); ctx.roundRect(X(x0) + (x0 ? gap / 2 : 0), by, X(x1) - X(x0) - (x0 ? gap / 2 : 0) - (x1 < 150 ? gap / 2 : 0), bh, 6); ctx.fill();
@@ -325,7 +325,7 @@
           text("your investment: USD 1,000", X(150), Y(NOM) + 18, { c: muted, al: "right", a: lerp(S.k1, .5, 1) * (1 - S.k3), s: 19 });
           text("break-even " + f0((NOM - CPN) / NOM * 100) + "%", X((NOM - CPN) / NOM * 100) + 6, Y(NOM) + 26, { b: true, c: ink, halo: "#fff", a: lerp(S.k1, .5, 1) * (1 - S.k2), s: 19 });
         }
-        if (S.k1 > 0) text("strike 100%", X(100) + 10, Y(1410), { b: true, c: U.css("--green-ink"), bl: "top", a: lerp(S.k1, .3, .8) });
+        if (S.k1 > 0) text("strike 100%", X(100) + 10, Y(1395), { b: true, c: U.css("--green-ink"), bl: "top", a: lerp(S.k1, .3, .8) });
         const poly = pts => { ctx.beginPath(); pts.forEach(([x, y], j) => j ? ctx.lineTo(X(x), Yp(y)) : ctx.moveTo(X(x), Yp(y))); ctx.closePath(); };
         const bk = B.kickIn * 100, slope = Math.atan2(Y(1000) - Y(0), X(100) - X(0));
         if (S.k1 > 0) {
@@ -359,8 +359,8 @@
         if (S.k2 > 0) {
           // the barrier at 65%: between 65% and 100% two branches, never touched (1,000 in cash) or touched (shares)
           ctx.save(); ctx.globalAlpha = S.k2; ctx.setLineDash([8, 6]); ctx.strokeStyle = loss; ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(X(bk), f.y + f.h); ctx.lineTo(X(bk), Y(1410)); ctx.stroke(); ctx.restore();
-          text("kick-in " + KI, X(bk) - 10, Y(1410), { b: true, c: loss, al: "right", bl: "top", a: S.k2 });
+          ctx.beginPath(); ctx.moveTo(X(bk), f.y + f.h); ctx.lineTo(X(bk), Y(1395)); ctx.stroke(); ctx.restore();
+          text("kick-in " + KI, X(bk) - 10, Y(1395), { b: true, c: loss, al: "right", bl: "top", a: S.k2 });
           ctx.strokeStyle = green; ctx.lineWidth = 7; ctx.lineCap = "round";
           ctx.beginPath(); ctx.moveTo(X(100), Yp(1000)); ctx.lineTo(X(100 - (100 - bk) * S.k2), Yp(1000)); ctx.stroke();
           text("never touched: USD 1,150", X(bk) + 8, Yp(1000) - 22, { b: true, c: green, a: lerp(S.k2, .5, 1), halo: "#fff" });
