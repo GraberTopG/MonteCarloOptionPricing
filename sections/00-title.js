@@ -142,13 +142,15 @@
   // Art from our own model, no results quoted.
   // o.full: the chart across the whole slide (title); otherwise right of the green diagonal (end card)
   function pathsArt(root, seed, o = {}) {
-    root.insertAdjacentHTML("beforeend", o.full ? `<div class="tt-chart"><canvas></canvas></div>` : `
+    // o.steps: the fan is shown at once and the three highlighted years draw one per click, each with its cards
+    root.insertAdjacentHTML("beforeend", o.inBody ? `<div class="tt-chart" style="position:absolute;inset:0"><canvas style="width:100%;height:100%"></canvas></div>`
+      : o.full ? `<div class="tt-chart"><canvas></canvas></div>` : `
       <div class="tt-right"><canvas></canvas></div>
       <svg class="tt-edge" viewBox="0 0 1920 1080"><line x1="1130" y1="0" x2="770" y2="1080" style="stroke:var(--green)" stroke-width="4"/></svg>`);
-    const cv = root.querySelector(o.full ? ".tt-chart canvas" : ".tt-right canvas");
+    const cv = root.querySelector(o.full || o.inBody ? ".tt-chart canvas" : ".tt-right canvas");
     const n = B.steps, FAN = 160;
     // the chart in stage pixels: days from X0 to X1, levels on Y (100% at y Y1, SC px per 100%), the legend at y LY
-    const X0 = o.X0 || 1130, X1 = o.X1 || 1840, XR = o.XR || 1860, Y1 = o.Y1 || 540, SC = o.SC || 560, LY = o.LY || 1000;
+    const X0 = o.X0 ?? 1130, X1 = o.X1 ?? 1840, XR = o.XR ?? 1860, Y1 = o.Y1 ?? 540, SC = o.SC ?? 560, LY = o.LY ?? 1000;
     const X = i => X0 + i / n * (X1 - X0), Y = v => Y1 - (v - 1) * SC;
 
     let sim = null;   // simulated on the first draw (the end card only when it is shown)
@@ -184,6 +186,7 @@
     // the fan is drawn once into a layer at the canvas's own resolution; the animation only reveals it from left to right
     const layer = document.createElement("canvas");
     let layerKey = "", k = 1, a = null;
+    const prog = [1, 1, 1];   // o.steps: how far each highlighted year is drawn (0-1)
     function draw() {
       const c = U.canvas(cv); if (!c) return;
       const { ctx } = c;
@@ -197,8 +200,9 @@
         g.strokeStyle = col.fan; g.globalAlpha = .17; g.lineWidth = 1.3; g.lineJoin = "round";
         sim.fan.forEach(f => { g.beginPath(); g.moveTo(X(0), Y(f.w[0])); for (let i = 1; i <= n; i++) g.lineTo(X(i), Y(f.w[i])); g.stroke(); });
       }
-      const upto = Math.max(1, Math.round(n * Math.min(1, k / .72)));   // days shown: the paths grow in the first 72% of the time
-      const lg = Math.max(0, Math.min(1, (k - .72) / .2));                // then the legend fades in
+      const upto = o.steps ? n : Math.max(1, Math.round(n * Math.min(1, k / .72)));   // days shown: the paths grow in the first 72% of the time
+      const lg = o.steps ? 0 : Math.max(0, Math.min(1, (k - .72) / .2));                // then the legend fades in
+      ctx.clearRect(0, 0, c.w, c.h);
       // the fan, revealed up to the day shown
       ctx.save(); ctx.beginPath(); ctx.rect(0, 0, X(upto), c.h); ctx.clip();
       ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(layer, 0, 0);
@@ -236,11 +240,13 @@
       };
       if (!o.labelsIn) levelLabels();
       // the highlighted years, each on a thin white edge so it stands clear of the fan
+      const upF = f => o.steps ? Math.round(n * prog[[sim.good, sim.mid, sim.bad].indexOf(f)]) : upto;   // days drawn of this year
       const path = (f, colr) => {
+        const u = upF(f); if (u < 1) return;
         ctx.lineJoin = "round"; ctx.lineCap = "round";
         [["#fff", 7.5], [colr, 3.5]].forEach(([s, wdt]) => {
           ctx.strokeStyle = s; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(X(0), Y(f.w[0]));
-          for (let i = 1; i <= upto; i++) ctx.lineTo(X(i), Y(f.w[i]));
+          for (let i = 1; i <= u; i++) ctx.lineTo(X(i), Y(f.w[i]));
           ctx.stroke();
         });
       };
@@ -250,10 +256,36 @@
       SCN.forEach(([f, cl]) => path(f, cl));
       const dot = (x, y, r, fill, ring) => { ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = fill; ctx.fill(); if (ring) { ctx.strokeStyle = ring; ctx.lineWidth = 3; ctx.stroke(); } };
       const badge = (x, y, num, cl) => { dot(x, y, 17, cl, "#fff"); ctx.font = "700 " + (num.length > 1 ? 15 : 17) + "px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = "#fff"; ctx.fillText(num, x, y + 1); };
-      SCN.forEach(([f, cl]) => { if (f.ki && upto >= f.kiDay) dot(X(f.kiDay), Y(f.w[f.kiDay]), 10, "#fff", cl); });   // the touch
+      SCN.forEach(([f, cl]) => { if (f.ki && upF(f) >= f.kiDay) dot(X(f.kiDay), Y(f.w[f.kiDay]), 10, "#fff", cl); });   // the touch
       dot(X(0), Y(1), 7, U.css("--green-ink"));
       if (o.labelsIn) levelLabels();
-      if (upto >= n) {   // the numbers at the ends, pushed apart where two ends are close
+      if (o.steps) {
+        // cards: a kick-in card where a year touches 65%, and at its end a card with the outcome
+        const card = (x, y, w, h, head, sub, cl, al) => {
+          ctx.save(); ctx.globalAlpha = al; ctx.shadowColor = "rgba(0,0,0,.12)"; ctx.shadowBlur = 10; ctx.shadowOffsetY = 2;
+          ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.roundRect(x, y, w, h, 8); ctx.fill(); ctx.shadowColor = "transparent";
+          ctx.fillStyle = cl; ctx.fillRect(x, y + 6, 5, h - 12);
+          ctx.textAlign = "left"; ctx.textBaseline = "top"; ctx.letterSpacing = "0px";
+          ctx.font = "700 21px " + U.F.body; ctx.fillStyle = cl; ctx.fillText(head, x + 18, y + 11);
+          if (sub) { ctx.font = "19px " + U.F.body; ctx.fillStyle = col.ink; ctx.fillText(sub, x + 18, y + 39); }
+          ctx.restore();
+        };
+        const pct = v => (v >= 1 ? "+" : "−") + U.fmt(Math.abs(v - 1) * 100, 1) + "%";
+        const ends = SCN.map(([f, cl]) => ({ f, cl, y: Y(f.w[n]), num: NUM(f), p: prog[[sim.good, sim.mid, sim.bad].indexOf(f)] }))
+          .filter(e => e.p >= 1).sort((p, q) => p.y - q.y);
+        for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 84);
+        ends.forEach(e => {
+          badge(X(n) + 4, e.y, e.num, e.cl);
+          const above = e.f.end >= B.strike;
+          card(X(n) + 30, e.y - 36, XR - X(n) - 30, 72, (above ? "Ended above strike " : "Ended below strike ") + pct(e.f.end),
+            above ? "→ USD 1,000 + coupons = USD 1,150" : "→ shares of the worst + coupons", e.cl, 1);
+        });
+        SCN.forEach(([f, cl]) => {
+          if (!f.ki || upF(f) < f.kiDay) return;
+          const x = X(f.kiDay), y = Y(B.kickIn);   // left of the touch, just under the barrier, where only the faint fan runs
+          card(x - 14 - 196, y + 16, 196, 46, "Kick-in event", "", cl, 1);
+        });
+      } else if (upto >= n) {   // the numbers at the ends, pushed apart where two ends are close
         const ends = SCN.map(([f, cl]) => ({ y: Y(f.w[n]), cl, num: NUM(f) })).sort((p, q) => p.y - q.y);
         for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 34);
         ends.forEach(e => badge(X(n) + 4, e.y, e.num, e.cl));
@@ -292,12 +324,23 @@
       }
       ctx.letterSpacing = "0px";
     }
+    if (o.steps) return {
+      resize: draw,
+      step(i, st) {   // click i draws year i (1, then 2a, then 2b); the years before it are complete
+        if (a) a.cancel(); a = null;
+        for (let j = 0; j < 3; j++) prog[j] = j < i - 1 ? 1 : 0;
+        if (i >= 1 && !(st && st.instant)) a = U.anim(3500, t => { prog[i - 1] = t; draw(); }, { ease: U.ease.inOut });
+        else { if (i >= 1) prog[i - 1] = 1; draw(); }
+      },
+      leave() { if (a) a.cancel(); a = null; }
+    };
     return {
       resize: draw,
       step() { if (a) a.cancel(); a = U.anim(6000, t => { k = Math.max(.02, t); draw(); }, { ease: U.ease.inOut }); },
       leave() { if (a) a.cancel(); a = null; }
     };
   }
+  U.pathsArt = pathsArt;   // for the scenario-paths slide in 02-product.js
 
   // ================= title =================
   Deck.addSlide({

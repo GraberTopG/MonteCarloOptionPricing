@@ -526,6 +526,21 @@
     }
   });
 
+  // ================= brc-paths: the title slide's simulated years again, the three scenarios one per click =================
+  // (the same seed as the title slide, so the same three years; drawn after the payoff chart)
+  const NOTES_PA = "Remember the picture from the start? Each grey line is one simulated year of the worst of our three stocks. [→] In this year, no stock ever touches 65 percent. Scenario one: you get your thousand back, plus the coupons. [→] In this one, a stock touches the barrier, that's a kick-in, but it recovers and ends above its starting price. Scenario 2a: again your thousand plus the coupons. [→] And here, after the kick-in, the worst stock ends below its starting price. Scenario 2b: you get shares of the worst stock, plus the coupons.";
+  Deck.addSlide({
+    id: "brc-paths", section: "product", steps: 3, secs: 40,
+    title: "The three scenarios in simulated years",
+    subtitle: "Each line: one simulated path of the worst underlying until maturity",
+    sources: "Own simulation",
+    notes: NOTES_PA,
+    render(body) {
+      return U.pathsArt(body, 7, { inBody: true, steps: true, labelsIn: true, X0: 0, X1: 1250, XR: 1744, Y1: 370, SC: 520, LY: 2000,
+        dates: { issue: "ISSUE DATE: 6 OCT 2026", expiry: "MATURITY: 6 OCT 2027", y: [14, 720] } });
+    }
+  });
+
   // ================= brc-suits: the advantages and the risks, four each (the group's terms and lines, 27 Oct 2026) =================
   const ICON = {
     // advantages (green): a fixed coupon, paid without conditions, protection through the barrier, a cushion against losses
