@@ -194,6 +194,7 @@
     /* ---------- brc-decompose ---------- */
     .prd-dec{display:grid;grid-template-columns:1fr 70px 1fr 70px 1fr;grid-template-rows:auto auto auto;row-gap:46px;height:100%;padding-top:34px;align-content:start}
     .prd-op{display:grid;place-items:center;font:300 84px/1 var(--f-head);color:var(--green-ink)}
+    .prd-op.mi{font-size:0;display:flex;align-items:center;justify-content:center} .prd-op.mi::before{content:"";width:40px;height:9px;border-radius:2px;background:var(--green-ink)}   /* a minus as heavy as the "=" */
     .prd-box{position:relative;border-radius:10px;padding:40px 28px 22px;display:flex;flex-direction:column;font:28px/1.32 var(--f-body)}
     .prd-box.gray{background:var(--card)} .prd-box.green{background:var(--green-light)} .prd-box.put{background:var(--orange-light)}
     .prd-box .chip{white-space:nowrap;font-size:20px}
@@ -632,7 +633,7 @@
     id: "brc-decompose", section: "product", steps: 3, secs: 18,
     title: "The Multi-BRC is a bond minus a put",
     subtitle: "You lend UBS USD 1,000 and sell a down-and-in put on the worst of three: the put finances the high coupon",
-    sources: "Arnold (2026), slide 14 (same payoffs, same price); own illustration",
+    sources: "",   // TODO: a finance paper with the bond-minus-put decomposition
     notes: `To price it, we split it in two: [→] a UBS bond that pays the coupons and the thousand, [→] minus the put you sold. [→] The bond is easy: just discount it. The put is the hard part, so that is what we value with Monte Carlo.`,
     render(body) {
       body.innerHTML = `
@@ -650,7 +651,7 @@
             <p>Pays the coupons and the USD 1,000, whatever the stocks do.</p>
             <div class="prd-f">${M_BOND}<small>in every scenario</small></div>
           </div>
-          <div class="prd-op" data-step="2">−</div>
+          <div class="prd-op mi" data-step="2" aria-label="minus">−</div>
           <div class="prd-box put" data-step="2">
             <span class="chip put">SOLD PUT</span>
             <h4>Down-and-in put on the worst of three</h4>
