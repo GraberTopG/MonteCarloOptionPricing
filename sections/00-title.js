@@ -177,13 +177,12 @@
       if (upto >= sim.bad.kiDay) dot(X(sim.bad.kiDay), Y(sim.bad.w[sim.bad.kiDay]), 10, "#fff", col.ink);   // the touch
       if (upto >= n) { dot(X(n), Y(sim.good.w[n]), 7, col.green); dot(X(n), Y(sim.bad.w[n]), 7, col.ink); }
       dot(X(0), Y(1), 7, U.css("--green-ink"));
-      // what the chart shows: a caption above the fan, and under it the payoff of the two highlighted years
+      // what the chart shows, under it: the payoff of the two highlighted years, and what each line is
       ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
-      ctx.textAlign = "left"; ctx.fillStyle = col.muted;
-      ctx.fillText("WORST OF ADOBE, APPLE, MICROSOFT · SIMULATED YEARS", 1150, 92);
+      ctx.textAlign = "left";
       if (lg > 0) {
         ctx.globalAlpha = lg;
-        const ly = 1028, items = [["PAYOFF:", null], ["COUPONS + USD 1,000", col.green], ["COUPONS + SHARES OF THE WORST", col.ink]];
+        const ly = 1000, items = [["PAYOFF:", null], ["COUPONS + USD 1,000", col.green], ["COUPONS + SHARES OF THE WORST", col.ink]];
         const w = items.map(([t, c]) => ctx.measureText(t).width + (c ? 46 : 0));
         let x = XR - w.reduce((s, v) => s + v, 0) - 28 * (items.length - 1);
         items.forEach(([t, c], i) => {
@@ -191,6 +190,8 @@
           ctx.fillStyle = c ? col.ink : col.muted; ctx.fillText(t, x + (c ? 46 : 0), ly);
           x += w[i] + 28;
         });
+        ctx.fillStyle = col.muted; ctx.textAlign = "right";
+        ctx.fillText("EACH LINE: ONE SIMULATED YEAR OF THE WORST-PERFORMING UNDERLYING UNTIL REDEMPTION", XR, ly + 36);
         ctx.globalAlpha = 1;
       }
       ctx.letterSpacing = "0px";
