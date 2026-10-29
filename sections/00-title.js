@@ -196,6 +196,19 @@
         });
         ctx.globalAlpha = 1;
       }
+      // what the chart shows: a caption above the fan, and a legend for the histogram's two colours under it
+      ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
+      ctx.textAlign = "left"; ctx.fillStyle = col.muted;
+      ctx.fillText("WORST OF ADOBE, APPLE, MICROSOFT · SIMULATED YEARS", 1150, 92);
+      if (hg > 0) {
+        ctx.globalAlpha = Math.min(1, hg * 3);
+        const ly = 1028, item = (x, colr, txt) => { ctx.fillStyle = colr; ctx.fillRect(x, ly - 9, 18, 18); ctx.fillStyle = col.ink; ctx.textAlign = "left"; ctx.fillText(txt, x + 28, ly); };
+        ctx.fillStyle = col.muted; ctx.textAlign = "right"; ctx.fillText("AFTER 1 YEAR:", 1440, ly);
+        item(1462, col.green, "USD 1,000 BACK");
+        item(1680, col.ink, "SHARES INSTEAD");
+        ctx.globalAlpha = 1;
+      }
+      ctx.letterSpacing = "0px";
     }
     return {
       resize: draw,
