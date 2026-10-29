@@ -19,7 +19,13 @@
     .lec-vars{display:grid;grid-template-columns:auto 1fr;gap:6px 48px}   /* the left column as wide as its longest line */
     .lec-vars .vars{grid-template-columns:96px 1fr;font-size:26px;gap:0 14px}
     .lec-vars .vars math{font-size:28px}
-    .lec-panel{align-self:start;margin-top:16px;padding:48px 30px 20px}
+    .lec-r{display:flex;flex-direction:column;justify-content:space-between;gap:30px;height:100%;padding-bottom:4px}
+    .lec-intp{margin-top:16px;padding:40px 30px 20px;border-color:var(--rule)}
+    .lec-intp .panel-title{color:var(--ink)}
+    .lec-intp p{margin:0 0 12px;font:22px/1.35 var(--f-body);color:var(--ink)}
+    .lec-intp p:last-child{margin:0}
+    .lec-intp b{display:block;font:700 italic 26px/1.2 var(--f-math);color:var(--green-ink)}
+    .lec-panel{padding:44px 30px 22px}
     .lec-smile{margin-top:14px;background:#fff;border-radius:10px}
     .lec-smile svg{display:block;width:100%;height:auto}
     .lec-smile .ax{fill:none;stroke:var(--rule);stroke-width:2}
@@ -45,7 +51,7 @@
   Deck.addSlide({
     id: "bs-recap", section: "why", steps: 1, secs: 10,
     title: "Recap: Where Black-Scholes can be applied",
-    subtitle: "For a vanilla call or put on one stock, there is an exact formula",
+    subtitle: "An exact formula for vanilla options, but only for one underlying and path-independent payoffs",
     lecture: "Lecture 4, slide 7",
     sources: "Arnold (2026); Black & Scholes (1973); Merton (1973)",
     notes: `So why not just use Black-Scholes? [→] It's a great formula, but it only works for one stock, and only when the final price matters.`,
@@ -58,8 +64,8 @@
               <div class="fbox"><span class="chip">CALL</span>${C0}</div>
               <div class="fbox orange"><span class="chip orange">PUT</span>${P0}</div>
             </div>
-            <div class="lec-d"><div class="fbox gray">${D1}<p class="lec-int"><b>N(d<sub>1</sub>)</b> = the call's delta: shares held to hedge it</p></div>
-              <div class="fbox gray">${D2}<p class="lec-int"><b>N(d<sub>2</sub>)</b> = risk-neutral probability that the call ends in the money (is exercised)</p></div></div>
+            <div class="lec-d"><div class="fbox gray">${D1}</div>
+              <div class="fbox gray">${D2}</div></div>
             <div class="lec-in">
               <p class="minor">Where</p>
               <div class="lec-vars">
@@ -77,14 +83,21 @@
               </div>
             </div>
           </div>
+          <div class="lec-r">
+          <section class="panel lec-intp">
+            <h3 class="panel-title">How to read it</h3>
+            <p><b>N(d<sub>1</sub>)</b>the call's delta: shares held to hedge it</p>
+            <p><b>N(d<sub>2</sub>)</b>risk-neutral probability that the call ends in the money (is exercised)</p>
+          </section>
           <section class="panel lec-panel" data-step="1">
-            <h3 class="panel-title">Why it doesn't fit our product</h3>
+            <h3 class="panel-title">Why it doesn't fit a Multi-BRC</h3>
             <ul>
               <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>the formula prices an option on a single underlying</span></li>
               <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>European payoff: the path along the way is ignored</span></li>
             </ul>
             <p class="lec-why" data-step="1" style="--d:6">Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path</p>
           </section>
+          </div>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
     }
