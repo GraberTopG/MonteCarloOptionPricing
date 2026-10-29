@@ -166,9 +166,17 @@
 
     /* ---------- 5) mc-paths ---------- */
     .slide[data-id="mc-paths"] .s-title{font-size:50px;white-space:nowrap}
-    .mc-pa{display:grid;grid-template-rows:auto minmax(0,1fr);row-gap:22px;height:100%}
+    .slide[data-id="mc-paths"] .s-title{font-size:44px}
+    .mc-pa{display:grid;grid-template-rows:auto auto minmax(0,1fr);row-gap:32px;height:100%}
+    .mc-pa-rm .box{height:58px;font-size:21px;gap:10px}
+    .mc-pa-rm .box:not(.act){opacity:.4}
+    .mc-pa-rm .box.act{border-color:var(--green);background:var(--green-light)}
+    .mc-pa-rm .n{width:30px;height:30px;border-radius:50%;background:var(--green-ink);color:#fff;display:inline-grid;place-items:center;font:800 17px/1 var(--f-body);flex:none}
+    .mc-pa-rm .badge{width:36px;height:36px}
+    .mc-pa-rm .badge svg{width:22px;height:22px}
+    .mc-pa-rm .ar{font-size:26px}
     .mc-pa-t{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.35fr) 400px;column-gap:24px;min-height:0}
-    .mc-pa-g{display:flex;flex-direction:column;justify-content:center;padding:30px 18px 12px}
+    .mc-pa-g{display:flex;flex-direction:column;justify-content:center;padding:28px 18px 8px}
     .mc-pa-g math{font-size:30px}
     .mc-pa-g .mc-cap{margin-top:8px;font-size:19px;line-height:1.35;text-align:center}
     .mc-pa-g .mc-cap math{font-size:21px}
@@ -697,14 +705,16 @@
 
   Deck.addSlide({
     id: "mc-paths", section: "mc", after: "mc-sample", steps: 3, secs: 45,
-    title: "Geometric Brownian motion: building one simulated year",
+    title: "Step 1 in detail: simulating a path with geometric Brownian motion",
     subtitle: `One step per trading day: ${NDAY} steps make one simulated year of each stock`,
     lecture: "Lecture 4, slide 15",
     sources: "Boyle (1977); Arnold (2026), slide 15; own illustration",
     notes: "Step one in detail: how do we simulate a path? Our lecture models a share price with geometric Brownian motion: a risk-neutral drift, the risk-free rate minus the dividend yield, plus a random shock that scales with the volatility. Phelim Boyle brought this to option pricing in 1977. [→] On a computer we take small steps: one trading day each. Tomorrow's price is today's price, plus the drift, plus a shock with a new random number Z from a standard normal distribution. The shock grows with the square root of delta t, because the variance grows linearly with time. Repeat this 252 times, and you have one simulated year, here for each of our three stocks. [→] Ten years. [→] And five hundred. In Excel, we simulate 2,000.",
     render(body) {
+      const rb = (k, icon, txt) => `<div class="box${k === 1 ? " act" : ""}"><span class="n">${k}</span><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
       body.innerHTML = `
         <div class="mc-pa">
+          <div class="mc-flow mc-pa-rm">${rb(1, "dice", "Sample a random path")}<span class="ar">→</span>${rb(2, "check", "Compute its discounted payoff")}<span class="ar">→</span>${rb(3, "avg", "Average them all")}</div>
           <div class="mc-pa-t">
             <div class="fbox mc-pa-g"><span class="chip">CONTINUOUS TIME</span>${GBM}<p class="mc-cap">the lecture's model for a share price</p></div>
             <div class="fbox mc-pa-g mc-pa-d" data-step="1"><span class="chip">IN DAILY STEPS</span>${GBMD}<p class="mc-cap">${DTN} <span class="sep">·</span> ${ZN}, a new random number every day<br><math><msqrt>${DT}</msqrt></math> because the variance grows linearly with time</p></div>
@@ -714,7 +724,7 @@
           </div>
           <figure class="mc-pa-chart">
             <canvas></canvas>
-            <figcaption>Simulated years of our three stocks, with our Excel's inputs (volatilities, dividends, correlations, risk-free rate)</figcaption>
+            <figcaption>For the Multi-BRC we simulate all three stocks at once, with our Excel's inputs (volatilities, dividends, correlations, risk-free rate)</figcaption>
           </figure>
         </div>`;
       const cv = body.querySelector("canvas");
