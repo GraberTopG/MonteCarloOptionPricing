@@ -386,10 +386,10 @@
           ctx.stroke();
           if (kf > 0) {
             const fu = Math.round(FUT * kf);
-            ctx.lineWidth = 2.6; ctx.globalAlpha *= .7;   // the illustrative future: the same colour, a little lighter
+            ctx.lineWidth = 3.6; ctx.setLineDash([10, 6]);   // the estimated future: dashed, bold, in the stock's colour
             ctx.beginPath(); ctx.moveTo(X(LAST), Y(p[LAST]));
             for (let j = 1; j <= fu; j++) ctx.lineTo(X(LAST + j), Y(consPath(s, j)));
-            ctx.stroke(); ctx.globalAlpha = Math.min(1, k * 8);
+            ctx.stroke(); ctx.setLineDash([]);
           }
           ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(upto), Y(p[upto]), 6.5, 0, 7); ctx.fill();
         });
@@ -406,9 +406,8 @@
         if (lab > 0) {
           ctx.globalAlpha = lab; ctx.textAlign = "left";
           // the heading of the column: what the prices under it are
-          ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 24px " + U.F.body; ctx.textBaseline = "top";
-          ctx.fillText("Consensus 12M", xe + 20, f.y - 50); ctx.fillText("target price", xe + 20, f.y - 22);
-          ctx.fillStyle = U.css("--green"); ctx.fillRect(xe + 20, f.y + 12, 64, 4);
+          ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 21px " + U.F.body; ctx.textBaseline = "bottom";
+          ctx.fillText("Consensus 12M target price", xe + 20, f.y - 14);   // same size and line as "Today, 6 Oct 2026"
           H.px.forEach((p, s) => {
             const y = Y(consPath(s, FUT)), x = xe + 20;
             ctx.fillStyle = U.css(COL[s]); ctx.font = "700 26px " + U.F.body; ctx.textBaseline = "bottom";
