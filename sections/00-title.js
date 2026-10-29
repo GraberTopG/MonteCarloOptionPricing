@@ -346,7 +346,7 @@
         const { ctx, w, h } = c;
         ctx.clearRect(0, 0, w, h);
         if (k <= 0) return;
-        ctx.globalAlpha = Math.min(1, k * 8);
+        ctx.globalAlpha = 1;
         const f = { x: 96, y: 50, w: w - 96 - 300, h: h - 50 - 46 };
         const { X, Y } = U.axes(ctx, f, {
           theme: "light", xMin: 0, xMax: XMAX, yMin: 150, yMax: 600, yTicks: [200, 300, 400, 500, 600],
@@ -366,8 +366,8 @@
         const xt = X(LAST), xe = X(XMAX);
         ctx.fillStyle = U.css("--green-light"); ctx.fillRect(xt, f.y, xe - xt, f.h);
         const vline = (x, txt, al, dash) => {
-          ctx.setLineDash(dash ? [6, 6] : []); ctx.strokeStyle = U.css("--green-ink"); ctx.globalAlpha = Math.min(1, k * 8) * .6; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.moveTo(x, f.y - 8); ctx.lineTo(x, f.y + f.h); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = Math.min(1, k * 8);
+          ctx.setLineDash(dash ? [6, 6] : []); ctx.strokeStyle = U.css("--green-ink"); ctx.globalAlpha = .6; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(x, f.y - 8); ctx.lineTo(x, f.y + f.h); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
           ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 21px " + U.F.body; ctx.textAlign = al; ctx.textBaseline = "bottom";
           ctx.fillText(txt, x + (al === "right" ? 6 : al === "left" ? -6 : 0), f.y - 14);
         };
@@ -376,7 +376,7 @@
         ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 20px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
         ctx.letterSpacing = "1px"; ctx.fillText("INVESTMENT HORIZON: 1 YEAR", (xt + xe) / 2, f.y + 12); ctx.letterSpacing = "0px";
         // the history (first 75% of the time), then the consensus paths (dashed)
-        const kh = Math.min(1, k / .75), kf = Math.max(0, (k - .75) / .25);
+        const kh = 1, kf = k;   // the history is there at once; only the year ahead draws in
         const upto = Math.max(1, Math.round(LAST * kh));
         H.px.forEach((p, s) => {
           const col = U.css(COL[s]);
@@ -441,8 +441,8 @@
         step(i, o) {
           if (a) a.cancel(); a = null;
           if (i === 0) { k = 0; draw(); return; }
-          // after the click: the history draws, then the consensus paths (3.25 s in all)
-          if (!o.instant) a = U.anim(3250, t => { k = Math.max(.001, t); draw(); }, { ease: U.ease.inOut });
+          // after the click: the chart with the history appears, the year ahead draws in 2 s
+          if (!o.instant) a = U.anim(2000, t => { k = Math.max(.001, t); draw(); }, { ease: U.ease.inOut });
           else { k = 1; draw(); }
         },
         leave() { if (a) a.cancel(); a = null; k = 0; }
