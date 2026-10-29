@@ -49,7 +49,7 @@
     .mc-key .hl{color:var(--green-ink)}
 
     /* ---------- 1) mc-origin ---------- */
-    .slide[data-id="mc-origin"] .s-title{font-size:43px;white-space:nowrap}
+    .slide[data-id="mc-origin"] .s-title{font-size:50px;white-space:nowrap}
     .mc-o{display:grid;grid-template-columns:400px minmax(0,1fr);column-gap:48px;height:100%}
     .mc-o-h{display:flex;flex-direction:column;gap:32px;padding:4px 40px 0 0;border-right:2px solid var(--rule-light);min-width:0}
     .mc-o-h b{display:block;font:800 32px/1 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums}
@@ -201,8 +201,8 @@
 
   Deck.addSlide({
     id: "mc-origin", section: "mc", steps: 2, secs: 40,
-    title: "Monte Carlo: averaging random draws to estimate an expected value",
-    subtitle: "1,000 random rolls of a die average 3.5: exactly its expected value, by the law of large numbers",
+    title: "Monte Carlo: averaging random draws to estimate E(X)",
+    subtitle: "Roll a die 1,000 times: by the law of large numbers, the average converges to the expected value",
     sources: "Eckhardt (1987); Metropolis (1987); own simulation",
     notes: "In 1946, Stanislaw Ulam was recovering from an illness and playing solitaire. Instead of calculating his chances, he asked: why not play a hundred games and count the wins? His colleague Nicholas Metropolis named it after the casino: Ulam had an uncle who just had to go to Monte Carlo. Here's the idea with a die. What's the average roll? Instead of calculating it, let's roll. [→] A thousand rolls: at first the average jumps around, then it settles at about 3.5. [→] Now the calculation: one to six, each with probability one sixth, gives exactly 3.5. The simulation got it right. That's the law of large numbers, and that's Monte Carlo: when we can't calculate an expected value, we estimate it by averaging random draws. For our Multi-BRC there's no closed-form solution, so that's exactly what we'll do.",
     render(body) {
@@ -212,6 +212,7 @@
             <p class="label mc-o-lab">Origin</p>
             <div><b>1946</b><p>Stanislaw Ulam, recovering from an illness, plays solitaire: why not play <em>100 games</em> and <em>count the wins</em>?</p></div>
             <div><b>The name</b><p>His colleague Nicholas Metropolis suggests it: Ulam had an uncle who “just had to go to Monte Carlo”</p></div>
+            <div class="mc-o-link" data-step="1"><b>Applied to a die</b><p>Ulam's idea: <em>don't calculate, roll</em> and take the average</p></div>
           </aside>
           <div class="mc-o-m">
             <div class="fbox mc-o-ev"><span class="chip">A FAIR DIE</span>
