@@ -306,6 +306,7 @@
     id: "mc-sample", section: "mc", steps: 2, secs: 31,
     title: "Monte Carlo: averaging the payoffs of random paths",
     subtitle: "The price is a discounted expected payoff, estimated by averaging simulated years",
+    lecture: "Lecture 4, slide 15",
     sources: "Arnold (2026), slides 11 and 15; explanation adapted from The Synthetic Mind (2026); own simulation",
     notes: "Our lecture prices an option as its expected payoff in a risk-neutral world, discounted at the risk-free rate. More on that at the end. [→] For our payoff, which depends on the whole year, the expectation is an integral over hundreds of random daily moves. Monte Carlo's answer: don't calculate it, sample it. [→] Draw random paths, compute each payoff, and average. The law of large numbers makes this average converge to the true value.",
     render(body) {
