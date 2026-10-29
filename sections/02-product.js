@@ -463,11 +463,11 @@
 
   // ================= brc-tree: what you get at maturity, one branch per click; the three outcomes numbered 1-3 =================
   Deck.addSlide({
-    id: "brc-tree", section: "product", steps: 4, secs: 34,
+    id: "brc-tree", section: "product", steps: 3, secs: 34,
     title: "Payoff scenarios per USD 1,000 invested",   // outcomes 1, 2a, 2b as on the payoff slide
     subtitle: "You always get the coupons, then either your USD 1,000 back or shares of the worst stock",
     sources: "Own illustration",
-    notes: `So what happens to your thousand dollars at maturity? You always get both coupons, ${CPN} dollars. [→] At the end, your thousand comes back in cash if no stock touched its barrier. [→] If one did, that's called the kick-in. Then the final prices decide. If every stock ends at or above its starting price, you still get cash. [→] If even one ends below, you get shares of the worst stock, with fractions paid in cash. [→] Say Adobe is the worst and ends ${f0((1 - EX_WORST) * 100)} percent down. The conversion ratio gives you 4.1959 shares: four Adobe shares are delivered, the rest is paid in cash. Together they're worth ${f0(EX_SHARES)} dollars, plus the coupons, ${f0(EX_SHARES + CPN)}.`,
+    notes: `So what happens to your thousand dollars at maturity? You always get both coupons, ${CPN} dollars. [→] At the end, your thousand comes back in cash if no stock touched its barrier. [→] If one did, that's called the kick-in. Then the final prices decide. If every stock ends at or above its starting price, you still get cash. [→] If even one ends below, you get shares of the worst stock, with fractions paid in cash. Say Adobe is the worst and ends ${f0((1 - EX_WORST) * 100)} percent down. The conversion ratio gives you 4.1959 shares: four Adobe shares are delivered, the rest is paid in cash. Together they're worth ${f0(EX_SHARES)} dollars, plus the coupons, ${f0(EX_SHARES + CPN)}.`,
     render(body) {
       // a tree from top to bottom (the body is 1744 × 740): question 1, then question 2 over its two answers; the three
       // outcomes side by side; under them one layer for the coupons, paid in all three
@@ -510,7 +510,7 @@
           ${cashBox(B1, "2a")}
           <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><div class="hd"><span class="num k">2b</span><b>Shares of the worst stock</b></div>
             <span class="sm">Barrier breached, at least one ends below the strike: whole shares delivered, fraction paid in cash</span>
-            <div class="exl" data-step="4"><p class="eh">Scenario: Adobe at USD ${fx(ST)} (−${f0((1 - EX_WORST) * 100)}%)</p>
+            <div class="exl"><p class="eh">Scenario: Adobe at USD ${fx(ST)} (−${f0((1 - EX_WORST) * 100)}%)</p>
               <div class="eg"><span>Conversion ratio (nominal / start)</span><span class="r">${U.fmt(RATIO_W, 4)}</span>
               <span>${WHOLE} Adobe shares delivered</span><span class="r">${fx(WHOLE * ST)}</span>
               <span>${U.fmt(FRAC, 4)} share paid in cash</span><span class="r">+ ${fx(FRAC * ST)}</span>
