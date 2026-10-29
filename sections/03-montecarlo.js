@@ -58,15 +58,15 @@
     .mc-o-h p em{font-style:normal;font-weight:700}
     .mc-o-h p.mc-o-lab{margin:0 0 -12px;font:700 24px var(--f-head);text-transform:uppercase;color:var(--ink)}
     .mc-o-h small{display:block;margin-top:6px;font:16px var(--f-body);color:var(--muted)}
-    .mc-o-m{display:flex;flex-direction:column;gap:34px;min-width:0}
-    .mc-o-ev{flex:none;padding:36px 28px 18px}
-    .mc-o-dice{display:grid;grid-template-columns:auto repeat(6,82px);column-gap:36px;row-gap:4px;justify-content:center;align-items:center}
-    .mc-o-dice .rl{justify-self:end;padding-right:8px;font-size:30px}
-    .mc-o-dice .p{justify-self:center;font-size:28px;math-style:normal}   /* full-size fractions */
-    .mc-die{display:block;width:82px;height:82px}
+    .mc-o-m{display:flex;flex-direction:column;gap:30px;min-width:0}
+    .mc-o-ev{flex:none;padding:28px 28px 8px}
+    .mc-o-dice{display:grid;grid-template-columns:auto repeat(6,56px);column-gap:30px;row-gap:2px;justify-content:center;align-items:center}
+    .mc-o-dice .rl{justify-self:end;padding-right:8px;font-size:24px}
+    .mc-o-dice .p{justify-self:center;font-size:21px;math-style:normal}   /* full-size fractions */
+    .mc-die{display:block;width:56px;height:56px}
     .mc-die rect{fill:#fff;stroke:var(--green-ink);stroke-width:4}
     .mc-die circle{fill:var(--green-ink)}
-    .mc-o-ev>math,.mc-o-evf>math{margin-top:14px}
+    .mc-o-ev>math,.mc-o-evf>math{margin-top:2px;font-size:28px}
     .mc-o-chk{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:26px 26px 20px}
     .mc-o-chk p{margin:0;font:24px/1.3 var(--f-body);color:var(--ink)}
     .mc-o-chk b{font-size:34px;color:var(--green)}
