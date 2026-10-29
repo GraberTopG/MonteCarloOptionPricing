@@ -28,10 +28,11 @@
     .lec-smile text{font:700 18px var(--f-body)} .lec-smile .tm{fill:var(--ink)} .lec-smile .tb{fill:var(--green)} .lec-smile .ta{fill:var(--muted);font-weight:400;font-size:16px}
     .lec-int{margin:8px 0 0;font:20px/1.3 var(--f-body);color:var(--ink);text-align:left}
     .lec-int b{font-family:var(--f-math);font-style:italic}
-    .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+    .lec-why{margin:22px 0 0;font:24px/1.35 var(--f-body);color:var(--ink)} .lec-why b{color:var(--green)}
+    .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:18px}
     .lec-panel .icard .num{width:46px;height:46px;font-size:22px}
-    .lec-panel .icard{font:22px/1.25 var(--f-body);padding:10px 20px 10px 14px}
-    .lec-panel .icard b{display:block;font:700 27px/1.15 var(--f-head);color:var(--ink)}
+    .lec-panel .icard{font:24px/1.3 var(--f-body);padding:16px 22px 16px 16px}
+    .lec-panel .icard b{display:block;font:700 30px/1.2 var(--f-head);color:var(--ink)}
   `);
 
   // Lecture 4, slide 7 (redrawn): call, put, d1 and d2 exactly as the lecture writes them (no dividend yield)
@@ -77,24 +78,12 @@
             </div>
           </div>
           <section class="panel lec-panel" data-step="1">
-            <h3 class="panel-title">What the model assumes</h3>
+            <h3 class="panel-title">Why it doesn't fit our product</h3>
             <ul>
-              <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>a single underlying</span></li>
-              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>the path along the way is ignored</span></li>
-              <li class="icard" data-step="1" style="--d:5"><span class="num">3</span><span><b>Constant volatility and rate</b>one implied σ for all strikes and dates</span></li>
-              <li class="icard" data-step="1" style="--d:6"><span class="num">4</span><span><b>No dividends, frictionless market</b>no costs, continuous trading; our Excel adds dividends</span></li>
+              <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>the formula prices an option on a single underlying</span></li>
+              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>European payoff: the path along the way is ignored</span></li>
             </ul>
-            <div class="lec-smile" data-step="1" style="--d:8">
-              <svg viewBox="0 0 520 150" aria-hidden="true">
-                <path class="ax" d="M40 8V122H510"/>
-                <path class="mkt" d="M60 34 C150 90, 230 110, 290 108 S420 92, 500 70"/>
-                <path class="bs" d="M60 96H500"/>
-                <path class="mkt" d="M250 20h30"/><text x="290" y="26" class="tm">market: smile / surface</text>
-                <path class="bs" d="M250 46h30"/><text x="290" y="52" class="tb">Black-Scholes: one σ</text>
-                <text x="275" y="144" text-anchor="middle" class="ta">strike K</text>
-                <text x="18" y="66" text-anchor="middle" class="ta" transform="rotate(-90 18 66)">implied σ</text>
-              </svg>
-            </div>
+            <p class="lec-why" data-step="1" style="--d:6">Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path</p>
           </section>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
