@@ -386,6 +386,18 @@
           ctx.strokeStyle = gInk; ctx.lineWidth = 2.4;
           tops.forEach(j => { const p = P[j]; ctx.beginPath(); ctx.moveTo(ax.X(0), ax.Y(p[0])); for (let d = 1; d <= day; d++) ctx.lineTo(ax.X(d), ax.Y(p[d])); ctx.stroke(); });
           ctx.restore();
+          // once the year is complete: which three years these are (they end at the 10%, 50% and 90% point)
+          if (day >= NDAY) {
+            const TL = ["10th percentile", "Median", "90th percentile"];
+            ctx.save();
+            ctx.font = "700 19px " + U.F.body; ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.lineJoin = "round";
+            tops.forEach((j, k) => {
+              const x = ax.X(NDAY) - 10, y = ax.Y(P[j][NDAY]) - 10;
+              ctx.lineWidth = 6; ctx.strokeStyle = "rgba(255,255,255,.92)"; ctx.strokeText(TL[k], x, y);
+              ctx.fillStyle = gInk; ctx.fillText(TL[k], x, y);
+            });
+            ctx.restore();
+          }
         }
         ctx.fillStyle = ink; ctx.beginPath(); ctx.arc(ax.X(0), ax.Y(100), 5, 0, 7); ctx.fill();
         // month 12: where the 2,000 years end (bars), and their average
