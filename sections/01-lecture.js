@@ -28,11 +28,17 @@
     .lec-smile text{font:700 18px var(--f-body)} .lec-smile .tm{fill:var(--ink)} .lec-smile .tb{fill:var(--green)} .lec-smile .ta{fill:var(--muted);font-weight:400;font-size:16px}
     .lec-int{margin:8px 0 0;font:20px/1.3 var(--f-body);color:var(--ink);text-align:left}
     .lec-int b{font-family:var(--f-math);font-style:italic}
-    .lec-why{margin:22px 0 0;font:24px/1.35 var(--f-body);color:var(--ink)} .lec-why b{color:var(--green)}
-    .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+    .lec-why{margin:10px 0 0;font:22px/1.3 var(--f-body);color:var(--ink)} .lec-why b{color:var(--green)}
+    .lec-grp{margin:0 0 12px;font:700 19px/1.2 var(--f-body);letter-spacing:.04em;text-transform:uppercase;color:var(--green)}
+    .lec-grp.sh{margin:24px 0 10px;padding-top:18px;border-top:2px solid var(--rule-light);color:var(--muted)}
+    .lec-sh{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+    .lec-sh li{font:20px/1.3 var(--f-body);color:var(--muted);padding-left:22px;position:relative}
+    .lec-sh li::before{content:"";position:absolute;left:4px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--rule)}
+    .lec-sh b{display:block;font:700 23px/1.2 var(--f-body);color:var(--ink)}
+    .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
     .lec-panel .icard .num{width:46px;height:46px;font-size:22px}
-    .lec-panel .icard{font:24px/1.3 var(--f-body);padding:16px 22px 16px 16px}
-    .lec-panel .icard b{display:block;font:700 30px/1.2 var(--f-head);color:var(--ink)}
+    .lec-panel .icard{font:22px/1.3 var(--f-body);padding:12px 20px 12px 16px}
+    .lec-panel .icard b{display:block;font:700 27px/1.2 var(--f-head);color:var(--ink)}
   `);
 
   // Lecture 4, slide 7 (redrawn): call, put, d1 and d2 exactly as the lecture writes them (no dividend yield)
@@ -78,12 +84,19 @@
             </div>
           </div>
           <section class="panel lec-panel" data-step="1">
-            <h3 class="panel-title">Why it doesn't fit our product</h3>
+            <h3 class="panel-title">What the model assumes</h3>
+            <p class="lec-grp">Only Black-Scholes: our product breaks</p>
             <ul>
-              <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>the formula prices an option on a single underlying</span></li>
-              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>European payoff: the path along the way is ignored</span></li>
+              <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>One stock</b>a single underlying</span></li>
+              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>European payoff, the path is ignored</span></li>
             </ul>
-            <p class="lec-why" data-step="1" style="--d:6">Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path</p>
+            <p class="lec-why" data-step="1" style="--d:5">→ ours: <b>three stocks</b>, <b>barrier</b> on the whole path</p>
+            <p class="lec-grp sh" data-step="1" style="--d:7">Shared with our Monte Carlo model</p>
+            <ul class="lec-sh" data-step="1" style="--d:8">
+              <li><b>Lognormal prices</b>stocks follow geometric Brownian motion</li>
+              <li><b>Constant volatility and rate</b>one σ per stock and one r for the year</li>
+              <li><b>No arbitrage, frictionless market</b>no costs, continuous trading, risk-neutral pricing</li>
+            </ul>
           </section>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
