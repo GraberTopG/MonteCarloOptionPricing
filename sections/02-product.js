@@ -64,11 +64,12 @@
     .prd-po-h span{font-weight:400;color:var(--muted)}
     .prd-po-hd{position:relative;height:104px;flex:none}
     .prd-po-hd .prd-po-h{position:absolute;left:0;top:0;right:0;transition:opacity .45s}
-    .prd-po-h.br{display:grid;grid-template-columns:auto 1fr;column-gap:16px;row-gap:4px;font-size:22px;opacity:0}
-    .prd-po-h.br b{grid-row:1/4;font-size:26px}
+    .prd-po-h.br{display:grid;grid-template-columns:auto 1fr;column-gap:14px;row-gap:4px;font-size:21px;opacity:0}
+    .prd-po-h.br b{grid-row:1/4;font-size:26px;line-height:1.2;white-space:nowrap} .prd-po-h.br .sc{white-space:nowrap}
     .prd-po-h.br .sc{margin-left:0}
     .prd-po-h.br .sc i{width:38px;border-radius:15px}
     .prd-po.barrier .prd-po-h.rc{opacity:0} .prd-po.barrier .prd-po-h.br{opacity:1}
+    .prd-po-h .wo,.prd-po-h .one{color:inherit} .prd-po-h .wo{display:none} .prd-po.worst .prd-po-h .wo{display:inline} .prd-po.worst .prd-po-h .one{display:none}
     .prd-po-h .sc{margin-left:22px;color:var(--ink);font-weight:400;white-space:nowrap}
     .prd-po-h .sc i{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--green-ink);color:#fff;font:700 18px/1 var(--f-body);font-style:normal;margin-right:8px;vertical-align:2px}
     .prd-po-l canvas{flex:1;width:100%;min-height:0;display:block}
@@ -235,8 +236,8 @@
               <p class="prd-po-h rc">At maturity: <span class="sc"><i>1</i>Above strike → USD 1,000 + coupons</span><span class="sc"><i>2</i>Below strike → shares + coupons</span></p>
               <div class="prd-po-h br"><b>At maturity:</b>
                 <span class="sc"><i>1</i>Barrier never touched → USD 1,000 + coupons</span>
-                <span class="sc"><i>2a</i>Barrier touched but above strike at maturity → USD 1,000 + coupons</span>
-                <span class="sc"><i>2b</i>Barrier touched and below strike at maturity → shares + coupons</span></div>
+                <span class="sc"><i>2a</i>Barrier touched but above strike → USD 1,000 + coupons</span>
+                <span class="sc"><i>2b</i>Barrier touched and below strike → <span class="one">shares</span><span class="wo">shares of the underlying with the worst performance</span> + coupons</span></div>
             </div>
             <canvas></canvas>
           </div>
@@ -395,7 +396,8 @@
           if (a) a.cancel();
           S.k1 = i >= 1 ? 1 : 0; S.k2 = i >= 2 ? 1 : 0; S.k3 = i >= 3 ? 1 : 0;
           cards.forEach((el, j) => el.classList.toggle("cur", j + 1 === i));
-          body.querySelector(".prd-po").classList.toggle("barrier", i >= 2);   // the maturity scenarios with the barrier
+          body.querySelector(".prd-po").classList.toggle("barrier", i >= 2);
+          body.querySelector(".prd-po").classList.toggle("worst", i >= 3);   // the maturity scenarios with the barrier
           const key = ["", "k1", "k2", "k3"][i];
           if (key) a = U.anim(i === 1 ? 1500 : 1100, t => { S[key] = t; draw(); }, { ease: i === 1 ? U.ease.inOut : U.ease.out });
           else draw();
