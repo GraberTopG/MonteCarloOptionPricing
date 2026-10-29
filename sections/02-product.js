@@ -130,10 +130,10 @@
     .prd-tr.tree .prd-tb .hd b{font:700 32px/1.1 var(--f-body)}
     .prd-tr.tree .prd-tb.cash .eg.cash{font-size:24px;line-height:1.45;margin-top:auto;padding-top:10px;border-top:2px dashed #B9D3C1}
     .prd-tr.tree .prd-tb .sm{display:block;margin:0;font-size:22px;line-height:1.35;color:var(--ink)}
-    .prd-tr.tree .prd-tb.shr .exl{font-size:24px;line-height:1.45;margin-top:auto;padding-top:10px}
+    .prd-tr.tree .prd-tb.shr .exl{font-size:24px;line-height:1.4;margin-top:auto;padding-top:8px}
     .prd-tr.tree .prd-tb.shr .exl .eh{font-weight:700;margin:0 0 2px}
     .prd-tr.tree .prd-tb.shr .exl .eg>span:nth-child(-n+2){color:var(--muted)}
-    .prd-when{position:absolute;left:1500px;top:0;width:244px;height:0}
+    .prd-when{position:absolute;left:1510px;top:0;width:244px;height:0}
     .prd-when .ax{position:absolute;left:0;top:-6px;height:226px;width:3px;background:var(--rule)}
     .prd-when .ax::after{content:"";position:absolute;left:-7px;bottom:-4px;border:8.5px solid transparent;border-top:12px solid var(--rule);border-bottom:0}
     .prd-when>div:not(.ax){position:absolute;left:18px;right:0;display:flex;flex-direction:column;justify-content:center;font:18px/1.25 var(--f-body);color:var(--muted)}
@@ -471,12 +471,12 @@
     render(body) {
       // a tree from top to bottom (the body is 1744 × 740): question 1, then question 2 over its two answers; the three
       // outcomes side by side; under them one layer for the coupons, paid in all three
-      const W3 = 506, WB = 668, G3 = 32, OY = 282, OH = 396;   // 2b wider for its example
+      const W3 = 560, WB = 560, G3 = 32, OY = 268, OH = 414;   // three boxes of the same width
       const A1 = [0, OY, W3, OH], B1 = [W3 + G3, OY, W3, OH], C1 = [2 * (W3 + G3), OY, WB, OH];
       const cxs = r => r[0] + r[2] / 2;
       const Q2c = (cxs(B1) + cxs(C1)) / 2, Q1c = (cxs(A1) + Q2c) / 2;
-      const Q1 = [Q1c - 330, 0, 660, 70], Q2 = [Q2c - 360, 136, 720, 70];
-      const CP = [0, OY + OH + 18, 1744, 740 - (OY + OH + 18)];
+      const Q1 = [Q1c - 330, 0, 660, 70], Q2 = [Q2c - 305, 128, 610, 70];
+      const CP = [0, OY + OH + 16, 1744, 740 - (OY + OH + 16)];
       // the example: the worst stock (Adobe) ends 20% down; the note delivers its conversion ratio in shares, whole shares
       // in kind and the fraction in cash
       const S0w = XL.S0[0], ST = S0w * EX_WORST, RATIO_W = NOM / S0w, WHOLE = Math.floor(RATIO_W), FRAC = RATIO_W - WHOLE;
@@ -485,9 +485,9 @@
       const pill = (x, y, t, ok) => `<g class="pill ${ok ? "ok" : "ko"}" transform="translate(${x} ${y})"><rect x="-38" y="-21" width="76" height="42" rx="21"/><text>${t}</text></g>`;
       // a branch: down from a box to a level, across, then down into the target
       const branch = (from, x2, y2, lvl) => `<path d="M${cxs(from)} ${from[1] + from[3]}V${lvl}H${x2}V${y2 - 6}" marker-end="url(#prd-arr)"/>`;
-      const L1 = Q1[3] + 33, L2 = Q2[1] + Q2[3] + 38;
+      const L1 = Q1[3] + 29, L2 = Q2[1] + Q2[3] + 35;
       const cashBox = (r, n) => `<div class="prd-tb cash" style="${pos(r)};--d:2" data-step="${n === "1" ? 1 : 2}"><div class="hd"><span class="num g">${n}</span><b>Max return</b></div>
-            <span class="sm">${n === "1" ? "No stock touched " + KI + ": your USD 1,000 back in cash" : "A stock touched " + KI + ", but all end at or above 100%: your USD 1,000 back in cash"}</span>
+            <span class="sm">${n === "1" ? "No barrier breached: USD 1,000 back in cash" : "Barrier breached, but all end at or above the strike: USD 1,000 back in cash"}</span>
             <div class="eg cash"><span>Nominal</span><span class="r">${fx(NOM)}</span><span class="c">Coupons 2 × ${HALF}</span><span class="r c">+ ${fx(CPN)}</span><span class="t">Total value</span><span class="r t">USD ${fx(NOM + CPN)}</span></div></div>`;
       body.innerHTML = `
         <div class="prd-tr tree">
@@ -504,13 +504,13 @@
             <div class="w2" style="top:${Q2[1]}px;height:${Q2[3]}px" data-step="2"><b>Only at maturity</b><span>strike checked once</span><span>(European-style)</span></div>
           </div>
           <div class="prd-tb q" style="${pos(Q1)}" data-step="1"><span class="num">?</span><span>Kick-in: did any stock touch ${KI}?</span></div>
-          <div class="prd-tb q" style="${pos(Q2)}" data-step="2"><span class="num">?</span><span>Is every stock at or above its strike (100%)?</span></div>
+          <div class="prd-tb q" style="${pos(Q2)}" data-step="2"><span class="num">?</span><span>Is every stock at or above its strike?</span></div>
           ${cashBox(A1, "1")}
           ${cashBox(B1, "2a")}
           <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><div class="hd"><span class="num k">2b</span><b>Shares of the worst stock</b></div>
-            <span class="sm">Whole shares delivered, the fraction paid in cash</span>
-            <div class="exl" data-step="4"><p class="eh">Scenario: Adobe ends at USD ${fx(ST)} (−${f0((1 - EX_WORST) * 100)}%)</p>
-              <div class="eg"><span>Conversion ratio (nominal / starting price)</span><span class="r">${U.fmt(RATIO_W, 4)}</span>
+            <span class="sm">Barrier breached, at least one ends below the strike: whole shares delivered, fraction paid in cash</span>
+            <div class="exl" data-step="4"><p class="eh">Scenario: Adobe at USD ${fx(ST)} (−${f0((1 - EX_WORST) * 100)}%)</p>
+              <div class="eg"><span>Conversion ratio (nominal / start)</span><span class="r">${U.fmt(RATIO_W, 4)}</span>
               <span>${WHOLE} Adobe shares delivered</span><span class="r">${fx(WHOLE * ST)}</span>
               <span>${U.fmt(FRAC, 4)} share paid in cash</span><span class="r">+ ${fx(FRAC * ST)}</span>
               <span class="c">Coupons 2 × ${HALF}</span><span class="r c">+ ${fx(CPN)}</span>
