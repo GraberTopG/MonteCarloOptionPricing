@@ -26,6 +26,8 @@
     .lec-smile .mkt{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round}
     .lec-smile .bs{fill:none;stroke:var(--green);stroke-width:4;stroke-dasharray:10 7}
     .lec-smile text{font:700 18px var(--f-body)} .lec-smile .tm{fill:var(--ink)} .lec-smile .tb{fill:var(--green)} .lec-smile .ta{fill:var(--muted);font-weight:400;font-size:16px}
+    .lec-int{margin:8px 0 0;font:20px/1.3 var(--f-body);color:var(--ink);text-align:left}
+    .lec-int b{font-family:var(--f-math);font-style:italic}
     .lec-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:20px}
     .lec-panel .icard{font:26px/1.3 var(--f-body);padding:14px 22px 14px 16px}
     .lec-panel .icard b{display:block;font:700 32px/1.2 var(--f-head);color:var(--ink)}
@@ -54,7 +56,8 @@
               <div class="fbox"><span class="chip">CALL</span>${C0}</div>
               <div class="fbox orange"><span class="chip orange">PUT</span>${P0}</div>
             </div>
-            <div class="lec-d"><div class="fbox gray">${D1}</div><div class="fbox gray">${D2}</div></div>
+            <div class="lec-d"><div class="fbox gray">${D1}<p class="lec-int"><b>N(d<sub>1</sub>)</b> = the call's delta: shares held to hedge it</p></div>
+              <div class="fbox gray">${D2}<p class="lec-int"><b>N(d<sub>2</sub>)</b> = risk-neutral probability that the call ends in the money (is exercised)</p></div></div>
             <div class="lec-in">
               <p class="minor">Where</p>
               <div class="lec-vars">
