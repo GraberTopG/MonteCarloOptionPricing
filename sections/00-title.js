@@ -195,19 +195,19 @@
       // the level labels: left of the chart like an axis, or (o.labelsIn) inside it at the right end, on a white halo:
       // the strike under its line, the kick-in above its line, where only the faint fan runs
       const levelLabels = () => {
-        ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
-        [["STRIKE " + Math.round(B.strike * 100) + "%", B.strike, col.muted, 20], ["KICK-IN " + KI + "%", B.kickIn, col.ink, -20]].forEach(([t, v, cl, dy]) => {
-          ctx.textAlign = "right";
-          const y = o.labelsIn ? Y(v) + dy : Y(v);
-          let x = X0 - 18;
-          if (o.labelsIn) {   // as far right as possible where no highlighted year crosses the label
-            const w = ctx.measureText(t).width + 16, day = px => Math.max(0, Math.min(n, Math.round((px - X0) / (X1 - X0) * n)));
-            const free = xr => SCN.every(([f]) => { for (let d = day(xr - w); d <= day(xr + 8); d++) if (Math.abs(Y(f.w[d]) - y) < 20) return false; return true; });
-            x = X(n) - 30;
-            while (x > X0 + w + 200 && !free(x)) x -= 10;
-          }
-          if (o.labelsIn) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 7; ctx.lineJoin = "round"; ctx.strokeText(t, x, y); }
-          ctx.fillStyle = cl; ctx.fillText(t, x, y);
+        ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle"; ctx.textAlign = "right";
+        const L = [["STRIKE " + Math.round(B.strike * 100) + "%", B.strike, col.muted, 20], ["KICK-IN " + KI + "%", B.kickIn, col.ink, -20]]
+          .map(([t, v, cl, dy]) => ({ t, cl, y: o.labelsIn ? Y(v) + dy : Y(v), w: ctx.measureText(t).width + 16 }));
+        let x = X0 - 18;
+        if (o.labelsIn) {   // one x for both labels: as far right as possible where no highlighted year crosses either label
+          const day = px => Math.max(0, Math.min(n, Math.round((px - X0) / (X1 - X0) * n)));
+          const free = xr => L.every(l => SCN.every(([f]) => { for (let d = day(xr - l.w); d <= day(xr + 8); d++) if (Math.abs(Y(f.w[d]) - l.y) < 20) return false; return true; }));
+          x = X(n) - 30;
+          while (x > X0 + 400 && !free(x)) x -= 10;
+        }
+        L.forEach(l => {
+          if (o.labelsIn) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 7; ctx.lineJoin = "round"; ctx.strokeText(l.t, x, l.y); }
+          ctx.fillStyle = l.cl; ctx.fillText(l.t, x, l.y);
         });
         ctx.letterSpacing = "0px";
       };
