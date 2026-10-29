@@ -113,7 +113,7 @@
             <div class="num">1</div>
             <div><h3>The Multi-BRC</h3><p>A bond minus a put on the worst of three stocks</p></div>
             <div class="cc-sfig">
-              <div class="cc-box bond"><b>Bond</b><em>coupons + ${fmt(NOMINAL, 0)}</em></div>
+              <div class="cc-box bond"><b>Bond</b><em>coupons + USD ${fmt(NOMINAL, 0)}</em></div>
               <span class="cc-op">−</span>
               <div class="cc-box put"><b>Put</b><em>on the worst of</em><span class="cc-tks">${TK.map((t, k) => `<span style="color:var(${LIGHT[k]})">${t}</span>`).join("")}</span></div>
             </div>
@@ -354,7 +354,7 @@
   });
   const VOLS = [
     `Volatility −5 pts → bank keeps <b>≈${fmt(KEEP[0], 0)}%</b>`,
-    `Today → <b>≈${fmt(KEEP[1], 1)}%</b> (${fmt(GAP, 0)} of ${fmt(NOMINAL, 0)})`,
+    `Today → <b>≈${fmt(KEEP[1], 1)}%</b> (USD ${fmt(GAP, 0)} of USD ${fmt(NOMINAL, 0)})`,
     `Volatility +5 pts → bank keeps <b>≈${fmt(KEEP[2], 0)}%</b>`
   ];
 
@@ -421,7 +421,7 @@
                 </div>
                 <div class="cc-xl"><span>fair</span><span>you get</span></div>
               </section>
-              <p class="cc-cap">Fair: the coupon that would make it worth ${fmt(NOMINAL, 0)}</p>
+              <p class="cc-cap">Fair: the coupon that would make it worth USD ${fmt(NOMINAL, 0)}</p>
             </div>
             <div class="cc-ecol" data-step="1">
               <section class="panel"><h3 class="panel-title">The value</h3>
@@ -437,10 +437,10 @@
             <div class="cc-ecol" data-step="2">
               ${U.term({ cls: "cc-term", fn: "MCSIM", title: `${fmt(N_PATHS, 0)} SIMULATED YEARS`, meta: "SHEET 9 · ONE SQUARE = ONE PATH",
                 body: `<canvas></canvas>`,
-                stats: `<div><div class="k">Below ${fmt(NOMINAL, 0)}</div><div class="v t-red" data-c="below">0</div></div>
-                  <div><div class="k">${fmt(NOMINAL, 0)} or more</div><div class="v t-green" data-c="above">0</div></div>
+                stats: `<div><div class="k">Below USD ${fmt(NOMINAL, 0)}</div><div class="v t-red" data-c="below">0</div></div>
+                  <div><div class="k">USD ${fmt(NOMINAL, 0)} or more</div><div class="v t-green" data-c="above">0</div></div>
                   <div><div class="k">Share below</div><div class="v t-red" data-c="share">0%</div></div>` })}
-              <p class="cc-cap"><b class="r">${PCT_BELOW}%</b> of our simulated years end below ${fmt(NOMINAL, 0)}, coupons included</p>
+              <p class="cc-cap"><b class="r">${PCT_BELOW}%</b> of our simulated years end below USD ${fmt(NOMINAL, 0)}, coupons included</p>
             </div>
             <div class="cc-vol" data-step="1" style="--d:12">${VOLS.map((t, k) => `<span class="cc-vt">${t}</span><span class="cc-vb"><i style="--w:${(KEEP[k] / Math.max(...KEEP)).toFixed(4)};--k:${k}"></i></span>`).join("")}</div>
           </div>

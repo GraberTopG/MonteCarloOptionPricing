@@ -376,7 +376,7 @@
           </div>
           <div class="hk-cpn">
             <div class="hk-big">${CPN}%<span class="pa"> p.a.</span></div>
-            <div class="hk-ct"><p class="k">Semi-annual coupon</p><p><b>2 × ${HALF}</b> per ${NOM} USD, paid whatever happens, but never more</p></div>
+            <div class="hk-ct"><p class="k">Semi-annual coupon</p><p><b>2 × ${HALF}</b> per USD ${NOM}, paid whatever happens, but never more</p></div>
             <div class="hk-gt" data-step="1" style="--d:14">&gt; ${RATIO}<span class="x">×</span></div>
             <div class="hk-rf" data-step="1" style="--d:11"><p class="k">Risk-free rate</p><p class="n">${R_TXT}%</p><p>continuously compounded ≈ ${R_YEAR}% a year</p></div>
           </div>

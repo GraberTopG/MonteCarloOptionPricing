@@ -251,7 +251,7 @@
             </div>
             <div class="prd-key-c">
               <span class="big">${CPN_PCT} p.a.</span>
-              <div><span class="k">SEMI-ANNUAL COUPON</span><span class="t"><b>${N_CPN} × ${HALF}</b> per ${f0(NOM)} USD</span></div>
+              <div><span class="k">SEMI-ANNUAL COUPON</span><span class="t"><b>${N_CPN} × ${HALF}</b> per USD ${f0(NOM)}</span></div>
               <div class="rf"><span class="k">RISK-FREE RATE</span><span class="t"><b>${R_TXT}%</b> continuously compounded ≈ ${R_YEAR}% a year</span></div>
             </div>
           </section>
@@ -417,8 +417,8 @@
   // ================= brc-tree: what you get at maturity, one branch per click; the three outcomes numbered 1-3 =================
   Deck.addSlide({
     id: "brc-tree", section: "product", steps: 4, secs: 34,
-    title: "Payoff scenarios per 1,000 invested",
-    subtitle: "You always get the coupons, then either your 1,000 back or shares of the worst stock",
+    title: "Payoff scenarios per USD 1,000 invested",
+    subtitle: "You always get the coupons, then either your USD 1,000 back or shares of the worst stock",
     sources: "adapted from UBS AG (2018); own illustration",
     notes: `You always get both coupons, ${CPN} dollars. [→] At the end, your thousand comes back in cash if no stock touched its barrier. [→] If one did, that's called the kick-in. Then the final prices decide. If every stock ends at or above its starting price, you still get cash. [→] If even one ends below, you get shares of the worst stock, with fractions paid in cash. [→] Say it ends ${f0((1 - EX_WORST) * 100)} percent down: shares worth ${f0(EX_SHARES)}, plus the coupons, ${f0(EX_SHARES + CPN)}.`,
     render(body) {
@@ -431,7 +431,7 @@
       const hArrow = (a, b, cls) => { const y = mid(a)[1]; return `<path class="${cls || ""}" d="M${a[0] + a[2]} ${y}H${b[0] - 6}" marker-end="url(#prd-arr)"/>`; };
       const vArrow = (a, b) => { const x = mid(a)[0]; return `<path d="M${x} ${a[1] + a[3]}V${b[1] - 6}" marker-end="url(#prd-arr)"/>`; };
       const cx = (a, b) => (a[0] + a[2] + b[0]) / 2, cy = (a, b) => (a[1] + a[3] + b[1]) / 2;
-      const ex = [`Shares worth 1,000 × ${f0(EX_WORST * 100)}%`, f0(EX_SHARES), `Coupons ${N_CPN} × ${HALF}`, f0(CPN)];
+      const ex = [`Shares worth USD 1,000 × ${f0(EX_WORST * 100)}%`, f0(EX_SHARES), `Coupons ${N_CPN} × ${HALF}`, f0(CPN)];
       body.innerHTML = `
         <div class="prd-tr">
           <svg aria-hidden="true">
@@ -451,7 +451,7 @@
           <div class="prd-tb cash" style="${pos(A1)};--d:2" data-step="1"><span class="num">1</span><span>USD 1,000 in cash</span></div>
           <div class="prd-tb q" style="${pos(Q2)}" data-step="2"><span class="num">?</span><span>Is every stock at or above its strike, its starting price?</span></div>
           <div class="prd-tb cash" style="${pos(B1)};--d:2" data-step="2"><span class="num">2</span><span>USD 1,000 in cash</span></div>
-          <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><span class="num">3</span><div><b>Shares of the worst stock</b><span>1,000 ÷ its starting price; fractions in cash</span></div></div>
+          <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><span class="num">3</span><div><b>Shares of the worst stock</b><span>USD 1,000 ÷ its starting price; fractions in cash</span></div></div>
           <div class="prd-tb ex" style="${pos(EX)}" data-step="4">
             <h4>Example: worst stock −${f0((1 - EX_WORST) * 100)}%</h4>
             <div class="prd-calc"><span>${ex[0]}</span><span class="r">${ex[1]}</span><span>${ex[2]}</span><span class="r">${ex[3]}</span>
@@ -526,7 +526,7 @@
   Deck.addSlide({
     id: "brc-decompose", section: "product", steps: 3, secs: 18,
     title: "The Multi-BRC is a bond minus a put",
-    subtitle: "You lend the issuer 1,000 and sell them a down-and-in put on the worst of three. The coupon is what they pay you for it.",
+    subtitle: "You lend the issuer USD 1,000 and sell them a down-and-in put on the worst of three. The coupon is what they pay you for it.",
     sources: "Arnold (2026), slide 14 (same payoffs, same price); own illustration",
     notes: `To price it, we split it in two: [→] a UBS bond that pays the coupons and the thousand, [→] minus the put you sold. [→] The bond is easy. The put is the hard part, and that's where Monte Carlo comes in.`,
     render(body) {
@@ -838,7 +838,7 @@
           ctx.lineJoin = "round"; ctx.lineWidth = 6; ctx.strokeStyle = "rgba(255,255,255,.92)"; ctx.strokeText(wl, bx - 10, wyy);
           ctx.fillStyle = tred; ctx.fillText(wl, bx - 10, wyy);
           ctx.fillStyle = amber; ctx.font = "700 19px " + U.F.mono; ctx.textAlign = "left"; ctx.textBaseline = "middle";
-          const ls = [`PAYS ${red1000} + ${CPN}`, `= USD ${f0(red1000 + CPN)}`, "PER 1,000"];
+          const ls = [`PAYS ${red1000} + ${CPN}`, `= USD ${f0(red1000 + CPN)}`, "PER USD 1,000"];
           const lx = Math.min(x + 22, w - 20 - Math.max(...ls.map(l => ctx.measureText(l).width)));   // inside the panel, clear of its edge
           ls.forEach((l, j) => ctx.fillText(l, lx, wy + 28 + 24 * j));
           ctx.globalAlpha = 1;
