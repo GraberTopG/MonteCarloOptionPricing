@@ -133,14 +133,15 @@
     .mc-g756 .s{font:28px/1.2 var(--f-body);color:var(--ink)}
     .mc-g756 .t{font:700 26px/1.2 var(--f-body);color:var(--orange)}
     .mc-gx{display:flex;flex-direction:row;align-items:flex-start;justify-content:center;padding-top:110px;font:700 26px/1 var(--f-body);color:var(--orange);white-space:nowrap}
-    .mc-gt{min-height:0}
-    .mc-gt .term-body{display:grid;grid-template-columns:var(--mc-gcols);padding:12px 34px 10px}
+    .mc-gr>.mc-gt{min-height:0;display:flex;flex-direction:column;padding:30px 32px 12px}
+    .mc-gt-b{flex:1;min-height:0;display:grid;grid-template-columns:var(--mc-gcols)}
     .mc-gt .cl{position:relative;min-width:0;display:flex;flex-direction:column;align-items:center}
     .mc-gt .cl canvas{position:relative;inset:auto;flex:1;min-height:0;height:auto;width:100%}
-    .mc-gt .cl p{margin:6px 0 0;font:700 18px/1 var(--f-mono);letter-spacing:.06em;color:var(--term-muted);white-space:nowrap}
+    .mc-gt .cl p{margin:6px 0 0;font:700 20px/1 var(--f-body);color:var(--muted);white-space:nowrap}
     .mc-gt .cl.f{justify-content:center;gap:10px;text-align:center}
     .mc-gt .cl.f math{font-size:40px;color:var(--amber)}
-    .mc-gt .cl.f span{font:700 26px/1.3 var(--f-mono);color:var(--term-text)}
+    .mc-gt .cl.f span{font:700 24px/1.3 var(--f-body);color:var(--ink)}
+    .mc-gt .cl.f small{font:400 19px var(--f-body);color:var(--muted)}
     .mc-gt .cl.f .mc-gmc{display:flex;flex-direction:column;align-items:center;gap:6px}
     .mc-gt .cl.f .mc-gmc>span{color:var(--amber)}
 
@@ -503,25 +504,25 @@
   Deck.addSlide({
     id: "mc-grid", section: "mc", steps: 2, secs: 19,
     title: "Monte Carlo escapes the curse of dimensionality",
-    subtitle: "A grid’s points explode with every dimension. Random points don’t.",
-    sources: "adapted from The Synthetic Mind (2026); own illustration",
-    notes: "A grid won't work: a year of our three stocks takes 756 random numbers, so 756 dimensions. [→] Ten values for each would already need ten to the power of 756 evaluations. [→] Monte Carlo's error shrinks at the same speed, however many dimensions there are.",
+    subtitle: "A grid grows exponentially with every dimension; the number of random points doesn’t",
+    sources: "own illustration",
+    notes: "Why not just try every combination, like a grid? A year of our three stocks takes 756 random numbers, so 756 dimensions. [→] Ten values for each would already need ten to the power of 756 points. That's the same curse of dimensionality that made the binomial tree too big. [→] Monte Carlo doesn't have this problem: a hundred random points stay a hundred points in any dimension, and the error shrinks at the same speed however many dimensions there are. More on that on the next slide.",
     render(body) {
       body.closest(".slide").classList.add("mc-tw");
       const cell = (dim, n, d) => `<div class="mc-gc" style="--d:${d}"><p class="mc-gh">${dim} dimension${dim > 1 ? "s" : ""}</p>${gridSVG(dim)}<div class="mc-gn"><b>${fmt(n, 0)}</b><span>points</span></div></div>`;
-      const cl = (k, d) => `<div class="cl"><canvas data-k="${k}"></canvas><p>${CLOUD_N} RANDOM POINTS</p></div>`;
+      const cl = (k, d) => `<div class="cl"><canvas data-k="${k}"></canvas><p>${CLOUD_N} random points</p></div>`;
       body.innerHTML = `
         <div class="mc-gr">
           <p class="mc-gr-s">One random number is one dimension. A simulated year of three stocks needs ${fmt(DIMS, 0)} of them, so it is <b class="g">a single point in ${fmt(DIMS, 0)}-dimensional space</b>.</p>
-          <section class="panel"><h3 class="panel-title">A grid: the points multiply with every dimension</h3>
+          <section class="panel"><h3 class="panel-title">A grid, like the binomial tree: the points multiply with every dimension</h3>
             <div class="mc-gcells">
               ${cell(1, 10, 0)}<div class="mc-gx mc-gc" style="--d:1">× 10 →</div>${cell(2, 100, 1)}<div class="mc-gx mc-gc" style="--d:2">× 10 →</div>${cell(3, 1000, 2)}<div class="mc-gx mc-gc" style="--d:3">…</div>
               <div class="mc-gc" style="--d:3"><p class="mc-gh">${fmt(DIMS, 0)} dimensions</p>
                 <div class="mc-g756"><span class="d">…</span><span class="s">${NSTOCK} stocks × ${NDAY} days</span><span class="t" data-step="1">ten values for each</span></div>
                 <div class="mc-gn"><b class="mc-gxn q">?</b><span>points</span></div></div>
             </div></section>
-          ${U.term({ cls: "mc-term mc-gt", fn: "MCSIM", title: "RANDOM POINTS · THE SAME n IN ANY DIMENSION",
-            body: `${cl(1)}<div></div>${cl(2)}<div></div>${cl(3)}<div></div><div class="cl f"><span>${fmt(DIMS, 0)} dimensions:<br>still ${CLOUD_N} points</span><div class="mc-gmc"><span>Monte Carlo:</span>${ERR}</div><span>in any dimension</span></div>` }).replace('class="term ', 'data-step="2" class="term ')}
+          <section class="panel mc-gt" data-step="2"><h3 class="panel-title">Monte Carlo: the same number of random points in any dimension</h3>
+            <div class="mc-gt-b">${cl(1)}<div></div>${cl(2)}<div></div>${cl(3)}<div></div><div class="cl f"><span>${fmt(DIMS, 0)} dimensions:<br>still ${CLOUD_N} points</span><div class="mc-gmc">${ERR}</div><span>in any dimension<br><small>more on the next slide</small></span></div></div></section>
         </div>`;
       const wrap = body.querySelector(".mc-gr"), cnt = body.querySelector(".mc-gxn"), cvs = [...body.querySelectorAll(".mc-gt canvas")];
       // the clouds: seeded uniform points, the same stream every time
