@@ -89,24 +89,26 @@
     .mc-o-int p.mb{font-size:21px;color:var(--muted)}
 
     /* ---------- 2) mc-sample ---------- */
-    .mc-sa{display:grid;grid-template-rows:182px minmax(0,1fr);row-gap:16px;height:100%}
-    .mc-sa-f{display:flex;align-items:center;justify-content:center;padding:22px 28px 12px}
-    .mc-sa-f math{font-size:46px}
-    .mc-sa-fw{position:relative}
-    .mc-sa-fw .mc-fn{position:absolute;left:100%;top:22px;margin-left:34px}
-    .mc-sa-lo{display:grid;grid-template-columns:minmax(0,1fr) 720px;column-gap:32px;min-height:0}
+    .mc-sa{display:grid;grid-template-rows:96px minmax(0,1fr);row-gap:26px;height:100%}
+    .mc-sa .n{width:36px;height:36px;border-radius:50%;background:var(--green-ink);color:#fff;display:inline-grid;place-items:center;font:800 20px/1 var(--f-body);flex:none}
+    .mc-sa-lo{display:grid;grid-template-columns:minmax(0,1fr) 700px;column-gap:32px;min-height:0}
     .mc-sa-chart{margin:0;min-height:0;display:flex;flex-direction:column}
+    .mc-sa-h{display:flex;align-items:center;gap:12px;margin:0 0 6px;font:700 24px var(--f-body);color:var(--green-ink)}
     .mc-sa-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
     .mc-sa-chart figcaption{margin-top:6px;font:21px var(--f-body);color:var(--muted)}
-    .mc-sa-r{display:flex;flex-direction:column;gap:20px;min-width:0}
-    .mc-sa-c{font-size:26px;line-height:1.35;padding:16px 24px}
-    .mc-flow{display:grid;grid-template-columns:1fr 34px 1.3fr 34px 1fr;align-items:center}
-    .mc-flow .box{background:var(--card);border-radius:10px;height:122px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;font:700 26px/1.12 var(--f-body);color:var(--green-ink);padding:0 10px}
-    .mc-flow .box .lb{height:2.24em;display:flex;align-items:center;justify-content:center;text-wrap:balance}   /* two lines for every label: the icons line up */
-    .mc-flow .badge{width:50px;height:50px}
-    .mc-flow .badge svg{width:30px;height:30px}
-    .mc-flow .ar{font:700 32px/1 var(--f-body);color:var(--orange);text-align:center}
-    .mc-lln{flex:1;min-height:0;margin-top:16px;padding:24px 18px 10px;display:flex;flex-direction:column;justify-content:center}
+    .mc-sa-r{display:flex;flex-direction:column;gap:34px;min-width:0;padding-top:14px}
+    .mc-sa-f{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:34px 24px 14px 60px}
+    .mc-sa-f math{font-size:34px}
+    .mc-sa-fw{position:relative}
+    .mc-sa-fw .mc-fn{position:absolute;right:0;top:100%;margin-top:6px}
+    .mc-sa .fbox>.n{position:absolute;left:18px;top:18px}
+    .mc-flow{display:grid;grid-template-columns:1fr 40px 1.25fr 40px 1fr;align-items:center}
+    .mc-flow .box{background:var(--card);border:3px solid transparent;border-radius:10px;height:96px;display:flex;align-items:center;justify-content:center;gap:14px;font:700 24px/1.15 var(--f-body);color:var(--green-ink);padding:0 16px;transition:border-color .3s,background .3s}
+    .mc-flow .box.act{border-color:var(--green);background:var(--green-light)}
+    .mc-flow .badge{width:46px;height:46px;flex:none}
+    .mc-flow .badge svg{width:28px;height:28px}
+    .mc-flow .ar{font:700 32px/1 var(--f-body);color:var(--green);text-align:center}
+    .mc-lln{position:relative;flex:1;min-height:0;padding:34px 18px 10px 60px;display:flex;flex-direction:column;justify-content:center}
     .mc-lln math{font-size:32px}
     .mc-lln p{margin:4px 0 0;font:26px/1.3 var(--f-body);text-align:center}
 
@@ -306,30 +308,30 @@
       <mspace width="0.3em"></mspace><mover><mo stretchy="true">⟶</mo><mrow><mi mathsize="0.85em">n</mi><mo mathsize="0.85em">→</mo><mi mathsize="0.85em">∞</mi></mrow></mover><mspace width="0.3em"></mspace>${EQ}</math>`;
 
   Deck.addSlide({
-    id: "mc-sample", section: "mc", steps: 2, secs: 31,
+    id: "mc-sample", section: "mc", steps: 3, secs: 36,
     title: "Monte Carlo pricing: simulate paths, discount payoffs, average them",
     subtitle: "Instead of rolling a die, we simulate a whole year of share prices, 2,000 times",
     lecture: "Lecture 4, slide 15",
     sources: "Arnold (2026), slides 11 and 15; explanation adapted from The Synthetic Mind (2026); own simulation",
-    notes: "Our lecture prices an option as its expected payoff in a risk-neutral world, discounted at the risk-free rate. More on that at the end. [→] For our payoff, which depends on the whole year, the expectation is an integral over hundreds of random daily moves. Monte Carlo's answer: don't calculate it, sample it. [→] Draw random paths, compute each payoff, and average. The law of large numbers makes this average converge to the true value.",
+    notes: "How do we apply this to an option? In three steps. [→] Step one: sample a random path, a whole year of daily share prices. We do that 2,000 times. [→] Step two: compute each path's payoff and discount it at the risk-free rate. That's how our lecture prices an option: its expected payoff in a risk-neutral world, discounted. [→] Step three: average them all. By the law of large numbers, the average converges to the true price.",
     render(body) {
-      const box = (icon, txt, d) => `<div class="box" data-step="2" style="--d:${d}"><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
+      const box = (k, icon, txt) => `<div class="box"><span class="n">${k}</span><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
       body.innerHTML = `
         <div class="mc-sa">
-          <div class="fbox mc-sa-f"><span class="chip">RISK-NEUTRAL VALUATION OF A PAYOFF</span><div class="mc-sa-fw">${PRICE}${lectureNote(`<math>${RF}</math>`)}</div></div>
+          <div class="mc-flow">${box(1, "dice", "Sample a random path")}<span class="ar">→</span>${box(2, "check", "Compute its discounted payoff")}<span class="ar">→</span>${box(3, "avg", "Average them all")}</div>
           <div class="mc-sa-lo">
             <figure class="mc-sa-chart">
+              <p class="mc-sa-h"><span class="n">1</span>Sample random paths</p>
               <canvas></canvas>
               <figcaption>${fmt(FAN.n, 0)} simulated years of one stock (volatility ${fmt(M.sigma * 100, 0)}%, like Apple; risk-free rate ${fmt(M.r * 100, 2)}%): each line is one year</figcaption>
             </figure>
             <div class="mc-sa-r">
-              <div class="card mc-sa-c" data-step="1">Our payoff depends on the <b>whole year</b>, so its expectation is an integral over <b>${NDAY} random daily moves</b>, one for each trading day.</div>
-              <div class="mc-flow">${box("dice", "Sample a random path", 0)}<span class="ar" data-step="2" style="--d:1">→</span>${box("check", "Compute its discounted payoff", 2)}<span class="ar" data-step="2" style="--d:3">→</span>${box("avg", "Average them all", 4)}</div>
-              <div class="fbox mc-lln" data-step="2" style="--d:6"><span class="chip">LAW OF LARGE NUMBERS</span>${LLN}<p>the average converges to the true value</p></div>
+              <div class="fbox mc-sa-f" data-step="2"><span class="n">2</span><span class="chip">RISK-NEUTRAL VALUATION OF A PAYOFF</span><div class="mc-sa-fw">${PRICE}${lectureNote(`<math>${RF}</math>`)}</div></div>
+              <div class="fbox mc-lln" data-step="3"><span class="n">3</span><span class="chip">LAW OF LARGE NUMBERS</span>${LLN}<p>the average converges to the true value</p></div>
             </div>
           </div>
         </div>`;
-      const cv = body.querySelector("canvas");
+      const cv = body.querySelector("canvas"), BOX = [...body.querySelectorAll(".mc-flow .box")];
       let fan = null, tops = null, hist = null, day = 0, grow = 0, a = null, cur = 0, pre = 0;
       // the 2,000 faint years are drawn once into an offscreen layer (per canvas size); a click only uncovers it from
       // left to right, so the animation stays smooth
@@ -423,6 +425,7 @@
       function step(i, o) {
         if (a) { a.cancel(); a = null; }
         cur = i;
+        BOX.forEach((e, k) => e.classList.toggle("act", k === i - 1));   // the step being shown
         if (i === 0) { day = 0; grow = 0; draw(); return; }
         if (i === 1 && fwd(o)) {
           day = 0; grow = 0;
