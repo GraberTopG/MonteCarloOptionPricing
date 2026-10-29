@@ -80,9 +80,9 @@
     .hk-say p{position:absolute;left:26px;top:12px;margin:0;font:700 46px/1.2 var(--f-head);color:var(--green-ink);white-space:nowrap}
 
     /* ---------- hook 3: the product ---------- */
-    .hk-pr{position:relative;height:100%;top:-34px}   /* closer to the one-line subtitle */
+    .hk-pr{position:relative;height:100%;top:-12px}   /* closer to the one-line subtitle */
     .hk-name{margin:0;font:700 42px/1.15 var(--f-head);color:var(--green-ink)}
-    .hk-terms{position:absolute;left:0;right:0;top:0;height:200px;display:grid;grid-template-columns:250px 318px 278px 290px 312px 236px;gap:12px}
+    .hk-terms{position:absolute;left:0;right:0;top:274px;height:188px;display:grid;grid-template-columns:250px 318px 278px 290px 312px 236px;gap:12px}
     .hk-t{position:relative;padding:12px 18px;display:flex;flex-direction:column;font-size:24px}
     .hk-t .k{font:700 20px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink)}
     .hk-t .v{font:700 42px/1.1 var(--f-head);color:var(--ink);margin:6px 0 4px;white-space:nowrap;font-variant-numeric:lining-nums}
@@ -93,8 +93,8 @@
     .hk-stk{display:flex;align-items:center;white-space:nowrap} .hk-stk b{margin-left:auto;color:var(--ink);font-variant-numeric:tabular-nums}
     .hk-cr{display:block;font-size:16px;letter-spacing:.02em;margin:-2px 0 2px}
     .hk-ring{position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 4px var(--orange);pointer-events:none}
-    .slide .hk-ring[data-step]{transform:none}
-    .hk-cpn{position:absolute;left:0;right:0;top:236px;height:180px;background:var(--card);border-radius:10px;border-left:10px solid var(--orange);display:flex;align-items:center;padding:0 30px;gap:30px}
+    .slide .hk-ring[data-step],.slide .hk-terms[data-step],.slide .hk-cpn[data-step]{transform:none}
+    .hk-cpn{position:absolute;left:0;right:0;top:482px;height:166px;background:var(--card);border-radius:10px;border-left:10px solid var(--orange);display:flex;align-items:center;padding:0 30px;gap:30px}
     /* "15% p.a.": the rate big, "p.a." small on the same baseline; the box is wide enough for the 1.2× beat of click 1 */
     .hk-big{width:480px;flex:none;text-align:center;font:800 120px/1 var(--f-head);color:var(--orange);white-space:nowrap;font-variant-numeric:lining-nums;transition:transform .8s cubic-bezier(.3,1.5,.5,1)}
     .hk-big .pa{font-size:46px}
@@ -108,12 +108,13 @@
     .hk-rf{flex:1;min-width:0}
     .hk-rf .n{font:700 76px/1 var(--f-head);color:var(--green-ink);margin:0 0 8px;font-variant-numeric:lining-nums}
     .hk-rf p{font-size:26px;color:var(--muted)}
-    .hk-q{position:absolute;left:0;right:0;top:708px;margin:0;padding:6px 0 7px 26px;border-left:8px solid var(--orange);font:700 46px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}   /* the same bar as slide 3's question */
+    .hk-q{position:absolute;left:0;right:0;top:672px;margin:0;padding:6px 0 7px 26px;border-left:8px solid var(--orange);font:700 46px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}   /* the same bar as slide 3's question */
     /* the Swiss Derivative Map in one row: families as small boxes, the yield-enhancement categories as chips, ours highlighted */
-    .hk-fam{position:absolute;left:0;right:0;top:456px;height:240px}
+    .hk-fam{position:absolute;left:0;right:0;top:0;height:206px}
+    .hk-feat-h{position:absolute;left:0;top:240px;margin:0;font:700 20px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink)}
     .hk-fam-h{margin:0 0 8px;font:700 20px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink);display:flex;align-items:baseline}
     .hk-fam-h .pop{margin-left:auto;font:700 21px/1 var(--f-body);letter-spacing:0;text-transform:none;color:var(--green)}
-    .hk-fam-r{display:grid;grid-template-columns:170px 1fr 170px 200px 170px;gap:14px;height:206px}
+    .hk-fam-r{display:grid;grid-template-columns:170px 1fr 170px 200px 170px;gap:14px;height:178px}
     .hk-fb{background:var(--card);border-radius:8px;padding:10px 12px;opacity:.55}
     .hk-fb b{display:block;font:800 32px/1 var(--f-head);color:var(--green-ink)}
     .hk-fb span{display:block;font:20px/1.2 var(--f-body);color:var(--ink);margin-top:6px}
@@ -535,20 +536,21 @@
   });
 
   // ================= hook 3: the product =================
-  const NOTES_PR = "But banks sell a product for exactly this view: a worst-of multi barrier reverse convertible, or Multi-BRC. You get a fifteen percent coupon whatever happens, but never more. As long as no stock touches 65 percent of its starting price, you get your thousand back. If one does, you may get shares instead. It belongs to the yield-enhancement family: you give up upside for a high, fixed coupon. In Swiss terms, it's category 1230, a barrier reverse convertible, and one of the bestsellers in Switzerland. [→] Fifteen percent: more than three times the risk-free rate. [→] But is it enough for the risk you take? Let's take a closer look at the product.";
+  const NOTES_PR = "But banks sell a product for exactly this view: a worst-of multi barrier reverse convertible, or Multi-BRC. It belongs to the yield-enhancement family: you give up upside for a high, fixed coupon. In Swiss terms, it's category 1230, a barrier reverse convertible, and one of the bestsellers in Switzerland. [→] Here are its features. You get a fifteen percent coupon whatever happens, but never more. As long as no stock touches 65 percent of its starting price, you get your thousand back. If one does, you may get shares instead. [→] Fifteen percent: more than three times the risk-free rate. [→] But is it enough for the risk you take? Let's take a closer look at the product.";
   const QUESTION = "But is it fair for the risk you take on?";
   Deck.addSlide({
-    id: "hook-product", section: "product", steps: 2, secs: secsFor(NOTES_PR, 2),
+    id: "hook-product", section: "product", steps: 3, secs: secsFor(NOTES_PR, 3),
     title: "Banks' solution: A Multi‑BRC on $ADBE, $AAPL, $MSFT",   // non-breaking hyphen: "Multi-BRC" stays on one line
     subtitle: "A bestseller among Swiss structured products: extra yield in sideways to slightly down markets",
     sources: "Bloomberg (2026); Swiss Structured Products Association (2026)",
     notes: NOTES_PR,
     render(body) {
       // click 1: the 15% grows and holds for about a second, then the risk-free rate (after 0.99 s) and "> 3×" (1.26 s) fade in
-      const tile = (k, v, s, ring) => `<div class="card hk-t"><span class="k">${k}</span><span class="v">${v}</span><span class="s">${s}</span>${ring ? `<span class="hk-ring" data-step="2" style="--d:${ring}"></span>` : ""}</div>`;
+      const tile = (k, v, s, ring) => `<div class="card hk-t"><span class="k">${k}</span><span class="v">${v}</span><span class="s">${s}</span>${ring ? `<span class="hk-ring" data-step="3" style="--d:${ring}"></span>` : ""}</div>`;
       body.innerHTML = `
         <div class="hk-pr">
-          <div class="hk-terms">
+          <p class="hk-feat-h" data-step="1">The product's features</p>
+          <div class="hk-terms" data-step="1">
             ${tile("Nominal", "USD " + NOM, "(= issue price)")}
             ${tile("Underlyings", "Worst of 3", `<span class="hk-cr">Conversion ratio (shares per note)</span>` + B.names.map((n, s) => `<span class="hk-stk"><span class="hk-dot ${DOT[s]}"></span>${n}<b>${U.fmt(B.nominal / XL.S0[s], 4)}</b></span>`).join(""), 5)}
             ${tile("Maturity", B.T + " year", `<span class="hk-ln">Issue date: 6 Oct 2026</span><span class="hk-ln">Maturity date: 6 Oct 2027</span>`)}
@@ -556,11 +558,11 @@
             ${tile("Kick-in barrier", KI + "%", "of the starting price; if touched, the product turns into a worst‑of reverse convertible", 3)}
             ${tile("Issuer", "UBS", "hypothetical issue; issuer credit risk applies")}
           </div>
-          <div class="hk-cpn">
+          <div class="hk-cpn" data-step="1">
             <div class="hk-big">${CPN}%<span class="pa"> p.a.</span></div>
             <div class="hk-ct"><p class="k">Semi-annual coupon</p><p><b>2 × ${HALF}</b> per USD ${NOM}</p><p class="all">paid in all scenarios</p></div>
-            <div class="hk-gt" data-step="1" style="--d:14">&gt; ${RATIO}<span class="x">×</span></div>
-            <div class="hk-rf" data-step="1" style="--d:11"><p class="k">Risk-free rate</p><p class="n">${R_TXT}%</p><p>continuously compounded ≈ ${R_YEAR}% a year</p></div>
+            <div class="hk-gt" data-step="2" style="--d:14">&gt; ${RATIO}<span class="x">×</span></div>
+            <div class="hk-rf" data-step="2" style="--d:11"><p class="k">Risk-free rate</p><p class="n">${R_TXT}%</p><p>continuously compounded ≈ ${R_YEAR}% a year</p></div>
           </div>
           <div class="hk-fam">
             <p class="hk-fam-h">Where it sits: Swiss Derivative Map of the Swiss Structured Products Association (SSPA)</p>
@@ -573,16 +575,16 @@
               <div class="hk-fb"><b>20</b><span>Leverage</span></div>
             </div>
           </div>
-          <p class="hk-q" data-step="2"><span class="qt"></span><span class="cur"></span></p>
+          <p class="hk-q" data-step="3"><span class="qt"></span><span class="cur"></span></p>
         </div>`;
       const pr = body.querySelector(".hk-pr"), q = body.querySelector(".hk-q"), qt = q.querySelector(".qt");
       let a = null;
       return {
         step(i, o) {
           if (a) a.cancel(); a = null;
-          pr.classList.toggle("beat", i >= 1);
+          pr.classList.toggle("beat", i >= 2);
           q.classList.remove("typing");
-          if (i < 2) { qt.textContent = ""; return; }
+          if (i < 3) { qt.textContent = ""; return; }
           if (o.instant) { qt.textContent = QUESTION; return; }
           q.classList.add("typing");
           a = U.anim(1300, t => { qt.textContent = QUESTION.slice(0, Math.round(QUESTION.length * t)); }, { ease: U.ease.lin, done: () => q.classList.remove("typing") });
