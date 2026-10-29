@@ -323,8 +323,8 @@
   const NOTES_PX = "Hi everyone. It's October 2026, and you have a thousand dollars to invest for one year. Here are the last two years: Adobe now trades at 238 dollars, Apple at 333 and Microsoft at 534. You expect a quiet year: 86 percent of analysts rate our three stocks HOLD. So what happens next? [→] Looking ahead to October 2027, the consensus sees them moving sideways or slightly down.";
   Deck.addSlide({
     id: "hook-prices", section: "hook", steps: 1, secs: secsFor(NOTES_PX, 1),
-    title: "Assumption: USD 1,000 to invest and sideways or slightly down year expected",
-    sources: "Bloomberg; Own illustration, not analyst targets",
+    title: "Assumption: USD 1,000 to invest and sideways to slightly down year expected",
+    sources: "Bloomberg (price history); analyst rating and 12M target prices: own illustration, for illustrative purposes only",
     notes: NOTES_PX,
     render(body) {
       body.innerHTML = `
@@ -372,6 +372,10 @@
         };
         vline(xt, "Today, " + dayTxt(H.dates[LAST]), "center", true);
         vline(xe, "", "right", false);
+        if (k > 0) {   // "Consensus estimates" above the end of the year ahead, once the paths start
+          ctx.globalAlpha = Math.min(1, k * 3); ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 21px " + U.F.body;
+          ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText("Consensus estimates", xe, f.y - 14); ctx.globalAlpha = 1;
+        }
         ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 20px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
         ctx.letterSpacing = "1px"; ctx.fillText("INVESTMENT HORIZON: 1 YEAR", (xt + xe) / 2, f.y + 12); ctx.letterSpacing = "0px";
         // before the click: a question mark in the investment horizon; it fades as the year ahead draws in
@@ -413,8 +417,10 @@
         if (lab > 0) {
           ctx.globalAlpha = lab; ctx.textAlign = "left";
           // the heading of the column: what the prices under it are
-          ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 21px " + U.F.body; ctx.textBaseline = "bottom";
-          ctx.fillText("Consensus 12M target price", xe + 20, f.y - 14);   // same size and line as "Today, 6 Oct 2026"
+          ctx.fillStyle = U.css("--green-ink"); ctx.textBaseline = "bottom";
+          let fs = 21; ctx.font = "700 21px " + U.F.body;   // same size and line as "Today, 6 Oct 2026", smaller only if it would not fit
+          while (fs > 16 && ctx.measureText("Expected change to 12M target").width > w - xe - 24) ctx.font = "700 " + (--fs) + "px " + U.F.body;
+          ctx.fillText("Expected change to 12M target", xe + 20, f.y - 14);
           H.px.forEach((p, s) => {
             const y = Y(consPath(s, FUT)), x = xe + 20, col = U.css(COL[s]);
             // in the chart, left of the end dot: the target price, on a white halo
