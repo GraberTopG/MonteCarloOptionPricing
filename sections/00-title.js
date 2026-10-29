@@ -26,7 +26,7 @@
     .tt-top{position:absolute;left:120px;right:120px;top:70px}
     .tt-top .tt-rule{margin-bottom:22px}
     .tt-top .tt-title{font-size:96px;line-height:1.05}
-    .tt-top .tt-sub{margin-top:10px;max-width:none;font-size:38px}
+    .tt-top .tt-sub{margin-top:10px;max-width:none;font-size:33px;white-space:nowrap}
     .tt-chart{position:absolute;inset:0}
     .tt-chart canvas{position:absolute;inset:0;width:1920px;height:1080px}
     .tt-foot{position:absolute;left:120px;right:120px;bottom:44px;border-top:2px solid var(--rule);padding-top:16px}
@@ -256,7 +256,7 @@
         <div class="tt-top">
           <div class="tt-rule"></div>
           <h1 class="tt-title">Monte Carlo Option Pricing</h1>
-          <p class="tt-sub">Pricing a Multi-BRC on Adobe, Apple and Microsoft</p>
+          <p class="tt-sub">Pricing a 1-year Worst-of Multi-BRC on Adobe, Apple and Microsoft, 65% kick-in, issued on 6 Oct 2026</p>
         </div>
         <div class="tt-foot">
           <p class="tt-uni">University of St.Gallen · Corporate Finance (7,107)</p>
