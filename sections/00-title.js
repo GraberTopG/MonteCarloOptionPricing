@@ -80,7 +80,7 @@
     .hk-say p{position:absolute;left:26px;top:12px;margin:0;font:700 46px/1.2 var(--f-head);color:var(--green-ink);white-space:nowrap}
 
     /* ---------- hook 3: the product ---------- */
-    .hk-pr{position:relative;height:100%}
+    .hk-pr{position:relative;height:100%;top:-34px}   /* closer to the one-line subtitle */
     .hk-name{margin:0;font:700 42px/1.15 var(--f-head);color:var(--green-ink)}
     .hk-terms{position:absolute;left:0;right:0;top:0;height:200px;display:grid;grid-template-columns:250px 318px 278px 290px 312px 236px;gap:12px}
     .hk-t{position:relative;padding:12px 18px;display:flex;flex-direction:column;font-size:24px}
