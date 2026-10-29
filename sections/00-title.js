@@ -82,7 +82,7 @@
     /* ---------- hook 3: the product ---------- */
     .hk-pr{position:relative;height:100%}
     .hk-name{margin:0;font:700 42px/1.15 var(--f-head);color:var(--green-ink)}
-    .hk-terms{position:absolute;left:0;right:0;top:0;height:200px;display:grid;grid-template-columns:250px 300px 220px 340px 340px 234px;gap:12px}
+    .hk-terms{position:absolute;left:0;right:0;top:0;height:200px;display:grid;grid-template-columns:250px 318px 278px 290px 312px 236px;gap:12px}
     .hk-t{position:relative;padding:12px 18px;display:flex;flex-direction:column;font-size:24px}
     .hk-t .k{font:700 20px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink)}
     .hk-t .v{font:700 42px/1.1 var(--f-head);color:var(--ink);margin:6px 0 4px;white-space:nowrap;font-variant-numeric:lining-nums}
@@ -550,10 +550,10 @@
         <div class="hk-pr">
           <div class="hk-terms">
             ${tile("Nominal", "USD " + NOM, "(= issue price)")}
-            ${tile("Maturity", B.T + " year", `<span class="hk-ln">Issue date: 6 Oct 2026</span><span class="hk-ln">Maturity date: 6 Oct 2027</span>`)}
-            ${tile("Strike", "100%", "of the starting price")}
-            ${tile("Kick-in barrier", KI + "%", "of the starting price; if touched: shares of the worst stock instead of USD " + NOM, 3)}
             ${tile("Underlyings", "Worst of 3", `<span class="hk-cr">Conversion ratio (shares per note)</span>` + B.names.map((n, s) => `<span class="hk-stk"><span class="hk-dot ${DOT[s]}"></span>${n}<b>${U.fmt(B.nominal / XL.S0[s], 4)}</b></span>`).join(""), 5)}
+            ${tile("Maturity", B.T + " year", `<span class="hk-ln">Issue date: 6 Oct 2026</span><span class="hk-ln">Maturity date: 6 Oct 2027</span>`)}
+            ${tile("Strike", "100%", `<span class="hk-cr">of the starting price, USD</span>` + B.names.map((n, s) => `<span class="hk-stk"><span class="hk-dot ${DOT[s]}"></span>${n}<b>${U.fmt(XL.S0[s], 2)}</b></span>`).join(""))}
+            ${tile("Kick-in barrier", KI + "%", "of the starting price; if touched: shares of the worst stock instead of USD " + NOM, 3)}
             ${tile("Issuer", "UBS", "hypothetical issue; issuer credit risk applies")}
           </div>
           <div class="hk-cpn">
