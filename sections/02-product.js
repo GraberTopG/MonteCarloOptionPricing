@@ -268,7 +268,7 @@
     .prd-call .t b{color:var(--ct)}
     .prd-call .t+.t{margin-top:8px}
     .prd-call.c1{max-width:470px}
-    .prd-call.c2{max-width:620px}
+    .prd-call.c2{max-width:700px}
     /* step 6: the simulated year makes way for reason 3, the binomial tree, on a card of its own (never over the chart) */
     .prd-mc.verdict>.term{opacity:0;transform:scale(.985)}
     .prd-tree{position:absolute;left:0;right:0;top:78px;height:620px;background:#fff;border:2px solid var(--green);border-radius:12px;padding:24px 44px 30px;display:flex;flex-direction:column}
@@ -719,7 +719,7 @@
       const why1 = sc.ki
         ? `One touch on <b>day ${sc.kiDay}</b> is enough: the <b>whole path</b> matters.`
         : `The ${KI} barrier is watched every day: the <b>whole path</b> matters.`;
-      const why2 = `<div class="t">Formulas exist for one stock with a barrier, or two stocks without one: <b>none for a Multi-BRC</b>.</div>`;
+      const why2 = `<div class="t">Closed-form solutions exist for one stock with a barrier, or two stocks without one: <b>none for a Multi-BRC</b>.</div>`;
       const call = (k, cc, ct, head, inner) => `<div class="prd-call c${k}" data-step="${k + 3}" style="--cc:${cc};--ct:${ct}"><div class="h"><span class="n">${k}</span>${head}</div>${inner}</div>`;
       // reason 3 (step 6): the lecture's binomial tree (slide 10), redrawn for one stock and three steps (10 nodes), next to its
       // size for ours; on a card of its own while the chart fades out. Node (c, s): after c steps, s = downs − ups
