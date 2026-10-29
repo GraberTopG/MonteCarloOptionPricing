@@ -477,9 +477,9 @@
       <text class="t-red" x="26" y="146">premium you pay</text><text class="t-grn" x="298" y="94" text-anchor="end">big jump</text>`
   };
   const OPTS = [
-    { art: ART.shares, t: "Shares", why: "You are exposed to the full downside" },
-    { art: ART.bond, t: "Government bond", why: `Safe, but only ≈ ${R_YEAR}% a year` },
-    { art: ART.call, t: "Call option", why: "You are not expecting an increase in the share price" }
+    { art: ART.shares, t: "Shares?", why: "You are exposed to the full downside" },
+    { art: ART.bond, t: "Government bond?", why: `Safe, but only ≈ ${R_YEAR}% a year` },
+    { art: ART.call, t: "Call option?", why: "You are not expecting an increase in the share price" }
   ];
   const NOTES_CH = "So how would you invest? [→] Shares? You take the full downside. [→] A government bond? Safe, but only about four and a half percent. [→] A call option? You pay for a big jump you don't expect. None of them fits a quiet year.";
   Deck.addSlide({
