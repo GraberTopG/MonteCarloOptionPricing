@@ -95,7 +95,9 @@
     .mc-sa-fw{position:relative}
     .mc-sa-fw .mc-fn{position:absolute;left:100%;top:22px;margin-left:34px}
     .mc-sa-lo{display:grid;grid-template-columns:minmax(0,1fr) 720px;column-gap:32px;min-height:0}
-    .mc-sa-lo .term{min-height:0}
+    .mc-sa-chart{margin:0;min-height:0;display:flex;flex-direction:column}
+    .mc-sa-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
+    .mc-sa-chart figcaption{margin-top:6px;font:21px var(--f-body);color:var(--muted)}
     .mc-sa-r{display:flex;flex-direction:column;gap:20px;min-width:0}
     .mc-sa-c{font-size:26px;line-height:1.35;padding:16px 24px}
     .mc-flow{display:grid;grid-template-columns:1fr 34px 1.3fr 34px 1fr;align-items:center}
@@ -316,8 +318,10 @@
         <div class="mc-sa">
           <div class="fbox mc-sa-f"><span class="chip">RISK-NEUTRAL VALUATION OF A PAYOFF</span><div class="mc-sa-fw">${PRICE}${lectureNote(`<math>${RF}</math>`)}</div></div>
           <div class="mc-sa-lo">
-            ${U.term({ cls: "mc-term", fn: "MCSIM", title: "ONE STOCK · ONE YEAR · % OF START", meta: `σ ${fmt(M.sigma * 100, 0)}% (LIKE APPLE) · r ${fmt(M.r * 100, 2)}%`, body: "<canvas></canvas>",
-              stats: `<div><div class="k">Paths</div><div class="v mc-v0">0</div></div><div><div class="k">Random daily moves per path</div><div class="v mc-v1">0</div></div><div><div class="k">Random numbers drawn</div><div class="v mc-v2">0</div></div>` }).replace('class="term ', 'data-step="1" class="term ')}
+            <figure class="mc-sa-chart">
+              <canvas></canvas>
+              <figcaption>${fmt(FAN.n, 0)} simulated years of one stock (volatility ${fmt(M.sigma * 100, 0)}%, like Apple; risk-free rate ${fmt(M.r * 100, 2)}%): each line is one year</figcaption>
+            </figure>
             <div class="mc-sa-r">
               <div class="card mc-sa-c" data-step="1">Our payoff depends on the <b>whole year</b>, so its expectation is an integral over <b>${NDAY} random daily moves</b>, one for each trading day.</div>
               <div class="mc-flow">${box("dice", "Sample a random path", 0)}<span class="ar" data-step="2" style="--d:1">→</span>${box("check", "Compute its discounted payoff", 2)}<span class="ar" data-step="2" style="--d:3">→</span>${box("avg", "Average them all", 4)}</div>
@@ -325,7 +329,7 @@
             </div>
           </div>
         </div>`;
-      const cv = body.querySelector("canvas"), vs = [0, 1, 2].map(i => body.querySelector(".mc-v" + i));
+      const cv = body.querySelector("canvas");
       let fan = null, tops = null, hist = null, day = 0, grow = 0, a = null, cur = 0, pre = 0;
       // the 2,000 faint years are drawn once into an offscreen layer (per canvas size); a click only uncovers it from
       // left to right, so the animation stays smooth
@@ -364,18 +368,14 @@
       }
       // build: also draw the faint years into their layer when none are shown yet (done before click 1)
       function draw(build) {
-        vs[0].textContent = fmt(day ? FAN.n : 0, 0);
-        vs[1].textContent = fmt(day, 0);
-        vs[2].textContent = fmt(day * FAN.n, 0);
         const c = U.canvas(cv); if (!c) return;
         const { ctx, w, h } = c;
         const f = frame(w, h);
-        const ax = U.axes(ctx, f, Object.assign({ xLabel: "MONTH", yLabel: "STOCK PRICE" }, yOpt, MONTHS));
+        const ax = U.axes(ctx, f, Object.assign({ xLabel: "Month", yLabel: "Share price (% of start)" }, yOpt, MONTHS));
         const green = css("--green"), gInk = css("--green-ink"), muted = css("--term-muted"), ink = css("--ink");
         ctx.save(); ctx.setLineDash([7, 7]); ctx.strokeStyle = muted; ctx.lineWidth = 1.6;
         ctx.beginPath(); ctx.moveTo(f.x, ax.Y(100)); ctx.lineTo(f.x + f.w, ax.Y(100)); ctx.stroke(); ctx.restore();
-        ctx.font = "700 17px " + U.F.mono; ctx.textBaseline = "top"; ctx.textAlign = "left"; ctx.fillStyle = muted;
-        ctx.fillText(`ONE YEAR, ${fmt(FAN.n, 0)} TIMES`, f.x + 12, f.y + 8);
+        ctx.font = "700 19px " + U.F.body; ctx.textBaseline = "top"; ctx.textAlign = "left"; ctx.fillStyle = muted;
         if (build || day > 0) buildLayer(w, h, ax, f);
         if (day > 0) {
           const P = paths();
@@ -391,7 +391,7 @@
         // month 12: where the 2,000 years end (bars), and their average
         if (grow > 0) {
           const hx = f.x + f.w + 16, hw = w - hx - 20;
-          ctx.fillStyle = muted; ctx.textAlign = "left"; ctx.globalAlpha = grow; ctx.fillText("AT MONTH 12", hx, 6); ctx.globalAlpha = 1;
+          ctx.fillStyle = muted; ctx.textAlign = "left"; ctx.globalAlpha = grow; ctx.fillStyle = ink; ctx.fillText("At month 12", hx, 6); ctx.globalAlpha = 1;
           ctx.fillStyle = css("--green-mid"); ctx.globalAlpha = .8;
           hist.cnt.forEach((k, b) => {
             if (!k) return;
@@ -404,7 +404,7 @@
           // its legend under the bars, on the row of the axis title "MONTH" (the row above holds the month numbers)
           const yl = f.y + f.h + 38;
           ctx.beginPath(); ctx.moveTo(hx, yl + 9.5); ctx.lineTo(hx + 22, yl + 9.5); ctx.stroke();
-          ctx.fillStyle = green; ctx.fillText("AVERAGE", hx + 30, yl);
+          ctx.fillStyle = green; ctx.fillText("Average", hx + 30, yl);
           ctx.globalAlpha = 1;
         }
       }
