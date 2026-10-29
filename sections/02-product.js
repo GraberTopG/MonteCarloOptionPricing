@@ -134,8 +134,8 @@
     .prd-tr.tree .prd-tb.shr .exl .eh{font-weight:700;margin:0 0 2px}
     .prd-tr.tree .prd-tb.shr .exl .eg>span:nth-child(-n+2){color:var(--muted)}
     .prd-when{position:absolute;left:1510px;top:0;width:244px;height:0}
-    .prd-when .ax{position:absolute;left:0;top:-6px;height:236px;width:3px;background:var(--rule)}
-    .prd-when .ax::after{content:"";position:absolute;left:-7px;bottom:-4px;border:8.5px solid transparent;border-top:12px solid var(--rule);border-bottom:0}
+    .prd-when .ax{position:absolute;left:0;top:-6px;width:3px;background:var(--rule)}
+    .prd-when .ax.a2::after{content:"";position:absolute;left:-7px;bottom:-4px;border:8.5px solid transparent;border-top:12px solid var(--rule);border-bottom:0}
     .prd-when>div:not(.ax){position:absolute;left:18px;right:0;display:flex;flex-direction:column;justify-content:center;font:18px/1.25 var(--f-body);color:var(--muted)}
     .prd-when>div:not(.ax)::before{content:"";position:absolute;left:-24px;top:50%;width:15px;height:15px;margin-top:-7.5px;border-radius:50%;background:var(--green-ink)}
     .prd-when b{font:700 20px/1.2 var(--f-body);color:var(--ink)}
@@ -499,7 +499,8 @@
             <g data-step="3"><path d="M${Q2c} ${L2}H${cxs(C1)}V${C1[1] - 6}" marker-end="url(#prd-arr)"/>${pill((Q2c + cxs(C1)) / 2, L2, "No", false)}</g>
           </svg>
           <div class="prd-when">
-            <div class="ax"></div>
+            <div class="ax a1" data-step="1" style="height:${Q1[3] + 40}px"></div>
+            <div class="ax a2" data-step="2" style="top:${Q1[3] + 34}px;height:${Q2[1] + Q2[3] - Q1[3] - 6}px"></div>
             <div class="w1" style="top:${Q1[1]}px;height:${Q1[3]}px" data-step="1"><b>During the whole term</b><span>barrier watched continuously</span><span>(American-style)</span></div>
             <div class="w2" style="top:${Q2[1]}px;height:${Q2[3]}px" data-step="2"><b>Only at maturity</b><span>strike checked once</span><span>(European-style)</span></div>
           </div>
