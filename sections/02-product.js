@@ -227,7 +227,7 @@
 
     /* ---------- brc-why-mc ---------- */
     /* the title runs over two lines (balanced, never broken inside "Multi-BRC"): the panel starts lower, under the subtitle */
-    .slide[data-id="brc-why-mc"] .s-title{font-size:50px;white-space:nowrap}
+    .slide[data-id="brc-why-mc"] .s-title{font-size:46px;white-space:nowrap}
     .prd-mc{position:relative;height:100%}
     .prd-mc .wm{position:absolute;left:0;right:0;top:-40px;bottom:40px}
     .prd-mc .wm-chart{position:absolute;left:0;top:0;bottom:0;right:0;transition:right .7s ease}
@@ -699,7 +699,7 @@
   const NODES = treeNodes(B.steps, DIM), NODES_BN = NODES / 1e9;
   Deck.addSlide({
     id: "brc-why-mc", section: "why", after: "bt-recap", steps: 5, secs: 44,
-    title: "The Multi-BRC is path-dependent: other formulas don't apply",
+    title: "The whole path matters: no closed-form solution for a Multi-BRC",
     subtitle: "A barrier alone and three stocks alone have a formula, while both together do not",
     sources: "Rubinstein & Reiner (1991); Stulz (1982); Johnson (1987); own illustration",
     notes: `(Clicks 1–3: one simulated year, no narration.) [→] [→] [→] Here is one possible year of our product, and it shows the two problems. [→] First, the barrier: one touch at any moment changes everything, so the whole path matters. [→] Second, three stocks: the less they move together, the more likely one of them falls through its barrier on its own. There are formulas for a barrier on one stock, and for the worst of two stocks, but none for our product. No formula, and a tree that's too big: so we simulate. That's Monte Carlo.`,
