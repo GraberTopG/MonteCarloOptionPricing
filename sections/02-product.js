@@ -583,7 +583,7 @@
     id: "brc-suits", section: "product", steps: 2, secs: 17,
     title: "Advantages and risks of the Multi-BRC",
     subtitle: "A high, fixed coupon in exchange for capped upside and downside risk",
-    sources: "UBS (2026); own illustration",
+    sources: "UBS (2026)",
     notes: `[→] It suits stocks that go sideways or fall a little. [→] The risks: after a kick-in you lose like a shareholder, your gain is capped at ${f0(XL.coupon * 100)} percent, you get no dividends, and if UBS goes bankrupt, your money is at risk.`,
     render(body) {
       // one item: the term in bold, the line under it; the advantages build in at step 1, the risks at step 2
