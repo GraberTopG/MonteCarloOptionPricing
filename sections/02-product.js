@@ -225,7 +225,7 @@
     id: "brc-payoff", section: "product", steps: 3, secs: 60,
     title: "The Payoff of the Multi-BRC",
     subtitle: "Based on three elements: reverse convertible + a barrier + three underlyings with a worst-of principle",
-    sources: "Arnold (2026), slide 14; adapted from UBS AG (2018); concept of the payout bars adapted from Vontobel; own illustration",
+    sources: "Arnold (2026), slide 14; adapted from UBS AG (2018); own illustration, inspired by Vontobel (2026), Swissquote (2026)",
     notes: `Let's build it in three steps. [→] Step one: a reverse convertible on one stock. The catch: if the stock ends below its starting price, you're paid back in shares, not cash. In option terms, you own a bond and have sold a put; the part of the coupon above normal interest is what the bank pays you for it. [→] Step two: the barrier. Now the put only kicks in if the stock touches 65 percent of its starting price. It becomes a down-and-in put. If the stock never gets there, you get your thousand back. [→] Step three: three stocks, and the worst-of principle. One touch by any of them is enough, and you get shares of the worst one, which isn't always the one that touched. So three stocks don't make it safer. They give you three chances to hit a barrier.`,
     render(body) {
       const card = (k, h, p) => `<div class="prd-po-c" data-step="${k}"><span class="num">${k}</span><div><h4>${h}</h4><p>${p}</p></div></div>`;
