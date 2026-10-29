@@ -62,6 +62,13 @@
     .prd-po-l{display:flex;flex-direction:column;min-width:0}
     .prd-po-h{font:700 26px/1.2 var(--f-body);margin:0 0 4px;color:var(--ink)}
     .prd-po-h span{font-weight:400;color:var(--muted)}
+    .prd-po-hd{position:relative;height:104px;flex:none}
+    .prd-po-hd .prd-po-h{position:absolute;left:0;top:0;right:0;transition:opacity .45s}
+    .prd-po-h.br{display:grid;grid-template-columns:auto 1fr;column-gap:16px;row-gap:4px;font-size:22px;opacity:0}
+    .prd-po-h.br b{grid-row:1/4;font-size:26px}
+    .prd-po-h.br .sc{margin-left:0}
+    .prd-po-h.br .sc i{width:38px;border-radius:15px}
+    .prd-po.barrier .prd-po-h.rc{opacity:0} .prd-po.barrier .prd-po-h.br{opacity:1}
     .prd-po-h .sc{margin-left:22px;color:var(--ink);font-weight:400;white-space:nowrap}
     .prd-po-h .sc i{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--green-ink);color:#fff;font:700 18px/1 var(--f-body);font-style:normal;margin-right:8px;vertical-align:2px}
     .prd-po-l canvas{flex:1;width:100%;min-height:0;display:block}
@@ -224,7 +231,13 @@
       body.innerHTML = `
         <div class="prd-po">
           <div class="prd-po-l">
-            <p class="prd-po-h">At maturity: <span class="sc"><i>1</i>Above strike → USD 1,000 + coupons</span><span class="sc"><i>2</i>Below strike → shares + coupons</span></p>
+            <div class="prd-po-hd">
+              <p class="prd-po-h rc">At maturity: <span class="sc"><i>1</i>Above strike → USD 1,000 + coupons</span><span class="sc"><i>2</i>Below strike → shares + coupons</span></p>
+              <div class="prd-po-h br"><b>At maturity:</b>
+                <span class="sc"><i>1</i>Barrier never touched → USD 1,000 + coupons</span>
+                <span class="sc"><i>2a</i>Barrier touched but above strike at maturity → USD 1,000 + coupons</span>
+                <span class="sc"><i>2b</i>Barrier touched and below strike at maturity → shares + coupons</span></div>
+            </div>
             <canvas></canvas>
           </div>
           <div class="prd-po-r">
@@ -361,6 +374,7 @@
           if (a) a.cancel();
           S.k1 = i >= 1 ? 1 : 0; S.k2 = i >= 2 ? 1 : 0; S.k3 = i >= 3 ? 1 : 0;
           cards.forEach((el, j) => el.classList.toggle("cur", j + 1 === i));
+          body.querySelector(".prd-po").classList.toggle("barrier", i >= 2);   // the maturity scenarios with the barrier
           const key = ["", "k1", "k2", "k3"][i];
           if (key) a = U.anim(i === 1 ? 1500 : 1100, t => { S[key] = t; draw(); }, { ease: i === 1 ? U.ease.inOut : U.ease.out });
           else draw();
