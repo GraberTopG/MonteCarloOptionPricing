@@ -140,14 +140,14 @@
     .prd-when>div:not(.ax)::before{content:"";position:absolute;left:-24px;top:50%;width:15px;height:15px;margin-top:-7.5px;border-radius:50%;background:var(--green-ink)}
     .prd-when b{font:700 20px/1.2 var(--f-body);color:var(--ink)}
     .slide .prd-when [data-step]{transform:none}
-    .prd-cpl{position:absolute;background:#3B8A5A;border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:22px;font:700 26px/1 var(--f-body)}
-    .prd-cpl .k{text-transform:uppercase;letter-spacing:.06em;font-size:22px;background:#fff;color:#2F7A4C;padding:6px 12px;border-radius:6px}
+    .prd-cpl{position:absolute;background:var(--green);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:22px;font:700 26px/1 var(--f-body)}
+    .prd-cpl .k{text-transform:uppercase;letter-spacing:.06em;font-size:22px;background:#fff;color:var(--green);padding:6px 12px;border-radius:6px}
     .prd-cpl .v{font-size:30px} .prd-cpl .s{font-weight:400;font-size:24px;opacity:.95}
-    .prd-cpl .up{position:absolute;top:-17px;font-size:14px!important;margin-left:-10px;color:#3B8A5A;font-size:20px;line-height:1}
+    .prd-cpl .up{position:absolute;top:-17px;font-size:14px!important;margin-left:-10px;color:var(--green);font-size:20px;line-height:1}
     .prd-tb .eg{display:grid;grid-template-columns:1fr auto;column-gap:16px}
     .prd-tb .eg .r{text-align:right;font-variant-numeric:tabular-nums}
     .prd-tb .eg .t{font-weight:700;border-top:1.5px solid var(--ink);margin-top:2px}
-    .prd-tb .eg .c{color:#2F7A4C;font-weight:700}   /* the coupons, in every outcome */
+    .prd-tb .eg .c{color:var(--green);font-weight:700}   /* the coupons, in every outcome */
     .prd-tb .eg.cash{margin-top:6px;font:21px/1.35 var(--f-body);color:var(--ink);width:100%}
     .prd-tb.cash>div,.prd-tb.shr>div{flex:1}
     .slide .prd-tb .exl[data-step]{transform:none}
@@ -500,7 +500,7 @@
           </svg>
           <div class="prd-when">
             <div class="ax"></div>
-            <div class="w1" style="top:${Q1[1]}px;height:${Q1[3]}px" data-step="1"><b>During the whole term</b><span>barrier watched every day</span><span>(American-style)</span></div>
+            <div class="w1" style="top:${Q1[1]}px;height:${Q1[3]}px" data-step="1"><b>During the whole term</b><span>barrier watched continuously</span><span>(American-style)</span></div>
             <div class="w2" style="top:${Q2[1]}px;height:${Q2[3]}px" data-step="2"><b>Only at maturity</b><span>strike checked once</span><span>(European-style)</span></div>
           </div>
           <div class="prd-tb q" style="${pos(Q1)}" data-step="1"><span class="num">?</span><span>Kick-in: did any stock touch ${KI}?</span></div>
@@ -517,7 +517,7 @@
               <span class="t">Total value</span><span class="r t">USD ${fx(RATIO_W * ST + CPN)}</span></div></div></div>
           <div class="prd-cpl" style="${pos(CP)}">
             ${[A1, B1, C1].map(r => `<span class="up" style="left:${cxs(r)}px">▲</span>`).join("")}
-            <span class="k">Coupons</span><span class="v">USD ${CPN} = ${N_CPN} × ${HALF}</span><span class="s">paid after ${MONTHS.join(" and ")} months, in 1, 2a and 2b</span>
+            <span class="k">Semi-annual coupons</span><span class="v">USD ${CPN} = ${N_CPN} × ${HALF}</span>
           </div>
         </div>`;
       return {};
