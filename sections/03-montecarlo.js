@@ -146,24 +146,32 @@
     .mc-gt .cl.f .mc-gmc>span{color:var(--amber)}
 
     /* ---------- 4) mc-pi ---------- */
-    .mc-pi{display:grid;grid-template-columns:780px minmax(0,1fr);column-gap:36px;height:100%}
-    .mc-pi .term{height:100%}
-    .mc-pi .term-stats{gap:30px}
-    .mc-pi .term-stats>div:first-child{min-width:104px}
-    .mc-pi .term-stats>div:nth-child(2){min-width:88px}
-    .mc-pi .term-meta .t-green,.mc-pi .term-meta .t-red{font-weight:700}
-    .mc-pi-r{display:flex;flex-direction:column;justify-content:space-between;gap:24px;min-width:0}
-    .mc-pi-f{padding:34px 20px 18px}
-    .mc-pi-f math{font-size:32px}
-    .mc-pi-f math+math{margin-top:18px}
-    .mc-pr{display:grid;grid-template-columns:190px 170px 1fr;align-items:center;gap:14px;background:var(--card);border-radius:10px;padding:18px 22px;font-size:26px;color:var(--muted)}
-    .mc-pr b{font:700 26px var(--f-body);color:var(--green-ink)}
-    .mc-pr .v{font:700 28px var(--f-mono);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-    .mc-pr.last .v{color:var(--orange)}
-    .mc-pi-ci{padding:34px 20px 16px}
-    .mc-pi-ci math{font-size:32px}
+    .slide[data-id="mc-pi"] .s-title{font-size:48px;white-space:nowrap}
+    .mc-pi{display:grid;grid-template-columns:760px minmax(0,1fr);column-gap:36px;height:100%}
+    .mc-pi-chart{margin:0;min-height:0;display:flex;flex-direction:column}
+    .mc-pi-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
+    .mc-pi-chart figcaption{margin-top:4px;font:21px var(--f-body);color:var(--muted)}
+    .mc-pi-r{display:flex;flex-direction:column;justify-content:space-between;gap:30px;min-width:0;padding-top:14px}
+    .mc-pi-f{padding:32px 20px 16px}
+    .mc-pi-f math{font-size:28px}
+    .mc-pi-lo{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}
+    .mc-pi-t{padding:32px 22px 14px;display:flex;flex-direction:column;justify-content:center}
+    .mc-pi-t table{width:100%;border-collapse:collapse;font:22px var(--f-body);color:var(--ink)}
+    .mc-pi-t th{text-align:left;font-weight:700;color:var(--muted);font-size:18px;padding:0 0 6px;border-bottom:1px solid var(--green-soft)}
+    .mc-pi-t td{padding:5px 0;border-bottom:1px solid var(--green-soft);font-variant-numeric:tabular-nums}
+    .mc-pi-t td{text-align:left}
+    .mc-pi-t td+td,.mc-pi-t th+th{text-align:right}
+    .mc-pi-t p{margin:10px 0 0;font:700 21px var(--f-body);color:var(--green)}
+    .mc-pi-our{display:flex;flex-direction:column;justify-content:center;padding:18px 22px}
+    .mc-pi-our p{margin:0}
+    .mc-pi-our .k{font:700 21px var(--f-body);color:var(--ink)}
+    .mc-pi-our .v{margin-top:8px;font:800 34px var(--f-body);color:var(--green-ink);white-space:nowrap}
+    .mc-pi-our .v span{color:var(--green)}
+    .mc-pi-our .s{margin-top:8px;font:19px/1.35 var(--f-body);color:var(--muted)}
+    .mc-pi-ci{padding:32px 20px 14px}
+    .mc-pi-ci math{font-size:30px}
     .mc-pi-ci .mc-cap{margin-top:12px}
-    .mc-pi-ci .mc-cap math{font-size:26px}
+    .mc-pi-ci .mc-cap math{font-size:24px}
 
     /* ---------- 5) mc-paths ---------- */
     .slide[data-id="mc-paths"] .s-title{font-size:50px;white-space:nowrap}
@@ -599,42 +607,48 @@
   const P_IN = ALL_IN / DART.n, SE = 4 * Math.sqrt(P_IN * (1 - P_IN) / DART.n), CI = [PI_ALL - 1.96 * SE, PI_ALL + 1.96 * SE];
   const landAt = i => DART.firstMs + i * DART.gapMs;   // when dart i of the first five lands (ms after the click)
   const FLY_MS = landAt(DART.few - 1) + DART.ringMs;
+  // the error table: 95% half-width 1.96 · 4 · √(p(1−p)/n) with p = π/4, for 100, 10,000 and 1,000,000 darts
+  const HW = n => 1.96 * 4 * Math.sqrt(Math.PI / 4 * (1 - Math.PI / 4) / n);
+  // our Multi-BRC (sheet 10/11): fair value ± 1.96 × standard error with 2,000 paths; 4× the paths halve it
+  const OUR_HW = 1.96 * XL.res.putSE;
   const piTxt = n => n ? fmt(4 * darts.cum[n] / n, n <= DART.few ? 2 : 3) : "–";
 
   Deck.addSlide({
-    id: "mc-pi", section: "mc", steps: 2, secs: 33,
-    title: "How precise is Monte Carlo?",
-    subtitle: "Because π is already known, we can measure the error exactly.",
-    sources: "own simulation; adapted from The Synthetic Mind (2026), 3:00–5:12",
-    notes: "Take pi. A circle of radius one inside a square of side two covers pi over four of its area. So throw random darts: four times the share inside estimates pi. [→] Five darts, three inside: 2.4. [→] Ten thousand: 3.15, with a ninety-five percent confidence interval from 3.12 to 3.18. The error falls with one over the square root of n, so halving it takes four times the darts. That's why our price comes with an interval, too.",
+    id: "mc-pi", section: "mc", steps: 3, secs: 42,
+    title: "Monte Carlo's precision: the error shrinks with 1/√n",
+    subtitle: "Estimating π with random darts: four times the darts halve the error",
+    sources: "own simulation",
+    notes: "How precise is Monte Carlo? Take a case where we know the answer: pi. A circle of radius one inside a square of side two covers pi over four of its area. So throw random darts: four times the share inside estimates pi. [→] Five darts, three inside: 2.4, far off. [→] Ten thousand darts: 3.15, with a ninety-five percent confidence interval from 3.12 to 3.18. [→] The error falls with one over the square root of n: a hundred times the darts make it ten times smaller, and halving it takes four times the darts. The same holds for our Multi-BRC: with 2,000 paths, the fair value comes with an interval of about plus or minus nine dollars.",
     render(body) {
+      const row = n => `<tr><td>${fmt(n, 0)} darts</td><td>± ${fmt(HW(n), HW(n) < .01 ? 3 : 2)}</td></tr>`;
       body.innerHTML = `
         <div class="mc-pi">
-          ${U.term({ cls: "mc-term", fn: "MCSIM", title: "RANDOM DARTS ON THE SQUARE", meta: `<span class="t-green">● INSIDE</span> &nbsp;<span class="t-red">● OUTSIDE</span>`, body: "<canvas></canvas>",
-            stats: `<div><div class="k">Darts</div><div class="v mc-v0">0</div></div><div><div class="k">Inside</div><div class="v mc-v1">0</div></div><div><div class="k"><span style="text-transform:none">π</span> ≈ 4 × inside / darts</div><div class="v mc-v2">–</div></div><div><div class="k">95% interval</div><div class="v mc-v3">–</div></div>` })}
+          <figure class="mc-pi-chart"><canvas></canvas><figcaption>Random darts on a square: green inside the circle, black outside</figcaption></figure>
           <div class="mc-pi-r">
             <div class="fbox mc-pi-f"><span class="chip">SHARE OF THE AREA</span>
-              <math display="block"><mtext>share inside</mtext><mo>=</mo><mfrac><mrow><mi>π</mi><mo>·</mo><msup><mn>1</mn><mn>2</mn></msup></mrow><mrow><mn>2</mn><mo>·</mo><mn>2</mn></mrow></mfrac><mo>=</mo><mfrac><mi>π</mi><mn>4</mn></mfrac></math>
-              <math display="block"><mi>π</mi><mo>≈</mo><mn>4</mn><mo>×</mo><mfrac><mtext>darts inside</mtext><mtext>darts thrown</mtext></mfrac></math></div>
-            <div class="mc-pr" data-step="1"><b>${fmt(DART.few, 0)} darts</b><span>${fmt(FEW_IN, 0)} inside</span><span class="v">4 × ${FEW_IN}/${DART.few} = ${fmt(PI_FEW, 2)}</span></div>
-            <div class="mc-pr last" data-step="2"><b>${fmt(DART.n, 0)} darts</b><span>${fmt(ALL_IN, 0)} inside</span><span class="v">4 × ${fmt(ALL_IN, 0)}/${fmt(DART.n, 0)} = ${fmt(PI_ALL, 3)}</span></div>
-            <div class="fbox mc-pi-ci" data-step="2" style="--d:2"><span class="chip">95% CONFIDENCE INTERVAL</span>
+              <math display="block"><mtext>share inside</mtext><mo>=</mo><mfrac><mrow><mi>π</mi><mo>·</mo><msup><mn>1</mn><mn>2</mn></msup></mrow><mrow><mn>2</mn><mo>·</mo><mn>2</mn></mrow></mfrac><mo>=</mo><mfrac><mi>π</mi><mn>4</mn></mfrac><mspace width="1.2em"/><mi>π</mi><mo>≈</mo><mn>4</mn><mo>×</mo><mfrac><mtext>darts inside</mtext><mtext>darts thrown</mtext></mfrac></math></div>
+            <div class="fbox mc-pi-ci" data-step="2"><span class="chip">95% CONFIDENCE INTERVAL, ${fmt(DART.n, 0)} DARTS</span>
               <math display="block"><mn>${fmt(PI_ALL, 3)}</mn><mo>±</mo><mn>1.96</mn><mo>×</mo><mn>${fmt(SE, 4)}</mn><mo>=</mo><mn>${fmt(CI[0], 2)}</mn><mtext>&nbsp;to&nbsp;</mtext><mn>${fmt(CI[1], 2)}</mn></math>
               <p class="mc-cap">standard error <math><mn>4</mn><msqrt><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="false">)</mo><mo>/</mo><mi>n</mi></msqrt><mo>=</mo><mn>${fmt(SE, 4)}</mn></math> with <math><mi>p</mi><mo>=</mo><mn>${fmt(ALL_IN, 0)}</mn><mo>/</mo><mn>${fmt(DART.n, 0)}</mn></math></p></div>
-            <div class="mc-key" data-step="2" style="--d:4"><span class="hl"><math><mtext>error</mtext><mo>∝</mo><mn>1</mn><mo>/</mo><msqrt><mi>n</mi></msqrt></math>:</span> half the error takes 4× the darts. That's why our price comes with an interval, too.</div>
+            <div class="mc-pi-lo">
+              <div class="fbox mc-pi-t" data-step="3"><span class="chip">ERROR ∝ 1/√n</span>
+                <table><thead><tr><th>Darts</th><th>95% interval</th></tr></thead><tbody>${row(100)}${row(10000)}${row(1000000)}</tbody></table>
+                <p>100× the darts → 10× smaller error</p></div>
+              <div class="card mc-pi-our" data-step="3" style="--d:4"><p class="k">Our Multi-BRC, ${fmt(XL.paths, 0)} paths</p>
+                <p class="v">USD ${fmt(XL.res.fv, 2)} <span>± ${fmt(OUR_HW, 2)}</span></p>
+                <p class="s">95% interval USD ${fmt(XL.res.ci[0], 2)} to ${fmt(XL.res.ci[1], 2)}; with ${fmt(4 * XL.paths, 0)} paths about ± ${fmt(OUR_HW / 2, 1)}</p></div>
+            </div>
           </div>
         </div>`;
-      const cv = body.querySelector("canvas"), vs = [0, 1, 2, 3].map(i => body.querySelector(".mc-v" + i));
+      const cv = body.querySelector("canvas");
       // st.n: darts on the board; st.t: ms into the flight of the first five (Infinity: all landed)
       let st = { n: 0, t: Infinity }, a = null, cur = 0;
       function landed() { if (st.t === Infinity) return st.n; let k = 0; while (k < DART.few && landAt(k) <= st.t) k++; return k; }
       function draw() {
         const n = landed();
-        vs[0].textContent = fmt(n, 0); vs[1].textContent = fmt(darts.cum[n], 0); vs[2].textContent = piTxt(n);
-        vs[3].textContent = n === DART.n ? fmt(CI[0], 2) + "–" + fmt(CI[1], 2) : "–";
         const c = U.canvas(cv); if (!c) return;
         const { ctx, w, h } = c;
-        const S = Math.min(w - 140, h - 92), cx = w / 2, cy = h / 2 - 10;
+        const S = Math.min(w - 60, h - 130), cx = w / 2, cy = 74 + S / 2;
         const X = x => cx + x * S / 2, Y = y => cy - y * S / 2;
         // inside: HSG green; outside: black; the circle in dark green, the square in grey, on the white panel
         const green = css("--green"), out = css("--ink"), gInk = css("--green-ink"), text = css("--term-text"), muted = css("--term-muted");
@@ -660,15 +674,18 @@
           ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.5; ctx.stroke();   // a white ring sets the five apart from the many
         }
         // labels on white boxes: side 2 under the square, radius 1 from the centre
-        ctx.font = "700 20px " + U.F.mono; ctx.textBaseline = "middle"; ctx.textAlign = "center";
+        // the running estimate above the board
+        ctx.font = "700 26px " + U.F.body; ctx.textBaseline = "middle"; ctx.textAlign = "center";
+        if (n) { ctx.fillStyle = n === DART.n ? green : text; ctx.fillText(`${fmt(n, 0)} dart${n > 1 ? "s" : ""}: π ≈ 4 × ${fmt(darts.cum[n], 0)}/${fmt(n, 0)} = ${piTxt(n)}`, cx, 28); }
+        ctx.font = "700 20px " + U.F.body;
         const yb = Y(-1) + 26;
         ctx.strokeStyle = text; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(-1), yb); ctx.lineTo(X(1), yb); ctx.moveTo(X(-1), yb - 7); ctx.lineTo(X(-1), yb + 7); ctx.moveTo(X(1), yb - 7); ctx.lineTo(X(1), yb + 7); ctx.stroke();
         const lab = (t, x, y) => { const tw = ctx.measureText(t).width; ctx.fillStyle = "#fff"; ctx.fillRect(x - tw / 2 - 10, y - 14, tw + 20, 28); ctx.fillStyle = text; ctx.fillText(t, x, y); };
-        lab("SIDE 2", cx, yb);
+        lab("Side 2", cx, yb);
         const ang = -Math.PI / 5, ex = cx + Math.cos(ang) * S / 2, ey = cy + Math.sin(ang) * S / 2;
         ctx.strokeStyle = gInk; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
         ctx.fillStyle = gInk; ctx.beginPath(); ctx.arc(cx, cy, 4.5, 0, 7); ctx.fill();
-        lab("RADIUS 1", cx + Math.cos(ang) * S / 4, cy + Math.sin(ang) * S / 4 - 26);
+        lab("Radius 1", cx + Math.cos(ang) * S / 4, cy + Math.sin(ang) * S / 4 - 26);
       }
       function step(i, o) {
         if (a) { a.cancel(); a = null; }
@@ -678,6 +695,7 @@
           if (fwd(o)) { st = { n: 0, t: 0 }; a = U.anim(FLY_MS, k => { st.t = k * FLY_MS; draw(); }, { ease: U.ease.lin, done: () => { a = null; st = { n: DART.few, t: Infinity }; draw(); } }); return; }
           st = { n: DART.few, t: Infinity }; draw(); return;
         }
+        if (i === 3) { st = { n: DART.n, t: Infinity }; draw(); return; }
         if (fwd(o)) { st = { n: DART.few, t: Infinity }; a = U.anim(DART.fillMs, k => { st.n = DART.few + Math.round((DART.n - DART.few) * k); draw(); }, { ease: U.ease.inOut, done: () => { a = null; } }); return; }
         st = { n: DART.n, t: Infinity }; draw();
       }
