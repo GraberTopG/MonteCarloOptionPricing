@@ -717,8 +717,7 @@
       const why1 = sc.ki
         ? `One touch on <b>day ${sc.kiDay}</b> is enough: the <b>whole path</b> matters.`
         : `The ${KI} barrier is watched every day: the <b>whole path</b> matters.`;
-      const why2 = `<div class="t">The less they move together, the more likely one falls through its barrier <b>on its own</b>.</div>
-        <div class="t">Formulas exist for a barrier on one stock (Rubinstein &amp; Reiner, 1991) and the worst of two (Stulz, 1982): <b>none for ours</b>.</div>`;
+      const why2 = `<div class="t">Formulas exist for one stock with a barrier, or two stocks without one: <b>none for ours</b>.</div>`;
       const call = (k, cc, ct, head, inner) => `<div class="prd-call c${k}" data-step="${k + 3}" style="--cc:${cc};--ct:${ct}"><div class="h"><span class="n">${k}</span>${head}</div>${inner}</div>`;
       // reason 3 (step 6): the lecture's binomial tree (slide 10), redrawn for one stock and three steps (10 nodes), next to its
       // size for ours; on a card of its own while the chart fades out. Node (c, s): after c steps, s = downs − ups
@@ -749,8 +748,6 @@
       const callouts = `<div class="prd-co">
           <svg aria-hidden="true">
             <line class="l1" data-step="4" pathLength="1" style="--cc:var(--term-red)"/><circle class="r1" data-step="4" r="15" style="--cc:var(--term-red)"/>
-            <line class="l2" data-step="5" pathLength="1" style="--cc:${KCOL}"/><path class="b2" data-step="5" style="--cc:${KCOL}"/>
-            <g class="dots" data-step="5">${B.tickers.map((t, k) => k === kAsset ? "" : `<circle class="d${k}" r="7" style="--dc:var(--c-${t.toLowerCase()})"/>`).join("")}</g>
           </svg>
           ${call(1, "var(--term-red)", "var(--term-red)", "THE BARRIER", `<div class="t">${why1}</div>`)}
           ${call(2, KCOL, KTXT, "THREE STOCKS", why2)}
@@ -804,19 +801,9 @@
         if (sc.ki) {
           rects.push({ x: X(sc.kiDay) - 4, y: Y(B.kickIn), w: 8, h: f.y + f.h - Y(B.kickIn) });   // its dotted drop line (its label is hidden once the boxes show)
         }
-        const tw2 = ctx.measureText("WORST −00.0%").width;                                    // the maturity bracket and its label
-        rects.push({ x: X(n) - 46 - tw2, y: (Y(B.strike) + Y(sc.worst)) / 2 - 16, w: tw2 + 46, h: Math.abs(Y(sc.worst) - Y(B.strike)) / 2 + 20 });
-        // callout 2's anchor: on the day of the touch, a bracket from the stock at the barrier up to the highest of the three,
-        // a tick at each stock's level, and a dot on the other two paths
+        // callout 1's anchor: the touch (or, in a year without one, the worst stock's lowest day)
         const lv = sc.paths.map((p, k) => k === kAsset && sc.ki ? B.kickIn : p[kDay]);
-        const kx = X(kDay), bkx = kx + 28, ys = lv.map(Y), yT = Math.min(...ys), yB = Math.max(...ys);
-        CO.querySelector(".b2").setAttribute("d", `M${bkx - 10} ${yT}H${bkx}V${yB}H${bkx - 10}` + ys.filter(y => y !== yT && y !== yB).map(y => `M${bkx - 10} ${y}H${bkx}`).join(""));
-        rects.push({ x: bkx - 12, y: yT - 4, w: 16, h: yB - yT + 2 });   // ends just above the barrier line, so box 1 fits under it
-        lv.forEach((v, k) => {
-          const d = CO.querySelector(".dots .d" + k); if (!d) return;
-          d.setAttribute("cx", kx); d.setAttribute("cy", Y(v));
-          rects.push({ x: kx - 9, y: Y(v) - 9, w: 18, h: 18 });
-        });
+        const kx = X(kDay);
         // the stock lines and the dashed lines as a grid of 2 px cells with a summed-area table: "does this box touch a line?"
         // is one lookup per position tried (the scan below tries tens of thousands); connectors drawn later go in extra
         const C = 2, GW = Math.ceil((f.x + f.w) / C) + 2, GH = Math.ceil((f.y + f.h) / C) + 2, R = GW + 1;
@@ -879,10 +866,10 @@
           extra.push(e);                                                                       // the next box keeps clear of this connector
         };
         const a1 = sc.ki ? [kx, Y(B.kickIn)] : [kx, Y(lv[kAsset])];
-        const a2 = [bkx, (yT + yB) / 2];
-        // both boxes right of that day: 1 under the touch, 2 next to the bracket
+        // box 1 right of and under the touch; box 2 (no connector) in the upper middle of the plot
         link(1, spot(CALL[0], a1[0] + 24 + CALL[0].offsetWidth / 2, a1[1] + 14 + CALL[0].offsetHeight / 2, a1[0], a1[1], 15), a1[0], a1[1], 15);
-        link(2, spot(CALL[1], a2[0] + 36 + CALL[1].offsetWidth / 2, a2[1], a2[0], a2[1], 0), a2[0], a2[1], 0);   // the nib meets the bracket's spine
+        const t2 = [f.x + f.w * .55, f.y + 10 + CALL[1].offsetHeight / 2];
+        spot(CALL[1], t2[0], t2[1], t2[0], t2[1], 0);
       }
       function draw() {
         const c = U.canvas(cv); if (!c) return;
@@ -953,21 +940,6 @@
             ctx.strokeStyle = tred; ctx.lineWidth = 2; ctx.strokeRect(bx, by, tw + 20, 32);
             ctx.fillStyle = on ? "#fff" : tred; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(lab, bx + 10, by + 17);   // white on the black label, black on white
           }
-        }
-        // maturity: worst stock vs strike, redemption per 1,000
-        if (S.mat > 0) {
-          ctx.globalAlpha = S.mat;
-          const x = X(n), y1 = Y(B.strike), y2 = Y(sc.worst), bx = x - 26;
-          ctx.strokeStyle = tred; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.moveTo(bx + 8, y1); ctx.lineTo(bx, y1); ctx.lineTo(bx, y2); ctx.lineTo(bx + 8, y2); ctx.stroke();
-          ctx.fillStyle = tred; ctx.font = "700 20px " + U.F.mono; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-          const wl = "WORST −" + U.fmt((1 - sc.worst) * 100, 1) + "%", wtw = ctx.measureText(wl).width, wyy = (y1 + y2) / 2;
-          // readable over a path without cutting a gap into the worst stock's line: a see-through white box (the line runs on,
-          // paler, under the label) and a white halo round the letters
-          ctx.fillStyle = "rgba(255,255,255,.78)"; ctx.fillRect(bx - 10 - wtw - 6, wyy - 15, wtw + 12, 30);
-          ctx.lineJoin = "round"; ctx.lineWidth = 6; ctx.strokeStyle = "rgba(255,255,255,.92)"; ctx.strokeText(wl, bx - 10, wyy);
-          ctx.fillStyle = tred; ctx.fillText(wl, bx - 10, wyy);
-          ctx.globalAlpha = 1;
         }
         ctx.fillStyle = text; ctx.beginPath(); ctx.arc(X(0), Y(1), 5, 0, 7); ctx.fill();
       }
