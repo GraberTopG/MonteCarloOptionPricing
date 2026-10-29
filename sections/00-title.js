@@ -390,6 +390,7 @@
             ctx.beginPath(); ctx.moveTo(X(LAST), Y(p[LAST]));
             for (let j = 1; j <= fu; j++) ctx.lineTo(X(LAST + j), Y(consPath(s, j)));
             ctx.stroke(); ctx.setLineDash([]);
+            if (fu >= FUT) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(XMAX), Y(consPath(s, FUT)), 6.5, 0, 7); ctx.fill(); }
           }
           ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(upto), Y(p[upto]), 6.5, 0, 7); ctx.fill();
         });
@@ -409,18 +410,21 @@
           ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 21px " + U.F.body; ctx.textBaseline = "bottom";
           ctx.fillText("Consensus 12M target price", xe + 20, f.y - 14);   // same size and line as "Today, 6 Oct 2026"
           H.px.forEach((p, s) => {
-            const y = Y(consPath(s, FUT)), x = xe + 20;
-            ctx.fillStyle = U.css(COL[s]); ctx.font = "700 26px " + U.F.body; ctx.textBaseline = "bottom";
-            ctx.fillText(B.names[s] + " ($" + B.tickers[s] + ")", x, y - 2);
-            // the target in the stock's colour, the change next to it: grey when flat or up a little, red when down
-            ctx.font = "700 22px " + U.F.body; ctx.textBaseline = "top";
-            const tp = "USD " + U.fmt(consPath(s, FUT), 2) + " ";
-            ctx.fillText(tp, x, y + 6);
+            const y = Y(consPath(s, FUT)), x = xe + 20, col = U.css(COL[s]);
+            // in the chart, left of the end dot: the target price, on a white halo
+            const tp = U.fmt(consPath(s, FUT), 2);
+            ctx.font = "700 20px " + U.F.body; ctx.textAlign = "right"; ctx.textBaseline = "bottom";
+            ctx.strokeStyle = "#fff"; ctx.lineWidth = 7; ctx.lineJoin = "round"; ctx.strokeText(tp, xe - 12, y - 12);
+            ctx.fillStyle = col; ctx.fillText(tp, xe - 12, y - 12);
+            // on the right: name and ticker in the stock's colour, the change after it (grey when flat or up, red when down)
+            ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.font = "700 23px " + U.F.body;
+            const nm = B.names[s] + " ($" + B.tickers[s] + ") ";
+            ctx.fillStyle = col; ctx.fillText(nm, x, y);
             ctx.fillStyle = CONS[s] < 0 ? "#B3261E" : U.css("--muted");
-            ctx.fillText("(" + (CONS[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CONS[s]) * 100, 1) + "%)", x + ctx.measureText(tp).width, y + 6);
+            ctx.fillText((CONS[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CONS[s]) * 100, 1) + "%", x + ctx.measureText(nm).width, y);
           });
           // the summary under the three targets, like a total line: a rule, a flat-to-down arrow and the verdict
-          const yb = Math.max(...H.px.map((p, s) => Y(consPath(s, FUT)))) + 46, x0 = xe + 20, AVG = CONS.reduce((t, v) => t + v, 0) / CONS.length * 100;
+          const yb = Math.max(...H.px.map((p, s) => Y(consPath(s, FUT)))) + 34, x0 = xe + 20, AVG = CONS.reduce((t, v) => t + v, 0) / CONS.length * 100;
           ctx.strokeStyle = U.css("--ink"); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0, yb); ctx.lineTo(x0 + 240, yb); ctx.stroke();
           ctx.lineWidth = 3.5; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath();
           ctx.moveTo(x0, yb + 24); ctx.lineTo(x0 + 18, yb + 24); ctx.lineTo(x0 + 34, yb + 32); ctx.stroke();
