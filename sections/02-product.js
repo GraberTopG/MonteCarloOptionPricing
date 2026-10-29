@@ -581,8 +581,8 @@
   };
   Deck.addSlide({
     id: "brc-suits", section: "product", steps: 1, secs: 17,
-    title: "When it suits you, and the risks",
-    subtitle: "Best in a sideways or slightly-down year",
+    title: "Advantages and risks of the Multi-BRC",
+    subtitle: "A high, fixed coupon in exchange for capped upside and downside risk",
     sources: "UBS (2026); own illustration",
     notes: `It suits stocks that go sideways or fall a little. [→] The risks: after a kick-in you lose like a shareholder, your gain is capped at ${f0(XL.coupon * 100)} percent, you get no dividends, and if UBS goes bankrupt, your money is at risk.`,
     render(body) {
