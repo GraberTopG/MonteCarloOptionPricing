@@ -181,7 +181,7 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(layer, 0, 0);
       ctx.restore();
       // the strike (grey) and the kick-in level (black), dashed over the fan, labelled on the left like an axis
-      const level = (v, colr, wdt) => { ctx.setLineDash([10, 8]); ctx.strokeStyle = colr; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(X0, Y(v)); ctx.lineTo(o.labelsRight ? XR - 150 : XR, Y(v)); ctx.stroke(); ctx.setLineDash([]); };
+      const level = (v, colr, wdt) => { ctx.setLineDash([10, 8]); ctx.strokeStyle = colr; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(X0, Y(v)); ctx.lineTo(XR, Y(v)); ctx.stroke(); ctx.setLineDash([]); };
       level(B.strike, col.rule, 2); level(B.kickIn, col.ink, 2.5);
       if (o.dates) {   // issue and expiry: a thin vertical line at the start and the end of the year, labelled on top
         const [top, bot] = o.dates.y;
@@ -192,12 +192,26 @@
         ctx.textAlign = "right"; ctx.fillText(o.dates.expiry, X(n), top);
         ctx.letterSpacing = "0px";
       }
-      // the level labels: left of the chart like an axis, or (o.labelsRight) at the right end of each dashed line
-      ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
-      [["STRIKE " + Math.round(B.strike * 100) + "%", B.strike, col.muted], ["KICK-IN " + KI + "%", B.kickIn, col.ink]].forEach(([t, v, cl]) => {
-        ctx.textAlign = "right"; ctx.fillStyle = cl; ctx.fillText(t, o.labelsRight ? XR : X0 - 18, Y(v));
-      });
-      ctx.letterSpacing = "0px";
+      // the level labels: left of the chart like an axis, or (o.labelsIn) inside it at the right end, on a white halo:
+      // the strike under its line, the kick-in above its line, where only the faint fan runs
+      const levelLabels = () => {
+        ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
+        [["STRIKE " + Math.round(B.strike * 100) + "%", B.strike, col.muted, 20], ["KICK-IN " + KI + "%", B.kickIn, col.ink, -20]].forEach(([t, v, cl, dy]) => {
+          ctx.textAlign = "right";
+          const y = o.labelsIn ? Y(v) + dy : Y(v);
+          let x = X0 - 18;
+          if (o.labelsIn) {   // as far right as possible where no highlighted year crosses the label
+            const w = ctx.measureText(t).width + 16, day = px => Math.max(0, Math.min(n, Math.round((px - X0) / (X1 - X0) * n)));
+            const free = xr => SCN.every(([f]) => { for (let d = day(xr - w); d <= day(xr + 8); d++) if (Math.abs(Y(f.w[d]) - y) < 20) return false; return true; });
+            x = X(n) - 30;
+            while (x > X0 + w + 200 && !free(x)) x -= 10;
+          }
+          if (o.labelsIn) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 7; ctx.lineJoin = "round"; ctx.strokeText(t, x, y); }
+          ctx.fillStyle = cl; ctx.fillText(t, x, y);
+        });
+        ctx.letterSpacing = "0px";
+      };
+      if (!o.labelsIn) levelLabels();
       // the highlighted years, each on a thin white edge so it stands clear of the fan
       const path = (f, colr) => {
         ctx.lineJoin = "round"; ctx.lineCap = "round";
@@ -214,6 +228,7 @@
       const badge = (x, y, num, cl) => { dot(x, y, 15, cl, "#fff"); ctx.font = "700 17px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = "#fff"; ctx.fillText(num, x, y + 1); };
       SCN.forEach(([f, cl]) => { if (f.ki && upto >= f.kiDay) dot(X(f.kiDay), Y(f.w[f.kiDay]), 10, "#fff", cl); });   // the touch
       dot(X(0), Y(1), 7, U.css("--green-ink"));
+      if (o.labelsIn) levelLabels();
       if (upto >= n) {   // the numbers at the ends, pushed apart where two ends are close
         const ends = SCN.map(([f, cl], i) => ({ y: Y(f.w[n]), cl, num: String(i + 1) })).sort((p, q) => p.y - q.y);
         for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 34);
@@ -275,7 +290,7 @@
           <p class="tt-uni">University of St.Gallen · Corporate Finance (7,107)</p>
           <p class="tt-meta"><b>Group III</b> · Ali Bozan Can, Benjamin Marco Bolliger, Cédric Anwar El Soda, Ivan Kissinger, Joaquim Graber, Leandro Broccucci, Mirko Cirantineo</p>
         </div>`;
-      return pathsArt(root, 7, { full: true, labelsRight: true, dates: { issue: "ISSUE DATE: 6 OCT 2026", expiry: "EXPIRY DATE: 6 OCT 2027", y: [292, 845] }, X0: 120, X1: 1600, XR: 1800, Y1: 570, SC: 430, LY: 880 });
+      return pathsArt(root, 7, { full: true, labelsIn: true, dates: { issue: "ISSUE DATE: 6 OCT 2026", expiry: "EXPIRY DATE: 6 OCT 2027", y: [292, 845] }, X0: 120, X1: 1770, XR: 1800, Y1: 570, SC: 430, LY: 880 });
     }
   });
 
