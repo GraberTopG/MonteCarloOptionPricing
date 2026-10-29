@@ -112,7 +112,7 @@
     }
   });
 
-  // ================= bt-recap: the lecture's binomial tree (Lecture 4, slides 9–10), same layout as bs-recap =================
+  // ================= bt-recap: the lecture's binomial tree (Lecture 4, slide 10), same layout as bs-recap =================
   // Cox-Ross-Rubinstein as in the lecture/Hull: u = e^(σ√Δt), d = 1/u, p = (e^(rΔt) − d)/(u − d), backward induction.
   // Size: a recombining tree for one stock has k + 1 nodes after k steps; for three stocks (k + 1)^3 (as on brc-why-mc).
   const BT = U.BRC, BT_N = BT.steps, BT_DIM = BT.tickers.length;
@@ -126,7 +126,7 @@
     id: "bt-recap", section: "why", after: "bs-recap", steps: 1, secs: 14,
     title: "Recap: The binomial tree and why it can't price a Multi-BRC",
     subtitle: "Handles any payoff and early exercise, but the tree grows with every step and every extra stock",
-    lecture: "Lecture 4, slides 9–10",
+    lecture: "Lecture 4, slide 10",
     sources: "Arnold (2026); Cox, Ross & Rubinstein (1979)",
     notes: `What about the binomial tree from the lecture? It moves the stock up or down each step and works backwards to today. [→] For one stock that's easy. But with three stocks, the tree grows in three dimensions, and with 252 trading days it reaches about ${U.fmt(BT_BN, 1)} billion nodes. Far too big for Excel.`,
     render(body) {
