@@ -605,7 +605,7 @@
               ${item("loss", "Loss possible after a barrier event", "after a kick-in you take the worst stock’s loss", 1)}
               ${item("cap", `Limited earnings potential (max. ${CPN_PCT})`, `You can not earn more than USD ${f0(NOM + CPN)}, whatever the stocks do`, 2)}
               ${item("div", "No entitlement to dividends", "Dividends are only paid to shareholders", 3)}
-              ${item("bank", "Issuer risk (UBS)", "If the issuer, which is UBS in this case, goes bankrupt, you could lose your money.", 4)}
+              ${item("bank", "Issuer risk (UBS)", "The note is unsecured debt of UBS: if UBS goes bankrupt, you could lose your money, even without a kick-in.", 4)}
             </ul>
           </section>
         </div>`;
