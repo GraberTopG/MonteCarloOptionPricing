@@ -320,8 +320,8 @@
         <div class="mc-sa">
           <div class="mc-flow">${box(1, "dice", "Sample a random path")}<span class="ar" data-step="2">→</span>${box(2, "check", "Compute its discounted payoff")}<span class="ar" data-step="3">→</span>${box(3, "avg", "Average them all")}</div>
           <div class="mc-sa-lo">
-            <figure class="mc-sa-chart" data-step="1">
-              <p class="mc-sa-h"><span class="n">1</span>Sample random paths</p>
+            <figure class="mc-sa-chart">
+              <p class="mc-sa-h" data-step="1"><span class="n">1</span>Sample random paths</p>
               <canvas></canvas>
               <figcaption>${fmt(FAN.n, 0)} simulated years of one stock (volatility ${fmt(M.sigma * 100, 0)}%, like Apple; risk-free rate ${fmt(M.r * 100, 2)}%): each line is one year</figcaption>
             </figure>
