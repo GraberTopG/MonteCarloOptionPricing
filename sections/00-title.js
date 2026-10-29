@@ -356,7 +356,7 @@
   const NOTES_PR = "But banks sell a product for exactly this view: a worst-of multi barrier reverse convertible, or Multi-BRC. You get a fifteen percent coupon whatever happens, but never more. As long as no stock touches 65 percent of its starting price, you get your thousand back. If one does, you may get shares instead. [→] Fifteen percent: more than three times the risk-free rate. [→] But is it enough for the risk you take? Let's take a closer look at the product.";
   const QUESTION = "But is it fair for the risk you take on?";
   Deck.addSlide({
-    id: "hook-product", section: "hook", steps: 2, secs: secsFor(NOTES_PR, 2),
+    id: "hook-product", section: "product", steps: 2, secs: secsFor(NOTES_PR, 2),
     title: "Banks' solution: A Multi-BRC",
     subtitle: "Banks created a product for this exact market view",
     sources: "UBS AG (2018) (model for the structure); Bloomberg (2026); own Excel model, sheets 1–2",
