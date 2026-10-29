@@ -87,7 +87,7 @@
           <section class="panel lec-intp">
             <h3 class="panel-title">How to read it</h3>
             <p><b>N(d<sub>1</sub>)</b>the call's delta: shares held to hedge it</p>
-            <p><b>N(d<sub>2</sub>)</b>risk-neutral probability that the call ends in the money (is exercised)</p>
+            <p><b>N(d<sub>2</sub>)</b>risk-neutral probability that the call ends in the money</p>
           </section>
           <section class="panel lec-panel" data-step="1">
             <h3 class="panel-title">Why it doesn't fit a Multi-BRC</h3>
