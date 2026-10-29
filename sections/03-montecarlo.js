@@ -203,7 +203,7 @@
     id: "mc-origin", section: "mc", steps: 2, secs: 40,
     title: "Monte Carlo: averaging random draws to estimate an expected value",
     subtitle: "1,000 random rolls of a die average 3.5: exactly its expected value, by the law of large numbers",
-    sources: "Eckhardt (1987); Metropolis (1987); dice example adapted from The Synthetic Mind (2026), about 1:20; own simulation",
+    sources: "Eckhardt (1987); Metropolis (1987); own simulation",
     notes: "In 1946, Stanislaw Ulam was recovering from an illness and playing solitaire. Instead of calculating his chances, he asked: why not play a hundred games and count the wins? His colleague Nicholas Metropolis named it after the casino: Ulam had an uncle who just had to go to Monte Carlo. Here's the idea with a die. What's the average roll? Instead of calculating it, let's roll. [→] A thousand rolls: at first the average jumps around, then it settles at about 3.5. [→] Now the calculation: one to six, each with probability one sixth, gives exactly 3.5. The simulation got it right. That's the law of large numbers, and that's Monte Carlo: when we can't calculate an expected value, we estimate it by averaging random draws. For our Multi-BRC there's no closed-form solution, so that's exactly what we'll do.",
     render(body) {
       body.innerHTML = `
@@ -466,7 +466,7 @@
     id: "mc-grid", section: "mc", steps: 2, secs: 19,
     title: "Monte Carlo escapes the curse of dimensionality",
     subtitle: "A grid’s points explode with every dimension. Random points don’t.",
-    sources: "Glasserman (2003), ch. 1; adapted from The Synthetic Mind (2026); own illustration",
+    sources: "adapted from The Synthetic Mind (2026); own illustration",
     notes: "A grid won't work: a year of our three stocks takes 756 random numbers, so 756 dimensions. [→] Ten values for each would already need ten to the power of 756 evaluations. [→] Monte Carlo's error shrinks at the same speed, however many dimensions there are.",
     render(body) {
       body.closest(".slide").classList.add("mc-tw");

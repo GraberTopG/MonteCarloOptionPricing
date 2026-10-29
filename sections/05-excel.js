@@ -440,7 +440,7 @@
     id: "brc-steps", section: "excel", steps: 0, secs: 26, liveSecs: 38,
     title: "Pricing the Multi-BRC in seven steps",
     subtitle: "Our plan for the Excel model, from the market data to the fair value",
-    sources: "own Excel model; Arnold (2026), slide 15; own simulation",
+    sources: "Arnold (2026), slide 15; own simulation",
     // the roadmap stays on screen while the narration runs: no clicks, the steps build in on entry. Then live Excel: the
     // workbook's Read Me and sheet tabs (the template, assignment 2a; until 27 Oct 2026 a slide of its own).
     // liveSecs = that narration (84 words) / 145 × 60 + 3 s for the Excel screen
@@ -502,7 +502,7 @@
     title: "Step 1: the missing inputs",
     subtitle: "Black-Scholes needs five inputs, and we know four of them",
     lecture: "Lecture 4, slide 7",
-    sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg; own Excel model, sheets 2, 5 and 6",
+    sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg",
     // live Excel follows (sheets 5, 6 and 4): liveSecs = its narration (94 words) / 145 × 60 + 3 s per Excel screen (two)
     notes: "Step one: volatility. Remember the Black-Scholes formula. "
       + "[→] We know almost every input: the stock price, the strike, the maturity and the interest rate. "
@@ -597,7 +597,7 @@
     title: "Step 2: How do we simulate a stock?",
     subtitle: "The lecture's geometric Brownian motion, one small time step at a time",
     lecture: "Lecture 4, slides 11 and 15",
-    sources: "Arnold (2026), slides 11 and 15; own Excel model, sheet 7; own illustration",
+    sources: "Arnold (2026), slides 11 and 15; own illustration",
     // live Excel follows (sheet 7): liveSecs = its narration (54 words) / 145 × 60 + 3 s for the one Excel screen
     notes: "Step two: how do we simulate a stock? With the lecture's geometric Brownian motion: tomorrow's price is today's price, plus a drift, plus a random shock. "
       + "[→] The drift is the risk-free rate minus the dividend yield; that's risk-neutral valuation, so we never need the stocks' expected returns. "
@@ -661,9 +661,9 @@
     id: "xl-corr", section: "excel", steps: 2, secs: 24, liveSecs: 8,
     title: "Step 2: correlated shocks",
     subtitle: "Our stocks don’t move independently, so we mix the random numbers",
-    sources: "Glasserman (2003), ch. 2–3; Hull (2022), ch. 21; own Excel model, sheets 4 and 8; own simulation",
+    sources: "own simulation",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
-    notes: "But these numbers are independent, and our stocks are not. So we mix them, with the Cholesky method, as in Hull's textbook. Adobe keeps its own random number. "
+    notes: "But these numbers are independent, and our stocks are not. So we mix them, with the Cholesky method. Adobe keeps its own random number. "
       + "[→] Apple takes 0.22 of Adobe's, exactly their correlation, plus 0.98 of its own. "
       + "[→] Microsoft mixes all three. Now our simulated stocks move together just like the real ones. "
       + "[Excel: the same numbers in sheet 4, step D (cells C37 and C40), and in sheet 8, cells E35 and C40, which the formula in cell H49 uses]",
@@ -676,7 +676,6 @@
               ${CO_ROWS.map((r, k) => `<div class="xl-co-row" style="border-left-color:var(${LIGHT[k]})">
                 <div class="xl-co-eq"><math>${zL(k)}</math><math><mo>=</mo></math><math>${r.rhs}</math></div>
                 <p class="xl-co-n">${r.note}</p></div>`).join("")}
-              <p class="xl-co-hull">Notation adapted from Hull (2022), ch. 21, who writes <math><mi>x</mi></math> for the independent numbers and <math><mi>ε</mi></math> for the correlated ones.</p>
               <span class="xlref">Excel · sheet 4, step D · sheet 8, H49</span>
             </div>
           </div>
@@ -751,7 +750,7 @@
     title: "Step 3: the engine, one simulated year.",
     subtitle: `Sheet 8 copies the step down ${NDAY} trading days, for all three stocks`,
     lecture: "Lecture 4, slide 15",
-    sources: "Arnold (2026), slide 15; own Excel model, sheet 8 (path 1)",
+    sources: "Arnold (2026), slide 15",
     // live Excel: the K49 shot between clicks 2 and 3, and after this slide all of 5.5–5.8 up to the engine checks
     // (sheets 8, 9, 10 and 11). liveSecs = that narration / 145 × 60 + 3 s per Excel screen (the owner's value, fix round 1)
     notes: "Step three: one simulated year. Sheet eight is the engine: each row is one trading day, and each cell uses this formula, "
@@ -874,7 +873,6 @@
     id: "xl-sens", section: "excel", steps: 1, secs: 15,
     title: "Which input matters most?",
     subtitle: `Sheet 11: how much the put changes when one input changes (same ${fmt(XL.paths, 0)} paths)`,
-    sources: "own Excel model, sheet 11",
     notes: "[Excel → web app] And which input matters most? "
       + "[→] Volatility. Five points more, and the put rises from 173 to 219 dollars, so the product's value falls from 925 to 878. Correlation moves it by only about seven.",
     render(body) {
