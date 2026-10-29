@@ -536,7 +536,7 @@
     id: "hook-product", section: "product", steps: 2, secs: secsFor(NOTES_PR, 2),
     title: "Banks' solution: A Multi-BRC",
     subtitle: "Banks offer this product to enhance your yield in sideways to slightly down markets",
-    sources: "UBS AG (2018) (model for the structure); Bloomberg (2026); Swiss Structured Products Association (2026); own Excel model, sheets 1–2",
+    sources: "Bloomberg (2026); Swiss Structured Products Association (2026); own Excel model, sheets 1–2",
     notes: NOTES_PR,
     render(body) {
       // click 1: the 15% grows and holds for about a second, then the risk-free rate (after 0.99 s) and "> 3×" (1.26 s) fade in
