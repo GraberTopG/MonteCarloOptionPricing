@@ -270,15 +270,15 @@
     }
     return {
       resize: draw,
-      step() { if (a) a.cancel(); a = U.anim(2000, t => { k = Math.max(.02, t); draw(); }, { ease: U.ease.inOut }); },
+      step() { if (a) a.cancel(); a = U.anim(6000, t => { k = Math.max(.02, t); draw(); }, { ease: U.ease.inOut }); },
       leave() { if (a) a.cancel(); a = null; }
     };
   }
 
   // ================= title =================
   Deck.addSlide({
-    id: "title", layout: "title", section: "", steps: 0, secs: 3,
-    notes: "(No narration: about two seconds on screen, then click.)",
+    id: "title", layout: "title", section: "", steps: 0, secs: 7,
+    notes: "(No narration: let the paths draw, about six seconds, then click.)",
     render(root) {
       root.innerHTML = `
         <div class="tt-top">
