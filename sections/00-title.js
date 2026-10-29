@@ -183,6 +183,15 @@
       // the strike (grey) and the kick-in level (black), dashed over the fan, labelled on the left like an axis
       const level = (v, colr, wdt) => { ctx.setLineDash([10, 8]); ctx.strokeStyle = colr; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(X0, Y(v)); ctx.lineTo(o.labelsRight ? XR - 150 : XR, Y(v)); ctx.stroke(); ctx.setLineDash([]); };
       level(B.strike, col.rule, 2); level(B.kickIn, col.ink, 2.5);
+      if (o.dates) {   // issue and expiry: a thin vertical line at the start and the end of the year, labelled on top
+        const [top, bot] = o.dates.y;
+        ctx.strokeStyle = U.css("--rule-light"); ctx.lineWidth = 2;
+        [X0, X(n)].forEach(x => { ctx.beginPath(); ctx.moveTo(x, top + 18); ctx.lineTo(x, bot); ctx.stroke(); });
+        ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle"; ctx.fillStyle = col.muted;
+        ctx.textAlign = "left"; ctx.fillText(o.dates.issue, X0, top);
+        ctx.textAlign = "right"; ctx.fillText(o.dates.expiry, X(n), top);
+        ctx.letterSpacing = "0px";
+      }
       // the level labels: left of the chart like an axis, or (o.labelsRight) at the right end of each dashed line
       ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
       [["STRIKE " + Math.round(B.strike * 100) + "%", B.strike, col.muted], ["KICK-IN " + KI + "%", B.kickIn, col.ink]].forEach(([t, v, cl]) => {
@@ -265,7 +274,7 @@
           <p class="tt-uni">University of St.Gallen · Corporate Finance (7,107)</p>
           <p class="tt-meta"><b>Group III</b> · Ali Bozan Can, Benjamin Marco Bolliger, Cédric Anwar El Soda, Ivan Kissinger, Joaquim Graber, Leandro Broccucci, Mirko Cirantineo</p>
         </div>`;
-      return pathsArt(root, 7, { full: true, labelsRight: true, X0: 120, X1: 1600, XR: 1800, Y1: 566, SC: 425, LY: 868 });
+      return pathsArt(root, 7, { full: true, labelsRight: true, dates: { issue: "ISSUE DATE: 6 OCT 2026", expiry: "EXPIRY DATE: 6 OCT 2027", y: [292, 845] }, X0: 120, X1: 1600, XR: 1800, Y1: 566, SC: 425, LY: 868 });
     }
   });
 
