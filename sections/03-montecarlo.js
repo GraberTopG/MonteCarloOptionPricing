@@ -314,7 +314,7 @@
       const box = (icon, txt, d) => `<div class="box" data-step="2" style="--d:${d}"><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
       body.innerHTML = `
         <div class="mc-sa">
-          <div class="fbox mc-sa-f"><span class="chip">LECTURE 4: RISK-NEUTRAL VALUATION</span><div class="mc-sa-fw">${PRICE}${lectureNote(`<math>${RF}</math>`)}</div></div>
+          <div class="fbox mc-sa-f"><span class="chip">RISK-NEUTRAL VALUATION OF A PAYOFF</span><div class="mc-sa-fw">${PRICE}${lectureNote(`<math>${RF}</math>`)}</div></div>
           <div class="mc-sa-lo">
             ${U.term({ cls: "mc-term", fn: "MCSIM", title: "ONE STOCK · ONE YEAR · % OF START", meta: `σ ${fmt(M.sigma * 100, 0)}% (LIKE APPLE) · r ${fmt(M.r * 100, 2)}%`, body: "<canvas></canvas>",
               stats: `<div><div class="k">Paths</div><div class="v mc-v0">0</div></div><div><div class="k">Random daily moves per path</div><div class="v mc-v1">0</div></div><div><div class="k">Random numbers drawn</div><div class="v mc-v2">0</div></div>` }).replace('class="term ', 'data-step="1" class="term ')}
