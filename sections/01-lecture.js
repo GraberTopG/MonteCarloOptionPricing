@@ -124,7 +124,7 @@
   const MN = `<math display="block"><mi>Δ</mi><mi>t</mi><mo>=</mo><mfrac><mi>T</mi><mi>n</mi></mfrac></math>`;
   Deck.addSlide({
     id: "bt-recap", section: "why", after: "bs-recap", steps: 1, secs: 14,
-    title: "Recap: The binomial tree and why it can't price a Multi-BRC",
+    title: "Recap: Binomial tree and why it's impractical for a Multi-BRC",
     subtitle: `The curse of dimensionality: 1 stock needs ${U.fmt(BT_ONE, 0)} nodes, 3 stocks need ${U.fmt(BT_BN, 1)} billion`,
     lecture: "Lecture 4, slide 10",
     sources: "Arnold (2026); Cox, Ross & Rubinstein (1979)",
