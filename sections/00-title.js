@@ -81,22 +81,22 @@
 
     /* ---------- hook 3: the product ---------- */
     .hk-pr{position:relative;height:100%}
-    .hk-name{margin:0;font:700 48px/1.15 var(--f-head);color:var(--green-ink)}
-    .hk-terms{position:absolute;left:0;right:0;top:82px;height:226px;display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
-    .hk-t{position:relative;padding:20px 20px;display:flex;flex-direction:column;font-size:24px}
+    .hk-name{margin:0;font:700 42px/1.15 var(--f-head);color:var(--green-ink)}
+    .hk-terms{position:absolute;left:0;right:0;top:66px;height:200px;display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
+    .hk-t{position:relative;padding:14px 20px;display:flex;flex-direction:column;font-size:24px}
     .hk-t .k{font:700 20px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink)}
-    .hk-t .v{font:700 52px/1.1 var(--f-head);color:var(--ink);margin:10px 0 8px;white-space:nowrap;font-variant-numeric:lining-nums}
-    .hk-t .s{font-size:26px;line-height:1.25;color:var(--muted)}
+    .hk-t .v{font:700 46px/1.1 var(--f-head);color:var(--ink);margin:6px 0 4px;white-space:nowrap;font-variant-numeric:lining-nums}
+    .hk-t .s{font-size:23px;line-height:1.25;color:var(--muted)}
     .hk-ln{display:block;white-space:nowrap}   /* the two dates of the maturity card: one line each */
     .hk-dot{display:inline-block;width:16px;height:16px;border-radius:50%;margin:0 8px 0 0;vertical-align:1px}
     .hk-dot.adbe{background:var(--c-adbe-light)} .hk-dot.aapl{background:var(--c-aapl-light)} .hk-dot.msft{background:var(--c-msft-light)}
     .hk-stk{display:block;white-space:nowrap}
     .hk-ring{position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 4px var(--orange);pointer-events:none}
     .slide .hk-ring[data-step]{transform:none}
-    .hk-cpn{position:absolute;left:0;right:0;top:340px;height:232px;background:var(--card);border-radius:10px;border-left:10px solid var(--orange);display:flex;align-items:center;padding:0 30px;gap:30px}
+    .hk-cpn{position:absolute;left:0;right:0;top:284px;height:190px;background:var(--card);border-radius:10px;border-left:10px solid var(--orange);display:flex;align-items:center;padding:0 30px;gap:30px}
     /* "15% p.a.": the rate big, "p.a." small on the same baseline; the box is wide enough for the 1.2× beat of click 1 */
-    .hk-big{width:480px;flex:none;text-align:center;font:800 150px/1 var(--f-head);color:var(--orange);white-space:nowrap;font-variant-numeric:lining-nums;transition:transform .8s cubic-bezier(.3,1.5,.5,1)}
-    .hk-big .pa{font-size:56px}
+    .hk-big{width:480px;flex:none;text-align:center;font:800 124px/1 var(--f-head);color:var(--orange);white-space:nowrap;font-variant-numeric:lining-nums;transition:transform .8s cubic-bezier(.3,1.5,.5,1)}
+    .hk-big .pa{font-size:48px}
     .hk-pr.beat .hk-big{transform:scale(1.2)}
     .hk-ct{width:440px;flex:none}
     .hk-ct .k,.hk-rf .k{font:700 20px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink);margin:0 0 8px}
@@ -104,9 +104,24 @@
     .hk-gt{width:160px;flex:none;text-align:center;font:800 84px/1 var(--f-head);color:var(--orange);white-space:nowrap}
     .hk-gt .x{font:700 64px/1 var(--f-body);vertical-align:-.06em;margin-left:4px}   /* centred on the digits: "times", not an exponent */
     .hk-rf{flex:1;min-width:0}
-    .hk-rf .n{font:700 92px/1 var(--f-head);color:var(--green-ink);margin:0 0 8px;font-variant-numeric:lining-nums}
+    .hk-rf .n{font:700 76px/1 var(--f-head);color:var(--green-ink);margin:0 0 8px;font-variant-numeric:lining-nums}
     .hk-rf p{font-size:26px;color:var(--muted)}
-    .hk-q{position:absolute;left:0;right:0;top:610px;margin:0;font:700 50px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}
+    .hk-q{position:absolute;left:0;right:0;top:672px;margin:0;font:700 46px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}
+    /* the Swiss Derivative Map in one row: families as small boxes, the yield-enhancement categories as chips, ours highlighted */
+    .hk-fam{position:absolute;left:0;right:0;top:494px;height:160px}
+    .hk-fam-h{margin:0 0 8px;font:700 20px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink)}
+    .hk-fam-r{display:grid;grid-template-columns:150px 1fr 150px 190px 150px;gap:14px;height:126px}
+    .hk-fb{background:var(--card);border-radius:8px;padding:10px 12px;opacity:.55}
+    .hk-fb b{display:block;font:800 26px/1 var(--f-head);color:var(--green-ink)}
+    .hk-fb span{display:block;font:17px/1.15 var(--f-body);color:var(--ink);margin-top:4px}
+    .hk-fb.y{opacity:1;background:var(--green-light);box-shadow:inset 0 0 0 3px var(--green)}
+    .hk-fb.y .hd{display:flex;align-items:baseline;gap:10px}
+    .hk-fb.y .hd b{color:var(--green)} .hk-fb.y .hd span{font:700 21px/1 var(--f-head);margin:0}
+    .hk-fb.y .hd span.tg{margin-left:auto;font:700 19px/1 var(--f-body);color:var(--green)}
+    .hk-chips{display:flex;gap:8px;margin-top:12px;align-items:stretch}
+    .hk-chips i{font:700 18px/1 var(--f-mono);font-style:normal;color:var(--muted);background:#fff;border-radius:6px;padding:12px 12px;display:flex;align-items:center}
+    .hk-chips i.me{color:var(--green-ink);background:#fff;box-shadow:inset 0 0 0 3px var(--green);gap:10px}
+    .hk-chips i.me em{font:700 19px/1.1 var(--f-body);font-style:normal;color:var(--ink)}
     .hk-q .cur{display:inline-block;width:5px;height:50px;background:var(--orange);margin-left:6px;vertical-align:-6px;opacity:0}
     .hk-q.typing .cur{opacity:1}
 
@@ -520,8 +535,8 @@
   Deck.addSlide({
     id: "hook-product", section: "product", steps: 2, secs: secsFor(NOTES_PR, 2),
     title: "Banks' solution: A Multi-BRC",
-    subtitle: "Banks created a product for this exact market view",
-    sources: "UBS AG (2018) (model for the structure); Bloomberg (2026); own Excel model, sheets 1–2",
+    subtitle: "Banks offer this product to enhance your yield in sideways to slightly down markets",
+    sources: "UBS AG (2018) (model for the structure); Bloomberg (2026); Swiss Structured Products Association (2026); own Excel model, sheets 1–2",
     notes: NOTES_PR,
     render(body) {
       // click 1: the 15% grows and holds for about a second, then the risk-free rate (after 0.99 s) and "> 3×" (1.26 s) fade in
@@ -541,6 +556,17 @@
             <div class="hk-ct"><p class="k">Semi-annual coupon</p><p><b>2 × ${HALF}</b> per USD ${NOM}, paid whatever happens, but never more</p></div>
             <div class="hk-gt" data-step="1" style="--d:14">&gt; ${RATIO}<span class="x">×</span></div>
             <div class="hk-rf" data-step="1" style="--d:11"><p class="k">Risk-free rate</p><p class="n">${R_TXT}%</p><p>continuously compounded ≈ ${R_YEAR}% a year</p></div>
+          </div>
+          <div class="hk-fam">
+            <p class="hk-fam-h">Where it sits: Swiss Derivative Map (SSPA)</p>
+            <div class="hk-fam-r">
+              <div class="hk-fb"><b>11</b><span>Capital protection</span></div>
+              <div class="hk-fb y"><div class="hd"><b>12</b><span>Yield enhancement</span><span class="tg">You give up upside for a high, fixed coupon</span></div>
+                <div class="hk-chips">${["1200", "1210", "1220", "1230", "1255", "1260"].map(c => c === "1230" ? `<i class="me">${c}<em>Barrier Reverse Convertible</em></i>` : `<i>${c}</i>`).join("")}</div></div>
+              <div class="hk-fb"><b>13</b><span>Participation</span></div>
+              <div class="hk-fb"><b>14</b><span>Additional credit risk</span></div>
+              <div class="hk-fb"><b>20</b><span>Leverage</span></div>
+            </div>
           </div>
           <p class="hk-q" data-step="2"><span class="qt"></span><span class="cur"></span></p>
         </div>`;
