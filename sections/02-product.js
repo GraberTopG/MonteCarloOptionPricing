@@ -227,7 +227,7 @@
 
     /* ---------- brc-why-mc ---------- */
     /* the title runs over two lines (balanced, never broken inside "Multi-BRC"): the panel starts lower, under the subtitle */
-    .slide[data-id="brc-why-mc"] .s-title{text-wrap:balance}
+    .slide[data-id="brc-why-mc"] .s-title{font-size:50px;white-space:nowrap}
     .prd-mc{position:relative;height:100%}
     .prd-mc>.term{position:absolute;left:0;right:0;top:36px;height:704px;transition:opacity .45s ease,transform .45s ease}
     .prd-mc .term-stats{gap:40px}
@@ -682,11 +682,11 @@
   const DIM = B.tickers.length, treeNodes = (days, dim) => { let s = 0; for (let k = 0; k <= days; k++) s += Math.pow(k + 1, dim); return s; };
   const NODES = treeNodes(B.steps, DIM), NODES_BN = NODES / 1e9;
   Deck.addSlide({
-    id: "brc-why-mc", section: "why", after: "bs-recap", steps: 6, secs: 54,
-    title: "Why Monte Carlo is used for the Multi-BRC",
+    id: "brc-why-mc", section: "why", after: "bt-recap", steps: 5, secs: 44,
+    title: "The Multi-BRC is path-dependent: other formulas don't apply",
     subtitle: "A barrier alone has a formula. Three stocks alone have a formula. Both together do not.",
-    sources: "Arnold (2026), slides 9–10; Rubinstein & Reiner (1991); Stulz (1982); Johnson (1987); own simulation",
-    notes: `(Clicks 1–3: one simulated year, no narration.) [→] [→] [→] Our product breaks both. [→] First, the barrier: one touch at any moment changes everything, so the whole path matters. [→] Second, three stocks: the less they move together, the more likely one of them falls through its barrier on its own. There are formulas for a barrier on one stock, and for the worst of two stocks, but none for our product. [→] And the binomial tree from the lecture? With three stocks and ${B.steps} trading days, it grows to about a billion nodes. Far too big for Excel: that's the curse of dimensionality. Monte Carlo avoids it. So what is Monte Carlo?`,
+    sources: "Rubinstein & Reiner (1991); Stulz (1982); Johnson (1987); own illustration",
+    notes: `(Clicks 1–3: one simulated year, no narration.) [→] [→] [→] Here is one possible year of our product, and it shows the two problems. [→] First, the barrier: one touch at any moment changes everything, so the whole path matters. [→] Second, three stocks: the less they move together, the more likely one of them falls through its barrier on its own. There are formulas for a barrier on one stock, and for the worst of two stocks, but none for our product. No formula, and a tree that's too big: so we simulate. That's Monte Carlo.`,
     render(body) {
       const sc = SC;
       const n = B.steps, red1000 = Math.round(sc.redemption * NOM);
@@ -746,7 +746,6 @@
             body: `<canvas></canvas>${callouts}`,
             stats: stat("Trading day", "d") + B.tickers.map((t, k) => stat(t, "s" + k, `color:var(--c-${t.toLowerCase()}-light)`)).join("") + stat("Kick-in", "ki") + stat("Payout per USD 1,000", "pay")
           })}
-          ${tree}
         </div>`;
       const wrap = body.querySelector(".prd-mc"), cv = body.querySelector("canvas"), big = body.querySelector(".prd-tree .big");
       const el = s => body.querySelector(".term-stats .v." + s);
@@ -976,7 +975,7 @@
           if (i === 5) anims.push(U.anim(500, t => { S.two = t; draw(); }));   // the stock reason 2 is about comes back to full strength
           // the tree's size counts up once its card has faded in (the card waits 0.45 s for the chart to fade out)
           if (i >= 6) anims.push(U.anim(1850, k => { big.textContent = "≈ " + U.fmt(NODES_BN * U.ease.out(Math.max(0, (k * 1850 - 450) / 1400)), 2) + " billion nodes"; }, { ease: U.ease.lin }));
-          else big.textContent = "≈ " + U.fmt(NODES_BN, 2) + " billion nodes";
+          else if (big) big.textContent = "≈ " + U.fmt(NODES_BN, 2) + " billion nodes";
           startLoop();
         }
       };
