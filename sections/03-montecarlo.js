@@ -165,21 +165,24 @@
     .mc-pi-ci .mc-cap math{font-size:26px}
 
     /* ---------- 5) mc-paths ---------- */
-    .mc-pa{display:grid;grid-template-rows:160px minmax(0,1fr);row-gap:22px;height:100%}
-    .mc-pa-t{display:grid;grid-template-columns:420px minmax(0,1fr) 640px;column-gap:32px;min-height:0}
-    .mc-pa-y{display:flex;flex-direction:column;justify-content:center}   /* a year and one line of text (no timeline) */
-    .mc-pa-y b{display:block;font:800 40px/1 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums}
-    .mc-pa-y p{margin:10px 0 0;font:26px/1.3 var(--f-body);color:var(--ink)}
-    .mc-pa-m{display:flex;flex-direction:column;justify-content:center;padding:14px 26px}
-    .mc-pa-m p{margin:0;font:26px/1.3 var(--f-body);color:var(--ink)}
-    .mc-pa-m b{display:block;margin-top:6px;font:800 34px/1.18 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums}
-    .mc-pa-m b .x{font:700 34px var(--f-body)}
-    .mc-pa-g{display:flex;flex-direction:column;justify-content:center;padding:26px 20px 8px}
-    .mc-pa-g math{font-size:36px}
-    .mc-pa-g .mc-cap{margin-top:4px}
-    .mc-pa-g .mc-fn{display:block;margin-top:4px;text-align:center}
-    .mc-kern{margin-left:-.07em}   /* Arial Bold leaves a gap between O and T in "MOTION": close it */
-    .mc-pa .term{min-height:0}
+    .slide[data-id="mc-paths"] .s-title{font-size:50px;white-space:nowrap}
+    .mc-pa{display:grid;grid-template-rows:auto minmax(0,1fr);row-gap:22px;height:100%}
+    .mc-pa-t{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.35fr) 400px;column-gap:24px;min-height:0}
+    .mc-pa-g{display:flex;flex-direction:column;justify-content:center;padding:30px 18px 12px}
+    .mc-pa-g math{font-size:30px}
+    .mc-pa-g .mc-cap{margin-top:8px;font-size:19px;line-height:1.35;text-align:center}
+    .mc-pa-g .mc-cap math{font-size:21px}
+    .mc-pa-g .sep{margin:0 6px;color:var(--muted)}
+    .mc-pa .dr{color:var(--green-ink)}
+    .mc-pa .sh{color:var(--green)}
+    .mc-pa .mc-bl{font-family:var(--f-body);font-size:.62em;font-weight:700}
+    .mc-pa-w{padding:28px 20px 12px}
+    .mc-pa-w dl{display:grid;grid-template-columns:auto 1fr;column-gap:16px;row-gap:2px;margin:0;align-items:baseline}
+    .mc-pa-w dt{font-size:24px}
+    .mc-pa-w dd{margin:0;font:21px/1.3 var(--f-body);color:var(--ink)}
+    .mc-pa-chart{margin:0;min-height:0;display:flex;flex-direction:column}
+    .mc-pa-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
+    .mc-pa-chart figcaption{margin-top:4px;font:21px var(--f-body);color:var(--muted)}
   `);
 
   // =====================================================================================================
@@ -683,28 +686,38 @@
   const PA = { seed: 73, ten: 10, many: 500, dayMs: 2200, tenMs: 1400, manyMs: 2200 };
   const STOCK_VARS = ["--c-adbe", "--c-aapl", "--c-msft"], STOCK_TEXT = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];
   const CLOUD_A = [.07, .075, .13];   // the hundreds: Microsoft's light green needs a little more to show on white
-  const GBM = `<math display="block"><mi>d</mi><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><mo stretchy="false">(</mo><mi>r</mi><mo>−</mo><mi>q</mi><mo stretchy="false">)</mo><mo>·</mo><msub><mi>S</mi><mi>t</mi></msub><mi>d</mi><mi>t</mi><mo>+</mo><mi>σ</mi><mo>·</mo><msub><mi>S</mi><mi>t</mi></msub><mi>d</mi><msub><mi>W</mi><mi>t</mi></msub></math>`;
+  // the lecture's GBM (Lecture 4, slide 15), in its notation r_f and δ: continuous, then in daily steps of Δt
+  const ST = `<msub><mi>S</mi><mi>t</mi></msub>`, RFD = `<mo stretchy="false">(</mo><msub><mi>r</mi><mi>f</mi></msub><mo>−</mo><mi>δ</mi><mo stretchy="false">)</mo>`, DT = `<mi>Δ</mi><mi>t</mi>`;
+  const BR = (inner, lab, cls) => `<munder><munder><mrow class="${cls}">${inner}</mrow><mo>⏟</mo></munder><mtext class="mc-bl ${cls}">${lab}</mtext></munder>`;
+  const GBM = `<math display="block"><mi>d</mi>${ST}<mo>=</mo>${BR(`${RFD}<mo>·</mo>${ST}<mi>d</mi><mi>t</mi>`, "drift", "dr")}<mo>+</mo>${BR(`<mi>σ</mi><mo>·</mo>${ST}<mi>d</mi><msub><mi>W</mi><mi>t</mi></msub>`, "shock", "sh")}</math>`;
+  const GBMD = `<math display="block"><msub><mi>S</mi><mrow><mi>t</mi><mo>+</mo>${DT}</mrow></msub><mo>=</mo>${ST}<mo>+</mo>${BR(`${RFD}<mo>·</mo>${ST}<mo>·</mo>${DT}`, "drift", "dr")}<mo>+</mo>${BR(`<mi>σ</mi><mo>·</mo>${ST}<mo>·</mo><msqrt>${DT}</msqrt><mo>·</mo><mi>Z</mi>`, "shock", "sh")}</math>`;
+  const DTN = `<math>${DT}<mo>=</mo><mfrac><mi>T</mi><mi>N</mi></mfrac><mo>=</mo><mfrac><mn>1</mn><mn>${NDAY}</mn></mfrac></math>`;
+  const ZN = `<math><mi>Z</mi><mo>∼</mo><mi mathvariant="script">N</mi><mo stretchy="false">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false">)</mo></math>`;
+  const WV = (sym, txt) => `<dt><math>${sym}</math></dt><dd>${txt}</dd>`;
 
   Deck.addSlide({
-    id: "mc-paths", section: "mc", steps: 2, secs: 18,
+    id: "mc-paths", section: "mc", after: "mc-sample", steps: 3, secs: 45,
     title: "Geometric Brownian motion: building one simulated year",
-    subtitle: `${NDAY} daily moves on each of three stocks, ${fmt(DIMS, 0)} random numbers per path`,
+    subtitle: `One step per trading day: ${NDAY} steps make one simulated year of each stock`,
     lecture: "Lecture 4, slide 15",
-    sources: "Boyle (1977); Arnold (2026), slide 15; own simulation",
-    notes: "In 1977, Phelim Boyle brought Monte Carlo to option pricing. For us, each dart becomes a whole year: 252 random daily moves, on three stocks at once. [→] The lecture calls this geometric Brownian motion. [→] Now, let's build it in Excel.",
+    sources: "Boyle (1977); Arnold (2026), slide 15; own illustration",
+    notes: "Step one in detail: how do we simulate a path? Our lecture models a share price with geometric Brownian motion: a risk-neutral drift, the risk-free rate minus the dividend yield, plus a random shock that scales with the volatility. Phelim Boyle brought this to option pricing in 1977. [→] On a computer we take small steps: one trading day each. Tomorrow's price is today's price, plus the drift, plus a shock with a new random number Z from a standard normal distribution. The shock grows with the square root of delta t, because the variance grows linearly with time. Repeat this 252 times, and you have one simulated year, here for each of our three stocks. [→] Ten years. [→] And five hundred. In Excel, we simulate 2,000.",
     render(body) {
-      twoLines(body);
       body.innerHTML = `
         <div class="mc-pa">
           <div class="mc-pa-t">
-            <div class="mc-pa-y"><b>1977</b><p>Phelim Boyle brings Monte Carlo to option pricing</p></div>
-            <div class="card mc-pa-m"><p>Each dart becomes a whole year:</p><b>1 path = ${NDAY} random daily moves<br><span class="x">×</span> ${NSTOCK} stocks</b></div>
-            <div class="fbox mc-pa-g" data-step="1"><span class="chip">GEOMETRIC BROWNIAN MO<span class="mc-kern">TION</span></span>${GBM}<p class="mc-cap">the lecture's model for a stock price</p>${lectureNote(`<math>${RF}</math> and <math><mi>δ</mi></math>`)}</div>
+            <div class="fbox mc-pa-g"><span class="chip">CONTINUOUS TIME</span>${GBM}<p class="mc-cap">the lecture's model for a share price</p></div>
+            <div class="fbox mc-pa-g mc-pa-d" data-step="1"><span class="chip">IN DAILY STEPS</span>${GBMD}<p class="mc-cap">${DTN} <span class="sep">·</span> ${ZN}, a new random number every day<br><math><msqrt>${DT}</msqrt></math> because the variance grows linearly with time</p></div>
+            <section class="panel mc-pa-w"><h3 class="panel-title">Where</h3><dl>
+              ${WV(ST, "share price on day t")}${WV(`<msub><mi>r</mi><mi>f</mi></msub>`, "risk-free rate")}${WV("<mi>δ</mi>", "dividend yield")}${WV("<mi>σ</mi>", "volatility")}${WV("<mi>T</mi><mo>,</mo><mi>N</mi>", "1 year, 252 steps")}${WV(`<mi>d</mi><msub><mi>W</mi><mi>t</mi></msub>`, "Wiener process increment")}${WV("<mi>Z</mi>", "standard normal draw")}
+            </dl></section>
           </div>
-          ${U.term({ cls: "mc-term", fn: "GBM", title: "THREE STOCKS AT ONCE · DAILY STEPS · % OF START", meta: `<span class="mc-tag">OUR EXCEL'S INPUTS</span>`, body: "<canvas></canvas>",
-            stats: `<div><div class="k">Paths (simulated years)</div><div class="v mc-v0">1</div></div><div><div class="k">Random numbers per path <em>· ${NDAY} days × ${NSTOCK} stocks</em></div><div class="v">${fmt(DIMS, 0)}</div></div><div><div class="k">Random numbers drawn</div><div class="v mc-v1">0</div></div>` })}
+          <figure class="mc-pa-chart">
+            <canvas></canvas>
+            <figcaption>Simulated years of our three stocks, with our Excel's inputs (volatilities, dividends, correlations, risk-free rate)</figcaption>
+          </figure>
         </div>`;
-      const cv = body.querySelector("canvas"), vs = [0, 1].map(i => body.querySelector(".mc-v" + i));
+      const cv = body.querySelector("canvas");
       const XP = Object.assign({}, B, XL.model);
       let sims = null, gen = null;
       function scen(k) {   // seeded scenarios, generated as far as needed (never at page load)
@@ -722,12 +735,10 @@
       function line(ctx, ax, p, upto, off) { const o = off || 0; ctx.beginPath(); ctx.moveTo(ax.X(0), ax.Y(p[0] * 100)); for (let d = 1; d <= upto; d++) ctx.lineTo(ax.X(d) + o, ax.Y(p[d] * 100)); ctx.stroke(); }
       function draw() {
         const paths = st.n > 1 ? st.n : st.ten ? PA.ten : 1;
-        vs[0].textContent = fmt(paths, 0);
-        vs[1].textContent = fmt(st.n > PA.ten ? st.n * DIMS : st.ten ? DIMS + (PA.ten - 1) * st.ten * NSTOCK : st.day * NSTOCK, 0);
         const c = U.canvas(cv); if (!c) return;
         const { ctx, w, h } = c, F = frames(w, h), cols = STOCK_VARS.map(v => css(v)), txt = STOCK_TEXT.map(v => css(v)), muted = css("--term-muted");
         const S = scen(Math.max(st.n, st.ten ? PA.ten : 1));
-        const axs = F.map((f, k) => U.axes(ctx, f, Object.assign({}, yOpt, MONTHS, k === 1 ? { xLabel: "MONTH" } : {})));
+        const axs = F.map((f, k) => U.axes(ctx, f, Object.assign({}, yOpt, MONTHS, k === 1 ? { xLabel: "Month" } : {})));
         // the hundreds: added to the layer as they come, then copied in one go
         const key = cv.width + "x" + cv.height;
         if (key !== layer.key || layer.n > st.n) { layer.cv.width = cv.width; layer.cv.height = cv.height; layer.key = key; layer.n = PA.ten; }
@@ -762,18 +773,19 @@
         F.forEach((f, k) => {
           const ax = axs[k];
           ctx.fillStyle = css("--ink"); ctx.beginPath(); ctx.arc(ax.X(0), ax.Y(100), 4.5, 0, 7); ctx.fill();
-          ctx.font = "700 19px " + U.F.mono; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillStyle = txt[k];
-          ctx.fillText(`${B.names[k].toUpperCase()} (${B.tickers[k]}) · σ ${fmt(XP.sigma[k] * 100, 0)}%`, f.x, 22);
+          ctx.font = "700 20px " + U.F.body; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillStyle = txt[k];
+          ctx.fillText(`${B.names[k]} ($${B.tickers[k]}) · σ ${fmt(XP.sigma[k] * 100, 0)}%`, f.x, 22);
         });
       }
       function step(i, o) {
         if (a) { a.cancel(); a = null; }
         cur = i;
-        if (i === 0) {
+        if (i === 0) { st = { day: 0, ten: 0, n: 1 }; draw(); return; }
+        if (i === 1) {
           if (fwd(o)) { st = { day: 0, ten: 0, n: 1 }; a = U.anim(PA.dayMs, k => { st.day = Math.round(k * NDAY); draw(); }, { ease: U.ease.lin, done: () => { a = null; } }); return; }
           st = { day: NDAY, ten: 0, n: 1 }; draw(); return;
         }
-        if (i === 1) {
+        if (i === 2) {
           if (fwd(o)) { st = { day: NDAY, ten: 0, n: 1 }; a = U.anim(PA.tenMs, k => { st.ten = Math.round(k * NDAY); draw(); }, { ease: U.ease.inOut, done: () => { a = null; } }); return; }
           st = { day: NDAY, ten: NDAY, n: 1 }; draw(); return;
         }
