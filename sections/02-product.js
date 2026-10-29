@@ -133,6 +133,13 @@
     .prd-tr.tree .prd-tb.shr .exl{font-size:24px;line-height:1.45;margin-top:auto;padding-top:10px}
     .prd-tr.tree .prd-tb.shr .exl .eh{font-weight:700;margin:0 0 2px}
     .prd-tr.tree .prd-tb.shr .exl .eg>span:nth-child(-n+2){color:var(--muted)}
+    .prd-when{position:absolute;left:1500px;top:0;width:244px;height:0}
+    .prd-when .ax{position:absolute;left:0;top:-6px;height:226px;width:3px;background:var(--rule)}
+    .prd-when .ax::after{content:"";position:absolute;left:-7px;bottom:-4px;border:8.5px solid transparent;border-top:12px solid var(--rule);border-bottom:0}
+    .prd-when>div:not(.ax){position:absolute;left:18px;right:0;display:flex;flex-direction:column;justify-content:center;font:18px/1.25 var(--f-body);color:var(--muted)}
+    .prd-when>div:not(.ax)::before{content:"";position:absolute;left:-24px;top:50%;width:15px;height:15px;margin-top:-7.5px;border-radius:50%;background:var(--green-ink)}
+    .prd-when b{font:700 20px/1.2 var(--f-body);color:var(--ink)}
+    .slide .prd-when [data-step]{transform:none}
     .prd-cpl{position:absolute;background:#3B8A5A;border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:22px;font:700 26px/1 var(--f-body)}
     .prd-cpl .k{text-transform:uppercase;letter-spacing:.06em;font-size:22px;background:#fff;color:#2F7A4C;padding:6px 12px;border-radius:6px}
     .prd-cpl .v{font-size:30px} .prd-cpl .s{font-weight:400;font-size:24px;opacity:.95}
@@ -491,6 +498,11 @@
               <path d="M${Q2c} ${Q2[1] + Q2[3]}V${L2}H${cxs(B1)}V${B1[1] - 6}" marker-end="url(#prd-arr)"/>${pill((Q2c + cxs(B1)) / 2, L2, "Yes", true)}</g>
             <g data-step="3"><path d="M${Q2c} ${L2}H${cxs(C1)}V${C1[1] - 6}" marker-end="url(#prd-arr)"/>${pill((Q2c + cxs(C1)) / 2, L2, "No", false)}</g>
           </svg>
+          <div class="prd-when">
+            <div class="ax"></div>
+            <div class="w1" style="top:${Q1[1]}px;height:${Q1[3]}px" data-step="1"><b>During the whole term</b><span>barrier watched every day</span><span>(American-style)</span></div>
+            <div class="w2" style="top:${Q2[1]}px;height:${Q2[3]}px" data-step="2"><b>Only at maturity</b><span>strike checked once</span><span>(European-style)</span></div>
+          </div>
           <div class="prd-tb q" style="${pos(Q1)}" data-step="1"><span class="num">?</span><span>Kick-in: did any stock touch ${KI}?</span></div>
           <div class="prd-tb q" style="${pos(Q2)}" data-step="2"><span class="num">?</span><span>Is every stock at or above its strike (100%)?</span></div>
           ${cashBox(A1, "1")}
