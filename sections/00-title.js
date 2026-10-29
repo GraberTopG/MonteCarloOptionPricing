@@ -112,32 +112,26 @@
       <div class="tt-right"><canvas></canvas></div>
       <svg class="tt-edge" viewBox="0 0 1920 1080"><line x1="1130" y1="0" x2="770" y2="1080" style="stroke:var(--green)" stroke-width="4"/></svg>`);
     const cv = root.querySelector(".tt-right canvas");
-    const n = B.steps, N = 2000, FAN = 160;
-    // the chart in stage pixels: days from X0 to X1, the histogram from HX (bars up to HW long), levels on Y (100% at y 540)
-    const X0 = 1130, X1 = 1650, HX = 1676, HW = 184;
+    const n = B.steps, FAN = 160;
+    // the chart in stage pixels: days from X0 to X1, levels on Y (100% at y 540)
+    const X0 = 1130, X1 = 1840, XR = 1860;
     const X = i => X0 + i / n * (X1 - X0), Y = v => 540 - (v - 1) * 560;
-    const LO = 0.2, HI = 1.7, BIN = 0.05, NB = Math.round((HI - LO) / BIN);   // bins of the worst stock after one year
 
     let sim = null;   // simulated on the first draw (the end card only when it is shown)
     function simulate() {
-      const norm = U.normal(U.rng(seed)), fan = [], bins = Array.from({ length: NB }, () => [0, 0]);
-      for (let p = 0; p < N; p++) {
+      const norm = U.normal(U.rng(seed)), fan = [];
+      for (let p = 0; p < FAN; p++) {
         const sc = U.simBRC(norm);
-        if (p < FAN) {
-          const w = new Float64Array(n + 1);
-          let lo = Infinity;
-          for (let t = 0; t <= n; t++) { w[t] = Math.min(sc.paths[0][t], sc.paths[1][t], sc.paths[2][t]); lo = Math.min(lo, w[t]); }
-          fan.push({ w, lo, end: sc.worst, ki: sc.ki, kiDay: sc.kiDay });
-        }
-        const b = Math.floor((sc.worst - LO) / BIN);
-        if (b >= 0 && b < NB) bins[b][sc.redemption < 1 ? 1 : 0]++;   // [1,000 back, shares]
+        const w = new Float64Array(n + 1);
+        let lo = Infinity;
+        for (let t = 0; t <= n; t++) { w[t] = Math.min(sc.paths[0][t], sc.paths[1][t], sc.paths[2][t]); lo = Math.min(lo, w[t]); }
+        fan.push({ w, lo, end: sc.worst, ki: sc.ki, kiDay: sc.kiDay });
       }
       // the two highlighted years: one that stays well above the kick-in level and ends near its start, one that touches it
       // mid-year and ends clearly below it
       const good = fan.find(f => !f.ki && f.lo > .78 && f.end > .97 && f.end < 1.2) || fan.find(f => !f.ki);
       const bad = fan.find(f => f.ki && f.kiDay > 90 && f.kiDay < 190 && f.end < .6) || fan.find(f => f.ki);
-      const used = bins.map((b, i) => b[0] + b[1] ? i : -1).filter(i => i >= 0);   // the lowest and highest bins with a bar
-      return { fan, bins, max: Math.max(...bins.map(b => b[0] + b[1])), bottom: used[0], top: used[used.length - 1], good, bad };
+      return { fan, good, bad };
     }
 
     // the fan is drawn once into a layer at the canvas's own resolution; the animation only reveals it from left to right
@@ -157,13 +151,13 @@
         sim.fan.forEach(f => { g.beginPath(); g.moveTo(X(0), Y(f.w[0])); for (let i = 1; i <= n; i++) g.lineTo(X(i), Y(f.w[i])); g.stroke(); });
       }
       const upto = Math.max(1, Math.round(n * Math.min(1, k / .72)));   // days shown: the paths grow in the first 72% of the time
-      const hg = U.ease.out(Math.max(0, Math.min(1, (k - .6) / .4)));    // then the histogram grows
+      const lg = Math.max(0, Math.min(1, (k - .72) / .2));                // then the legend fades in
       // the fan, revealed up to the day shown
       ctx.save(); ctx.beginPath(); ctx.rect(0, 0, X(upto), c.h); ctx.clip();
       ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(layer, 0, 0);
       ctx.restore();
       // the strike (grey) and the kick-in level (black), dashed over the fan, labelled on the left like an axis
-      const level = (v, colr, wdt) => { ctx.setLineDash([10, 8]); ctx.strokeStyle = colr; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(X0, Y(v)); ctx.lineTo(HX + HW, Y(v)); ctx.stroke(); ctx.setLineDash([]); };
+      const level = (v, colr, wdt) => { ctx.setLineDash([10, 8]); ctx.strokeStyle = colr; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(X0, Y(v)); ctx.lineTo(XR, Y(v)); ctx.stroke(); ctx.setLineDash([]); };
       level(B.strike, col.rule, 2); level(B.kickIn, col.ink, 2.5);
       ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
       ctx.fillStyle = col.muted; ctx.fillText("STRIKE " + Math.round(B.strike * 100) + "%", X0 - 18, Y(B.strike));
@@ -183,29 +177,20 @@
       if (upto >= sim.bad.kiDay) dot(X(sim.bad.kiDay), Y(sim.bad.w[sim.bad.kiDay]), 10, "#fff", col.ink);   // the touch
       if (upto >= n) { dot(X(n), Y(sim.good.w[n]), 7, col.green); dot(X(n), Y(sim.bad.w[n]), 7, col.ink); }
       dot(X(0), Y(1), 7, U.css("--green-ink"));
-      // where the worst stock ends: one bar per 5% band, 1,000 back (green) then shares (black), on a baseline as long as the bars
-      if (hg > 0) {
-        ctx.strokeStyle = col.rule; ctx.lineWidth = 1.5; ctx.globalAlpha = Math.min(1, hg * 3);
-        ctx.beginPath(); ctx.moveTo(HX - .5, Y(LO + (sim.top + 1) * BIN) - 8); ctx.lineTo(HX - .5, Y(LO + sim.bottom * BIN) + 8); ctx.stroke();
-        const L = HW / sim.max * hg;
-        ctx.globalAlpha = .85;
-        sim.bins.forEach(([full, shares], b) => {
-          const y0 = Y(LO + (b + 1) * BIN) + 3.5, h = Y(LO + b * BIN) - 3.5 - y0;
-          ctx.fillStyle = col.green; ctx.fillRect(HX, y0, full * L, h);
-          ctx.fillStyle = col.ink; ctx.fillRect(HX + full * L, y0, shares * L, h);
-        });
-        ctx.globalAlpha = 1;
-      }
-      // what the chart shows: a caption above the fan, and a legend for the histogram's two colours under it
+      // what the chart shows: a caption above the fan, and under it the payoff of the two highlighted years
       ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
       ctx.textAlign = "left"; ctx.fillStyle = col.muted;
       ctx.fillText("WORST OF ADOBE, APPLE, MICROSOFT · SIMULATED YEARS", 1150, 92);
-      if (hg > 0) {
-        ctx.globalAlpha = Math.min(1, hg * 3);
-        const ly = 1028, item = (x, colr, txt) => { ctx.fillStyle = colr; ctx.fillRect(x, ly - 9, 18, 18); ctx.fillStyle = col.ink; ctx.textAlign = "left"; ctx.fillText(txt, x + 28, ly); };
-        ctx.fillStyle = col.muted; ctx.textAlign = "right"; ctx.fillText("AFTER 1 YEAR:", 1440, ly);
-        item(1462, col.green, "USD 1,000 BACK");
-        item(1680, col.ink, "SHARES INSTEAD");
+      if (lg > 0) {
+        ctx.globalAlpha = lg;
+        const ly = 1028, items = [["PAYOFF:", null], ["COUPONS + USD 1,000", col.green], ["COUPONS + SHARES OF THE WORST", col.ink]];
+        const w = items.map(([t, c]) => ctx.measureText(t).width + (c ? 46 : 0));
+        let x = XR - w.reduce((s, v) => s + v, 0) - 28 * (items.length - 1);
+        items.forEach(([t, c], i) => {
+          if (c) { ctx.strokeStyle = c; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x, ly); ctx.lineTo(x + 32, ly); ctx.stroke(); }
+          ctx.fillStyle = c ? col.ink : col.muted; ctx.fillText(t, x + (c ? 46 : 0), ly);
+          x += w[i] + 28;
+        });
         ctx.globalAlpha = 1;
       }
       ctx.letterSpacing = "0px";
