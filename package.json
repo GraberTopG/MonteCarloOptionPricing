@@ -1,5 +1,8 @@
 {
   "name": "monte-carlo-option-pricing",
   "private": true,
-  "description": "Corporate Finance group video: pricing a Worst-Of Multi Barrier Reverse Convertible with Monte Carlo simulation"
+  "description": "Corporate Finance group video: pricing a Worst-Of Multi Barrier Reverse Convertible with Monte Carlo simulation",
+  "dependencies": {
+    "@vercel/functions": "^3.9.11"
+  }
 }

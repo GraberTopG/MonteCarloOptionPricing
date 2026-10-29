@@ -73,7 +73,7 @@ The list of sources and references is on the last slide and in `sections/07-refe
 
 ## Viewing the presentation
 
-It is a static site with no build step. Open `index.html` through any local web server, for example:
+The published site is protected by a group password (`middleware.js`, set as `SITE_PASSWORD` in the Vercel project settings). Locally it is a static site with no build step. Open `index.html` through any local web server, for example:
 
 ```bash
 python3 -m http.server 8000
