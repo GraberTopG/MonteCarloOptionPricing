@@ -245,6 +245,8 @@
     .prd-mc .wm-row.dep .v{color:var(--ink)}
     .prd-mc .wm-diff{margin:0;font:22px/1.3 var(--f-body);color:var(--ink)}
     .prd-mc .wm-diff b{color:var(--ink)}
+    .prd-mc .wm-mc{margin:18px 0 0;padding-top:18px;border-top:3px solid var(--green);font:700 24px/1.3 var(--f-body);color:var(--green)}
+    .prd-mc .wm-mc b{color:var(--green)}
     .prd-mc>.term{position:absolute;left:0;right:0;top:36px;height:704px;transition:opacity .45s ease,transform .45s ease}
     .prd-mc .term-stats{gap:40px}
     .prd-mc .term-stats .k{font-size:16px}
@@ -700,7 +702,7 @@
   Deck.addSlide({
     id: "brc-why-mc", section: "why", after: "bt-recap", steps: 5, secs: 44,
     title: "The whole path matters: no closed-form solution for a Multi-BRC",
-    subtitle: "A barrier alone and three stocks alone have a formula, while both together do not",
+    subtitle: "A barrier alone and three stocks alone have a closed-form solution, while both together do not",
     sources: "Rubinstein & Reiner (1991); Stulz (1982); Johnson (1987); own illustration",
     notes: `(Clicks 1–3: one simulated year, no narration.) [→] [→] [→] Here is one possible year of our product, and it shows the two problems. [→] First, the barrier: one touch at any moment changes everything, so the whole path matters. [→] Second, three stocks: the less they move together, the more likely one of them falls through its barrier on its own. There are formulas for a barrier on one stock, and for the worst of two stocks, but none for our product. No formula, and a tree that's too big: so we simulate. That's Monte Carlo.`,
     render(body) {
@@ -769,6 +771,7 @@
                 <p class="v">USD ${f0(red1000 + CPN)}</p>
               </div>
               <p class="wm-diff">Same final prices, <b>USD ${f0(NOM - red1000)} less</b></p>
+              <p class="wm-mc" data-step="5" style="--d:4">→ No closed-form solution, and a tree that's too big: so we simulate. That's <b>Monte Carlo</b>.</p>
             </aside>
           </div>
           <p class="wm-cap">Illustrative price developments of three underlyings during ${n} trading days, a strike of ${Math.round(B.strike * 100)}% and a barrier of ${KI}</p>
