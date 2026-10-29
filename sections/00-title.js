@@ -560,7 +560,7 @@
             <div class="hk-rf" data-step="1" style="--d:11"><p class="k">Risk-free rate</p><p class="n">${R_TXT}%</p><p>continuously compounded ≈ ${R_YEAR}% a year</p></div>
           </div>
           <div class="hk-fam">
-            <p class="hk-fam-h">Where it sits: Swiss Derivative Map (SSPA)</p>
+            <p class="hk-fam-h">Where it sits: Swiss Derivative Map of the Swiss Structured Products Association (SSPA)</p>
             <div class="hk-fam-r">
               <div class="hk-fb"><b>11</b><span>Capital protection</span></div>
               <div class="hk-fb y"><div class="hd"><b>12</b><span>Yield enhancement</span></div>
