@@ -158,7 +158,7 @@
             <h3 class="panel-title">Why it doesn't fit a Multi-BRC</h3>
             <ul>
               <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>Three stocks</b>the tree grows in three dimensions: (k + 1)³ nodes after k steps</span></li>
-              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Daily barrier</b>${BT_N} steps needed: ${U.fmt(BT_ONE, 0)} nodes for one stock</span></li>
+              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Daily barrier</b>${BT_N} steps needed to check the barrier every trading day</span></li>
             </ul>
             <div class="lec-why2" data-step="1" style="--d:6"><span>Our Multi-BRC: <b>three stocks</b> × <b>${BT_N} days</b> ≈ <b>${U.fmt(BT_BN, 1)} billion nodes</b></span><span class="ar" aria-hidden="true"></span><span class="no"><span class="x">✕</span>Works in theory, but too big to compute</span></div>
           </section>
