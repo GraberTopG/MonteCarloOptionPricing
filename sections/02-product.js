@@ -657,11 +657,10 @@
             <h4>Down-and-in put on the worst of three</h4>
             <p>You sold it: after a kick-in, you bear the loss.</p>
             <div class="prd-f">${M_PUT}<small>only after a kick-in</small></div>
-            <span class="prd-mcring" data-step="3" style="--d:6"></span>
           </div>
           <div class="card prd-same" data-step="2" style="--d:3"><span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 21h14"/><path d="M4 7h16"/><path d="M7 7l-3 7a3 3 0 0 0 6 0z"/><path d="M17 7l-3 7a3 3 0 0 0 6 0z"/></svg></span><div><b>The law of one price</b><span class="eq">Price(Multi-BRC) =</span><span class="eq">Price(bond) − Price(put)</span></div></div>
           <div class="prd-vd easy" data-step="3"><span class="badge">${U.icon("check")}</span><div><h4>Bond: Easy to price</h4><p>just discount it</p></div></div>
-          <div class="prd-vd hard" data-step="3" style="--d:3"><span class="badge">${U.icon("warn")}</span><div><h4>Put: Hard to price</h4><p>barrier + three stocks</p></div><span class="prd-mcring" data-step="3" style="--d:6"></span></div>
+          <div class="prd-vd hard" data-step="3" style="--d:3"><span class="badge">${U.icon("warn")}</span><div><h4>Put: Hard to price</h4><p>barrier + three stocks</p></div></div>
           <p class="prd-wdef">W = worst stock at maturity ÷ its starting price</p>
           <p class="prd-mcgo" data-step="3" style="--d:6"><span class="ar">↑</span>Valued with <b>Monte Carlo</b></p>
         </div>`;
