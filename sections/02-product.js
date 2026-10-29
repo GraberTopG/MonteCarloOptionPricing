@@ -897,12 +897,12 @@
         ctx.fillText("Maturity: day " + n, X(n), f.y - 8);
         // paths: the worst one on top; dim the others at maturity, except the stock that touched while reason 2 is about it
         // (on the white panel the dimmed lines keep 45%, their labels 67%, so the light greens stay readable)
-        const dim = k => k === sc.worstAsset ? 1 : 1 - .55 * S.mat * (k === kAsset ? 1 - S.two : 1), dimT = k => 1 - (1 - dim(k)) * .6;
-        const order = [0, 1, 2].filter(k => k !== sc.worstAsset).concat([sc.worstAsset]);
+        const dim = k => k === sc.worstAsset || k === kAsset ? 1 : 1 - .55 * S.mat, dimT = k => 1 - (1 - dim(k)) * .6;   // the stock that touched stays strong
+        const order = [0, 1, 2].filter(k => k !== sc.worstAsset && k !== kAsset).concat(kAsset === sc.worstAsset ? [] : [kAsset], [sc.worstAsset]);
         order.forEach(k => {
           const isW = k === sc.worstAsset;
           ctx.globalAlpha = dim(k);
-          ctx.strokeStyle = cols[k]; ctx.lineWidth = isW ? 2.6 + 2 * S.mat : 2.6; ctx.lineJoin = "round";
+          ctx.strokeStyle = k === kAsset && !isW ? tcols[k] : cols[k]; ctx.lineWidth = isW ? 2.6 + 2 * S.mat : k === kAsset ? 3.4 : 2.6; ctx.lineJoin = "round";   // the stock that touched: darker and thicker
           ctx.beginPath(); ctx.moveTo(X(0), Y(1));
           for (let t = 1; t <= S.upto; t++) ctx.lineTo(X(t), Y(sc.paths[k][t]));
           ctx.stroke();
