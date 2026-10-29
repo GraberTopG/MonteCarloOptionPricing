@@ -542,8 +542,9 @@
           ctx.fillStyle = text; ctx.strokeStyle = text;
           if (k === 1) {
             ctx.strokeStyle = muted; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(10, G1.y); ctx.lineTo(310, G1.y); ctx.stroke();
-            ctx.strokeStyle = text; ctx.lineWidth = 2; ctx.globalAlpha = .8;
-            for (let i = 0; i < shown; i++) { const x = G1.x0 + pts[i][0] * (G1.x1 - G1.x0); ctx.beginPath(); ctx.moveTo(x, G1.y - 13); ctx.lineTo(x, G1.y + 13); ctx.stroke(); }
+            // dots on the line, like the 2D and 3D clouds; see-through, so where they bunch up it shows
+            ctx.globalAlpha = .45;
+            for (let i = 0; i < shown; i++) { const x = G1.x0 + pts[i][0] * (G1.x1 - G1.x0); ctx.beginPath(); ctx.arc(x, G1.y, 3.8, 0, 7); ctx.fill(); }
           } else if (k === 2) {
             ctx.strokeStyle = line; ctx.lineWidth = 1.5; ctx.strokeRect(G2.x0 - 8, G2.y0 - 4, G2.s + 16, G2.s + 8);
             ctx.globalAlpha = .9;
