@@ -425,7 +425,7 @@
     id: "brc-tree", section: "product", steps: 4, secs: 34,
     title: "Payoff scenarios per USD 1,000 invested",
     subtitle: "You always get the coupons, then either your USD 1,000 back or shares of the worst stock",
-    sources: "adapted from UBS AG (2018); own illustration",
+    sources: "Own illustration",
     notes: `You always get both coupons, ${CPN} dollars. [→] At the end, your thousand comes back in cash if no stock touched its barrier. [→] If one did, that's called the kick-in. Then the final prices decide. If every stock ends at or above its starting price, you still get cash. [→] If even one ends below, you get shares of the worst stock, with fractions paid in cash. [→] Say it ends ${f0((1 - EX_WORST) * 100)} percent down: shares worth ${f0(EX_SHARES)}, plus the coupons, ${f0(EX_SHARES + CPN)}.`,
     render(body) {
       // boxes in body pixels (the body is always 1744 × 740): x, y, w, h
@@ -493,7 +493,7 @@
     id: "brc-suits", section: "product", steps: 1, secs: 17,
     title: "When it suits you, and the risks",
     subtitle: "Best in a sideways or slightly-down year",
-    sources: "UBS AG (2018); own illustration",
+    sources: "Own illustration",
     notes: `It suits stocks that go sideways or fall a little. [→] The risks: after a kick-in you lose like a shareholder, your gain is capped at ${f0(XL.coupon * 100)} percent, you get no dividends, and if UBS goes bankrupt, your money is at risk.`,
     render(body) {
       // one item: the term in bold, the line under it; the risks build in at step 1
