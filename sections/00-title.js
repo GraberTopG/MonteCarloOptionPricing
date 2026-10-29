@@ -412,9 +412,13 @@
           H.px.forEach((p, s) => {
             const y = Y(consPath(s, FUT)), x = xe + 20;
             ctx.fillStyle = U.css(COL[s]); ctx.font = "700 26px " + U.F.body; ctx.textBaseline = "bottom";
-            ctx.fillText(B.names[s], x, y - 2);
+            ctx.fillText(B.names[s] + " ($" + B.tickers[s] + ")", x, y - 2);
+            // the target in the stock's colour, the change next to it: grey when flat or up a little, red when down
             ctx.font = "700 22px " + U.F.body; ctx.textBaseline = "top";
-            ctx.fillText("USD " + U.fmt(consPath(s, FUT), 2) + " (" + (CONS[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CONS[s]) * 100, 1) + "%)", x, y + 6);
+            const tp = "USD " + U.fmt(consPath(s, FUT), 2) + " ";
+            ctx.fillText(tp, x, y + 6);
+            ctx.fillStyle = CONS[s] < 0 ? "#B3261E" : U.css("--muted");
+            ctx.fillText("(" + (CONS[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CONS[s]) * 100, 1) + "%)", x + ctx.measureText(tp).width, y + 6);
           });
         }
         ctx.globalAlpha = 1;
