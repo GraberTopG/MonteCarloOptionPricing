@@ -245,15 +245,16 @@
         });
       };
       // the three payoff scenarios: 1 never touches 65%, 2 touches it but ends above the strike, 3 touches it and ends below
-      const SCN = [[sim.good, col.green], [sim.mid, col.muted], [sim.bad, col.ink]].filter(([f]) => f);
+      const SCN = [[sim.good, col.green], [sim.mid, col.green], [sim.bad, col.ink]].filter(([f]) => f);   // 1 and 2a pay the same: both green
+      const NUM = f => ["1", "2a", "2b"][[sim.good, sim.mid, sim.bad].indexOf(f)];   // the numbering of the scenario slide
       SCN.forEach(([f, cl]) => path(f, cl));
       const dot = (x, y, r, fill, ring) => { ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = fill; ctx.fill(); if (ring) { ctx.strokeStyle = ring; ctx.lineWidth = 3; ctx.stroke(); } };
-      const badge = (x, y, num, cl) => { dot(x, y, 15, cl, "#fff"); ctx.font = "700 17px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = "#fff"; ctx.fillText(num, x, y + 1); };
+      const badge = (x, y, num, cl) => { dot(x, y, 17, cl, "#fff"); ctx.font = "700 " + (num.length > 1 ? 15 : 17) + "px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = "#fff"; ctx.fillText(num, x, y + 1); };
       SCN.forEach(([f, cl]) => { if (f.ki && upto >= f.kiDay) dot(X(f.kiDay), Y(f.w[f.kiDay]), 10, "#fff", cl); });   // the touch
       dot(X(0), Y(1), 7, U.css("--green-ink"));
       if (o.labelsIn) levelLabels();
       if (upto >= n) {   // the numbers at the ends, pushed apart where two ends are close
-        const ends = SCN.map(([f, cl], i) => ({ y: Y(f.w[n]), cl, num: String(i + 1) })).sort((p, q) => p.y - q.y);
+        const ends = SCN.map(([f, cl]) => ({ y: Y(f.w[n]), cl, num: NUM(f) })).sort((p, q) => p.y - q.y);
         for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 34);
         ends.forEach(e => badge(X(n) + 4, e.y, e.num, e.cl));
       }
@@ -269,9 +270,9 @@
         // the legend: one row across the slide (title), or one scenario per row on the right (end card)
         ctx.globalAlpha = lg; ctx.font = "700 18px " + U.F.body; ctx.textBaseline = "middle";
         const TXT = ["COUPONS + USD 1,000", "COUPONS + USD 1,000", "COUPONS + SHARES OF THE WORST"];
-        const items = SCN.map(([f, cl], i) => ({ t: TXT[[sim.good, sim.mid, sim.bad].indexOf(f)], cl, num: String(i + 1) }));
-        const iw = it => 30 + 12 + ctx.measureText(it.t).width;
-        const item = (it, x, y) => { badge(x + 15, y, it.num, it.cl); ctx.font = "700 18px " + U.F.body; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillStyle = col.ink; ctx.fillText(it.t, x + 42, y); };
+        const items = SCN.map(([f, cl]) => ({ t: TXT[[sim.good, sim.mid, sim.bad].indexOf(f)], cl, num: NUM(f) }));
+        const iw = it => 34 + 12 + ctx.measureText(it.t).width;
+        const item = (it, x, y) => { badge(x + 17, y, it.num, it.cl); ctx.font = "700 18px " + U.F.body; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillStyle = col.ink; ctx.fillText(it.t, x + 46, y); };
         const HEAD = "PAYOFF SCENARIOS:";
         if (o.full) {
           const hw = ctx.measureText(HEAD).width, gap = 36;
