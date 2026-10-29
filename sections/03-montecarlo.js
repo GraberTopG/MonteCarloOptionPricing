@@ -312,8 +312,8 @@
       <mo>·</mo>
       <munder><munder><mrow>${PI}</mrow><mo>⏟</mo></munder>${UL("payoff of", "simulated path i")}</munder></math>`;
   // step 3: the average of the n discounted payoffs converges to the lecture's risk-neutral price
-  const LLN = `<math display="block"><mtext>price</mtext><mo>≈</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover>${VI}
-      <mspace width="0.3em"></mspace><mover><mo stretchy="true">⟶</mo><mrow><mi mathsize="0.85em">n</mi><mo mathsize="0.85em">→</mo><mi mathsize="0.85em">∞</mi></mrow></mover><mspace width="0.3em"></mspace>${DF}<mo>·</mo>${EQ}</math>`;
+  const LLN = `<math display="block"><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover>${VI}
+      <mspace width="0.3em"></mspace><mover><mo stretchy="true">⟶</mo><mrow><mi mathsize="0.85em">n</mi><mo mathsize="0.85em">→</mo><mi mathsize="0.85em">∞</mi></mrow></mover><mspace width="0.3em"></mspace>${DF}<mo>·</mo>${EQ}<mo>=</mo><mtext>price</mtext></math>`;
 
   Deck.addSlide({
     id: "mc-sample", section: "mc", steps: 3, secs: 36,
