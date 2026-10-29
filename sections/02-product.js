@@ -717,7 +717,7 @@
       const why1 = sc.ki
         ? `One touch on <b>day ${sc.kiDay}</b> is enough: the <b>whole path</b> matters.`
         : `The ${KI} barrier is watched every day: the <b>whole path</b> matters.`;
-      const why2 = `<div class="t">Formulas exist for one stock with a barrier, or two stocks without one: <b>none for ours</b>.</div>`;
+      const why2 = `<div class="t">Formulas exist for one stock with a barrier, or two stocks without one: <b>none for a Multi-BRC</b>.</div>`;
       const call = (k, cc, ct, head, inner) => `<div class="prd-call c${k}" data-step="${k + 3}" style="--cc:${cc};--ct:${ct}"><div class="h"><span class="n">${k}</span>${head}</div>${inner}</div>`;
       // reason 3 (step 6): the lecture's binomial tree (slide 10), redrawn for one stock and three steps (10 nodes), next to its
       // size for ours; on a card of its own while the chart fades out. Node (c, s): after c steps, s = downs − ups
