@@ -142,7 +142,20 @@
       // mid-year and ends clearly below it
       const good = fan.find(f => !f.ki && f.lo > .78 && f.end > .97 && f.end < 1.2) || fan.find(f => !f.ki);
       const bad = fan.find(f => f.ki && f.kiDay > 90 && f.kiDay < 190 && f.end < .6) || fan.find(f => f.ki);
-      return { fan, good, bad };
+      // the third: touches the kick-in level but ends above the strike (rare, so we keep simulating until one turns up)
+      const okMid = f => f.ki && f.kiDay > 40 && f.kiDay < 200 && f.end > 1.05 && f.end < 1.35 && f.w[n - 15] > .97   // ends clearly above the strike
+        && (!bad || Math.abs(f.kiDay - bad.kiDay) > 45) && (!good || Math.abs(f.end - good.end) > .1);   // its touch and its end apart from the others'
+
+      let mid = fan.find(okMid);
+      for (let p = 0; !mid && p < 50000; p++) {
+        const sc = U.simBRC(norm);
+        if (!sc.ki || sc.worst < 1.05) continue;
+        const w = new Float64Array(n + 1);
+        for (let t = 0; t <= n; t++) w[t] = Math.min(sc.paths[0][t], sc.paths[1][t], sc.paths[2][t]);
+        const f = { w, end: sc.worst, ki: sc.ki, kiDay: sc.kiDay };
+        if (okMid(f)) mid = f;
+      }
+      return { fan, good, mid, bad };
     }
 
     // the fan is drawn once into a layer at the canvas's own resolution; the animation only reveals it from left to right
@@ -174,7 +187,7 @@
       ctx.fillStyle = col.muted; ctx.fillText("STRIKE " + Math.round(B.strike * 100) + "%", X0 - 18, Y(B.strike));
       ctx.fillStyle = col.ink; ctx.fillText("KICK-IN " + KI + "%", X0 - 18, Y(B.kickIn));
       ctx.letterSpacing = "0px";
-      // the two highlighted years, each on a thin white edge so it stands clear of the fan
+      // the highlighted years, each on a thin white edge so it stands clear of the fan
       const path = (f, colr) => {
         ctx.lineJoin = "round"; ctx.lineCap = "round";
         [["#fff", 7.5], [colr, 3.5]].forEach(([s, wdt]) => {
@@ -183,11 +196,18 @@
           ctx.stroke();
         });
       };
-      path(sim.good, col.green); path(sim.bad, col.ink);
+      // the three payoff scenarios: 1 never touches 65%, 2 touches it but ends above the strike, 3 touches it and ends below
+      const SCN = [[sim.good, col.green], [sim.mid, col.muted], [sim.bad, col.ink]].filter(([f]) => f);
+      SCN.forEach(([f, cl]) => path(f, cl));
       const dot = (x, y, r, fill, ring) => { ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = fill; ctx.fill(); if (ring) { ctx.strokeStyle = ring; ctx.lineWidth = 3; ctx.stroke(); } };
-      if (upto >= sim.bad.kiDay) dot(X(sim.bad.kiDay), Y(sim.bad.w[sim.bad.kiDay]), 10, "#fff", col.ink);   // the touch
-      if (upto >= n) { dot(X(n), Y(sim.good.w[n]), 7, col.green); dot(X(n), Y(sim.bad.w[n]), 7, col.ink); }
+      const badge = (x, y, num, cl) => { dot(x, y, 15, cl, "#fff"); ctx.font = "700 17px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = "#fff"; ctx.fillText(num, x, y + 1); };
+      SCN.forEach(([f, cl]) => { if (f.ki && upto >= f.kiDay) dot(X(f.kiDay), Y(f.w[f.kiDay]), 10, "#fff", cl); });   // the touch
       dot(X(0), Y(1), 7, U.css("--green-ink"));
+      if (upto >= n) {   // the numbers at the ends, pushed apart where two ends are close
+        const ends = SCN.map(([f, cl], i) => ({ y: Y(f.w[n]), cl, num: String(i + 1) })).sort((p, q) => p.y - q.y);
+        for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 34);
+        ends.forEach(e => badge(X(n) + 4, e.y, e.num, e.cl));
+      }
       // what the chart shows, under it: the payoff of the two highlighted years, and what each line is
       ctx.font = "700 18px " + U.F.body; ctx.letterSpacing = "1px"; ctx.textBaseline = "middle";
       ctx.textAlign = "left";
@@ -197,17 +217,25 @@
         ctx.font = "700 18px " + U.F.body;
       }
       if (lg > 0) {
-        ctx.globalAlpha = lg;
-        const ly = LY, items = [["PAYOFF:", null], ["COUPONS + USD 1,000", col.green], ["COUPONS + SHARES OF THE WORST", col.ink]];
-        const w = items.map(([t, c]) => ctx.measureText(t).width + (c ? 46 : 0));
-        let x = XR - w.reduce((s, v) => s + v, 0) - 28 * (items.length - 1);
-        items.forEach(([t, c], i) => {
-          if (c) { ctx.strokeStyle = c; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x, ly); ctx.lineTo(x + 32, ly); ctx.stroke(); }
-          ctx.fillStyle = c ? col.ink : col.muted; ctx.fillText(t, x + (c ? 46 : 0), ly);
-          x += w[i] + 28;
-        });
-        ctx.fillStyle = col.muted; ctx.textAlign = "right";
-        ctx.fillText("EACH LINE = ONE SIMULATED YEAR", XR, ly + 36);
+        // the legend: one row across the slide (title), or one scenario per row on the right (end card)
+        ctx.globalAlpha = lg; ctx.font = "700 18px " + U.F.body; ctx.textBaseline = "middle";
+        const TXT = ["COUPONS + USD 1,000", "COUPONS + USD 1,000", "COUPONS + SHARES OF THE WORST"];
+        const items = SCN.map(([f, cl], i) => ({ t: TXT[[sim.good, sim.mid, sim.bad].indexOf(f)], cl, num: String(i + 1) }));
+        const iw = it => 30 + 12 + ctx.measureText(it.t).width;
+        const item = (it, x, y) => { badge(x + 15, y, it.num, it.cl); ctx.font = "700 18px " + U.F.body; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillStyle = col.ink; ctx.fillText(it.t, x + 42, y); };
+        const HEAD = "PAYOFF SCENARIOS:";
+        if (o.full) {
+          const hw = ctx.measureText(HEAD).width, gap = 36;
+          let x = XR - hw - items.reduce((s, it) => s + iw(it) + gap, 0);
+          ctx.fillStyle = col.muted; ctx.textAlign = "left"; ctx.fillText(HEAD, x, LY); x += hw + gap;
+          items.forEach(it => { item(it, x, LY); x += iw(it) + gap; });
+        } else {
+          const mw = Math.max(...items.map(iw)), x = XR - mw;
+          ctx.fillStyle = col.muted; ctx.textAlign = "left"; ctx.fillText(HEAD, x, LY - 36 * items.length);
+          items.forEach((it, i) => item(it, x, LY - 36 * (items.length - 1 - i)));
+        }
+        ctx.font = "700 18px " + U.F.body; ctx.fillStyle = col.muted; ctx.textAlign = "right";
+        ctx.fillText("EACH LINE = ONE SIMULATED YEAR", XR, LY + 36);
         ctx.globalAlpha = 1;
       }
       ctx.letterSpacing = "0px";
