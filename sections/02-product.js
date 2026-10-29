@@ -266,7 +266,7 @@
     .prd-call .t b{color:var(--ct)}
     .prd-call .t+.t{margin-top:8px}
     .prd-call.c1{max-width:470px}
-    .prd-call.c2{max-width:540px}
+    .prd-call.c2{max-width:620px}
     /* step 6: the simulated year makes way for reason 3, the binomial tree, on a card of its own (never over the chart) */
     .prd-mc.verdict>.term{opacity:0;transform:scale(.985)}
     .prd-tree{position:absolute;left:0;right:0;top:78px;height:620px;background:#fff;border:2px solid var(--green);border-radius:12px;padding:24px 44px 30px;display:flex;flex-direction:column}
