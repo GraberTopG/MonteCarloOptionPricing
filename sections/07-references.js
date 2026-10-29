@@ -41,7 +41,7 @@
 
   Deck.addStyle(`
     .rf-box{background:var(--green-light);border-radius:10px;padding:20px 32px 16px;display:flex;flex-direction:column}
-    .rf-list{columns:2;column-gap:44px;margin:0;padding:0;list-style:none;font:18px/1.28 var(--f-body);color:var(--ink)}
+    .rf-list{columns:2;column-gap:44px;margin:0;padding:0;list-style:none;font:17px/1.26 var(--f-body);color:var(--ink)}
     .rf-list a{overflow-wrap:anywhere}
     .rf-list a.ext::after{content:"\\00a0\\2197"}
     .rf-list li{break-inside:avoid;padding-left:30px;text-indent:-30px;margin:0 0 6px}
