@@ -101,6 +101,7 @@
     .hk-ct{width:440px;flex:none}
     .hk-ct .k,.hk-rf .k{font:700 20px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink);margin:0 0 8px}
     .hk-ct p,.hk-rf p{margin:0;font-size:28px;line-height:1.3}
+    .hk-ct .k{font-size:26px} .hk-ct p:not(.k){font-size:40px}   /* the coupon terms a little larger */
     .hk-gt{width:160px;flex:none;text-align:center;font:800 84px/1 var(--f-head);color:var(--orange);white-space:nowrap}
     .hk-gt .x{font:700 64px/1 var(--f-body);vertical-align:-.06em;margin-left:4px}   /* centred on the digits: "times", not an exponent */
     .hk-rf{flex:1;min-width:0}
