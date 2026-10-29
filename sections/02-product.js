@@ -216,7 +216,13 @@
     .prd-vd.easy .badge{background:var(--green)} .prd-vd.hard .badge{background:var(--red-ink)}
     .prd-vd h4{margin:0;font:700 34px/1.15 var(--f-head);color:var(--ink);white-space:nowrap}
     .prd-vd p{margin:6px 0 0;font:30px/1.3 var(--f-body);color:var(--ink)}
-    .prd-mcgo{grid-column:3/6;grid-row:3;margin:0;text-align:center;font:800 50px/1.1 var(--f-head);color:var(--green);letter-spacing:.01em}
+    .prd-mcgo{grid-column:5/6;grid-row:3;margin:-30px 0 0;text-align:center;font:700 34px/1.2 var(--f-head);color:var(--ink);white-space:nowrap}
+    .prd-mcgo b{color:var(--green);font-weight:800}
+    .prd-mcgo .ar{display:block;font:800 40px/1 var(--f-body);color:var(--green);margin-bottom:2px}
+    .prd-box.put,.prd-vd.hard{position:relative}
+    .prd-box.put .chip{z-index:2}
+    .prd-mcring{position:absolute;inset:-6px;border:4px solid var(--green);border-radius:14px;pointer-events:none}
+    .slide .prd-mcring[data-step]{transform:none}
 
     /* ---------- brc-why-mc ---------- */
     /* the title runs over two lines (balanced, never broken inside "Multi-BRC"): the panel starts lower, under the subtitle */
@@ -627,7 +633,7 @@
     title: "The Multi-BRC is a bond minus a put",
     subtitle: "You lend UBS USD 1,000 and sell a down-and-in put on the worst of three: the put finances the high coupon",
     sources: "Arnold (2026), slide 14 (same payoffs, same price); own illustration",
-    notes: `To price it, we split it in two: [→] a UBS bond that pays the coupons and the thousand, [→] minus the put you sold. [→] The bond is easy. The put is the hard part, and that's where Monte Carlo comes in.`,
+    notes: `To price it, we split it in two: [→] a UBS bond that pays the coupons and the thousand, [→] minus the put you sold. [→] The bond is easy: just discount it. The put is the hard part, so that is what we value with Monte Carlo.`,
     render(body) {
       body.innerHTML = `
         <div class="prd-dec">
@@ -650,12 +656,13 @@
             <h4>Down-and-in put on the worst of three</h4>
             <p>You sold it: after a kick-in, you bear the loss.</p>
             <div class="prd-f">${M_PUT}<small>only after a kick-in</small></div>
+            <span class="prd-mcring" data-step="3" style="--d:6"></span>
           </div>
           <div class="card prd-same" data-step="2" style="--d:3"><span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 21h14"/><path d="M4 7h16"/><path d="M7 7l-3 7a3 3 0 0 0 6 0z"/><path d="M17 7l-3 7a3 3 0 0 0 6 0z"/></svg></span><div><b>The law of one price</b><span class="eq">Price(Multi-BRC) =</span><span class="eq">Price(bond) − Price(put)</span></div></div>
           <div class="prd-vd easy" data-step="3"><span class="badge">${U.icon("check")}</span><div><h4>Bond: Easy to price</h4><p>just discount it</p></div></div>
-          <div class="prd-vd hard" data-step="3" style="--d:3"><span class="badge">${U.icon("warn")}</span><div><h4>Put: Hard to price</h4><p>barrier + three stocks</p></div></div>
+          <div class="prd-vd hard" data-step="3" style="--d:3"><span class="badge">${U.icon("warn")}</span><div><h4>Put: Hard to price</h4><p>barrier + three stocks</p></div><span class="prd-mcring" data-step="3" style="--d:6"></span></div>
           <p class="prd-wdef">W = worst stock at maturity ÷ its starting price</p>
-          <p class="prd-mcgo" data-step="3" style="--d:6">→ that's where Monte Carlo comes in</p>
+          <p class="prd-mcgo" data-step="3" style="--d:6"><span class="ar">↑</span>Valued with <b>Monte Carlo</b></p>
         </div>`;
       return {};
     }
