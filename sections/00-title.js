@@ -246,8 +246,9 @@
           items.forEach((it, i) => item(it, x, LY - 36 * (items.length - 1 - i)));
         }
         ctx.font = "700 18px " + U.F.body; ctx.fillStyle = col.muted; ctx.textAlign = "right";
-        const CAP = ["EACH LINE = ONE SIMULATED PATH OF THE WORST UNDERLYING UNTIL REDEMPTION", "HIGHLIGHTED LINES = EXAMPLE PATHS OF THE THREE PAYOFF SCENARIOS"];
-        CAP.forEach((t, i) => ctx.fillText(t, XR, LY + (o.full ? 34 + 30 * i : 36 * (i + 1))));
+        const CAP = ["EACH LINE = ONE SIMULATED PATH OF THE WORST UNDERLYING", "HIGHLIGHTED LINES = EXAMPLE PATHS OF THE THREE PAYOFF SCENARIOS"];
+        if (o.full) ctx.fillText(CAP.join(" · "), XR, LY + 36);
+        else CAP.forEach((t, i) => ctx.fillText(t, XR, LY + 36 * (i + 1)));
         ctx.globalAlpha = 1;
       }
       ctx.letterSpacing = "0px";
@@ -274,7 +275,7 @@
           <p class="tt-uni">University of St.Gallen · Corporate Finance (7,107)</p>
           <p class="tt-meta"><b>Group III</b> · Ali Bozan Can, Benjamin Marco Bolliger, Cédric Anwar El Soda, Ivan Kissinger, Joaquim Graber, Leandro Broccucci, Mirko Cirantineo</p>
         </div>`;
-      return pathsArt(root, 7, { full: true, labelsRight: true, dates: { issue: "ISSUE DATE: 6 OCT 2026", expiry: "EXPIRY DATE: 6 OCT 2027", y: [292, 845] }, X0: 120, X1: 1600, XR: 1800, Y1: 566, SC: 425, LY: 868 });
+      return pathsArt(root, 7, { full: true, labelsRight: true, dates: { issue: "ISSUE DATE: 6 OCT 2026", expiry: "EXPIRY DATE: 6 OCT 2027", y: [292, 845] }, X0: 120, X1: 1600, XR: 1800, Y1: 570, SC: 430, LY: 880 });
     }
   });
 
