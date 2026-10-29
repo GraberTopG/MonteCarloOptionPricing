@@ -108,7 +108,7 @@
     .hk-rf{flex:1;min-width:0}
     .hk-rf .n{font:700 76px/1 var(--f-head);color:var(--green-ink);margin:0 0 8px;font-variant-numeric:lining-nums}
     .hk-rf p{font-size:26px;color:var(--muted)}
-    .hk-q{position:absolute;left:0;right:0;top:714px;margin:0;font:700 46px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}
+    .hk-q{position:absolute;left:0;right:0;top:708px;margin:0;padding:6px 0 7px 26px;border-left:8px solid var(--orange);font:700 46px/1.2 var(--f-head);color:var(--orange-ink);white-space:nowrap}   /* the same bar as slide 3's question */
     /* the Swiss Derivative Map in one row: families as small boxes, the yield-enhancement categories as chips, ours highlighted */
     .hk-fam{position:absolute;left:0;right:0;top:456px;height:240px}
     .hk-fam-h{margin:0 0 8px;font:700 20px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--green-ink);display:flex;align-items:baseline}
