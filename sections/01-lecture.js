@@ -5,7 +5,7 @@
   const U = Deck.util;
 
   Deck.addStyle(`
-    .slide[data-id="bs-recap"] .s-title{font-size:50px;white-space:nowrap}   /* the long title on one line */
+    .slide[data-id="bs-recap"] .s-title,.slide[data-id="bt-recap"] .s-title{font-size:50px;white-space:nowrap}   /* the long title on one line */
     .lec{display:grid;grid-template-columns:1fr 600px;gap:56px;height:100%}
     .lec-l{display:flex;flex-direction:column;min-width:0}
     .lec-l .label{margin-bottom:22px}
@@ -106,6 +106,61 @@
               <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Only the final price matters</b>European payoff: the path along the way is ignored</span></li>
             </ul>
             <div class="lec-why2" data-step="1" style="--d:6"><span>Our Multi-BRC breaks both: <b>three stocks</b> and a <b>barrier</b> that watches the whole path</span><span class="ar" aria-hidden="true"></span><span class="no"><span class="x">✕</span>Black-Scholes can't be applied</span></div>
+          </section>
+        </div>`;
+      return { resize() { U.tightenRoots(body); } };
+    }
+  });
+
+  // ================= bt-recap: the lecture's binomial tree (Lecture 4, slides 9–10), same layout as bs-recap =================
+  // Cox-Ross-Rubinstein as in the lecture/Hull: u = e^(σ√Δt), d = 1/u, p = (e^(rΔt) − d)/(u − d), backward induction.
+  // Size: a recombining tree for one stock has k + 1 nodes after k steps; for three stocks (k + 1)^3 (as on brc-why-mc).
+  const BT = U.BRC, BT_N = BT.steps, BT_DIM = BT.tickers.length;
+  const btNodes = (days, dim) => { let s = 0; for (let k = 0; k <= days; k++) s += Math.pow(k + 1, dim); return s; };
+  const BT_BN = btNodes(BT_N, BT_DIM) / 1e9, BT_ONE = btNodes(BT_N, 1);
+  const MU = `<math display="block"><mi>u</mi><mo>=</mo><msup><mi>e</mi><mrow><mi>σ</mi><msqrt><mrow><mi>Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup><mo>,</mo><mspace width="0.6em"/><mi>d</mi><mo>=</mo><mfrac><mn>1</mn><mi>u</mi></mfrac></math>`;
+  const MP = `<math display="block"><mi>p</mi><mo>=</mo><mfrac><mrow><msup><mi>e</mi><mrow><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup><mo>−</mo><mi>d</mi></mrow><mrow><mi>u</mi><mo>−</mo><mi>d</mi></mrow></mfrac></math>`;
+  const MF = `<math display="block"><mi>f</mi><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>Δ</mi><mi>t</mi></mrow></msup><mrow><mo>[</mo><mi>p</mi><msub><mi>f</mi><mi>u</mi></msub><mo>+</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="false">)</mo><msub><mi>f</mi><mi>d</mi></msub><mo>]</mo></mrow></math>`;
+  const MN = `<math display="block"><mi>Δ</mi><mi>t</mi><mo>=</mo><mfrac><mi>T</mi><mi>n</mi></mfrac></math>`;
+  Deck.addSlide({
+    id: "bt-recap", section: "why", after: "bs-recap", steps: 1, secs: 14,
+    title: "Recap: The binomial tree and why it can't price a Multi-BRC",
+    subtitle: "Handles any payoff and early exercise, but the tree grows with every step and every extra stock",
+    lecture: "Lecture 4, slides 9–10",
+    sources: "Arnold (2026); Cox, Ross & Rubinstein (1979)",
+    notes: `What about the binomial tree from the lecture? It moves the stock up or down each step and works backwards to today. [→] For one stock that's easy. But with three stocks, the tree grows in three dimensions, and with 252 trading days it reaches about ${U.fmt(BT_BN, 1)} billion nodes. Far too big for Excel.`,
+    render(body) {
+      body.innerHTML = `
+        <div class="lec v2 bt">
+          <div class="lec-l">
+            <p class="label">Binomial tree (Cox-Ross-Rubinstein), one stock</p>
+            <div class="lec-cp">
+              <div class="fbox"><span class="chip">UP AND DOWN</span>${MU}</div>
+              <div class="fbox"><span class="chip">BACKWARD INDUCTION</span>${MF}</div>
+            </div>
+            <div class="lec-d"><div class="fbox gray">${MP}</div><div class="fbox gray">${MN}</div></div>
+          </div>
+          <section class="panel lec-intp">
+            <h3 class="panel-title">Where</h3>
+            <div class="lec-vars1">
+              ${v("<mi>u</mi><mo>,</mo><mi>d</mi>", "up and down factor per step")}
+              ${v("<mi>p</mi>", "risk-neutral probability of an up move")}
+              ${v("<mi>f</mi>", "option value at a node")}
+              ${v("<msub><mi>f</mi><mi>u</mi></msub><mo>,</mo><msub><mi>f</mi><mi>d</mi></msub>", "value after an up / down move")}
+              ${v("<mi>Δ</mi><mi>t</mi>", "length of one step")}
+              ${v("<mi>n</mi>", "number of steps")}
+              ${v("<mi>T</mi>", "time to maturity in years")}
+              ${v("<mi>σ</mi>", "volatility per year")}
+              ${v("<mi>r</mi>", "risk-free rate (continuous)")}
+            </div>
+          </section>
+          <section class="panel lec-panel lec-bot" data-step="1">
+            <h3 class="panel-title">Why it doesn't fit a Multi-BRC</h3>
+            <ul>
+              <li class="icard" data-step="1" style="--d:1"><span class="num">1</span><span><b>Three stocks</b>the tree grows in three dimensions: (k + 1)³ nodes after k steps</span></li>
+              <li class="icard" data-step="1" style="--d:3"><span class="num">2</span><span><b>Daily barrier</b>${BT_N} steps needed: ${U.fmt(BT_ONE, 0)} nodes for one stock</span></li>
+            </ul>
+            <div class="lec-why2" data-step="1" style="--d:6"><span>Our Multi-BRC: <b>three stocks</b> × <b>${BT_N} days</b> ≈ <b>${U.fmt(BT_BN, 1)} billion nodes</b></span><span class="ar" aria-hidden="true"></span><span class="no"><span class="x">✕</span>Binomial tree too big to compute</span></div>
           </section>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
