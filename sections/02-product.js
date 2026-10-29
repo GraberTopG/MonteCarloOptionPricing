@@ -246,7 +246,7 @@
             <div class="prd-po-slots">${[1, 2, 3].map(k => `<div class="prd-po-slot"><span class="num">${k}</span></div>`).join("")}</div>
             ${card(1, "Reverse convertible", `<b>= bond + sold put</b><br>Strike decides if you receive the nominal or shares at maturity`)}
             ${card(2, `+ Barrier at ${KI}`, `<b>= down-and-in put</b><br>Touch of the barrier turns the product into a reverse convertible`)}
-            ${card(3, "+ Worst Of Principle", `underlying asset with the worst performance counts`)}
+            ${card(3, "+ Worst-of principle", `underlying asset with the worst performance counts`)}
           </div>
         </div>`;
       const cv = body.querySelector("canvas"), cards = [...body.querySelectorAll(".prd-po-c")];
@@ -314,17 +314,17 @@
           seg(0, bkx, ink, "Shares", "#fff", a1 * S.k2);
           seg(bkx, 100, U.css("--green-light"), "USD 1,000 if untouched", U.css("--green-ink"), a1 * S.k2);
           seg(100, 150, green, "USD 1,000", "#fff", a1);
-          ctx.save(); ctx.globalAlpha = a1; ctx.fillStyle = U.css("--green-mid");
+          ctx.save(); ctx.globalAlpha = a1; ctx.fillStyle = "#3B8A5A";   // a darker green, so the white text reads clearly
           ctx.beginPath(); ctx.roundRect(X(0), by + bh + gap, X(150) - X(0), bh, 6); ctx.fill();
-          ctx.fillStyle = "#fff"; ctx.font = "700 19px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-          ctx.fillText("+ coupons: USD " + CPN + " (2 × " + HALF + "), in every case", xc, by + bh + gap + bh / 2 + 1); ctx.restore();
+          ctx.fillStyle = "#fff"; ctx.font = "700 20px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText("+ 2 coupons: USD " + CPN + " (2 × " + HALF + ")", xc, by + bh + gap + bh / 2 + 1); ctx.restore();
         }
         text("Stock at maturity (% of its starting level)", xc, xt, { al: "center", a: 1 - S.k3 });
         text("Worst stock at maturity (% of its starting level)", xc, xt, { al: "center", a: S.k3, c: oink, b: true });
         text("Total received, USD per 1,000", f.x - 76, f.y + f.h / 2, { al: "center", rot: -Math.PI / 2 });
         if (S.k1 > 0) {
-          text("your investment: USD 1,000", X(150), Y(NOM) + 18, { c: muted, al: "right", a: lerp(S.k1, .5, 1) * (1 - S.k3), s: 19 });
-          text("break-even " + f0((NOM - CPN) / NOM * 100) + "%", X((NOM - CPN) / NOM * 100) + 6, Y(NOM) + 26, { b: true, c: ink, halo: "#fff", a: lerp(S.k1, .5, 1) * (1 - S.k2), s: 19 });
+          text("your investment: USD 1,000", X(150), Y(NOM) - 18, { c: muted, al: "right", a: lerp(S.k1, .5, 1), s: 19 });
+          text("break-even " + f0((NOM - CPN) / NOM * 100) + "%", X((NOM - CPN) / NOM * 100) + 6, Y(NOM) + 26, { b: true, c: ink, halo: "#fff", a: lerp(S.k1, .5, 1) * (1 - S.k3), s: 19 });
         }
         if (S.k1 > 0) text("strike 100%", X(100) + 10, Y(1395), { b: true, c: U.css("--green-ink"), bl: "top", a: lerp(S.k1, .3, .8) });
         const poly = pts => { ctx.beginPath(); pts.forEach(([x, y], j) => j ? ctx.lineTo(X(x), Yp(y)) : ctx.moveTo(X(x), Yp(y))); ctx.closePath(); };
