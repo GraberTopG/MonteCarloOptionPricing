@@ -419,6 +419,16 @@
             ctx.fillStyle = CONS[s] < 0 ? "#B3261E" : U.css("--muted");
             ctx.fillText("(" + (CONS[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CONS[s]) * 100, 1) + "%)", x + ctx.measureText(tp).width, y + 6);
           });
+          // the summary under the three targets, like a total line: a rule, a flat-to-down arrow and the verdict
+          const yb = Math.max(...H.px.map((p, s) => Y(consPath(s, FUT)))) + 46, x0 = xe + 20, AVG = CONS.reduce((t, v) => t + v, 0) / CONS.length * 100;
+          ctx.strokeStyle = U.css("--ink"); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0, yb); ctx.lineTo(x0 + 240, yb); ctx.stroke();
+          ctx.lineWidth = 3.5; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath();
+          ctx.moveTo(x0, yb + 24); ctx.lineTo(x0 + 18, yb + 24); ctx.lineTo(x0 + 34, yb + 32); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x0 + 25, yb + 34); ctx.lineTo(x0 + 34, yb + 32); ctx.lineTo(x0 + 32, yb + 23); ctx.stroke();
+          ctx.fillStyle = U.css("--ink"); ctx.font = "700 22px " + U.F.body; ctx.textBaseline = "middle";
+          ctx.fillText("Sideways to", x0 + 46, yb + 26); ctx.fillText("slightly down", x0 + 46, yb + 52);
+          ctx.fillStyle = U.css("--muted"); ctx.font = "400 19px " + U.F.body;
+          ctx.fillText("average " + (AVG < 0 ? "−" : "+") + U.fmt(Math.abs(AVG), 1) + "%", x0 + 46, yb + 80);
         }
         ctx.globalAlpha = 1;
       }
