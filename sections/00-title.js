@@ -535,7 +535,7 @@
   });
 
   // ================= hook 3: the product =================
-  const NOTES_PR = "But banks sell a product for exactly this view: a worst-of multi barrier reverse convertible, or Multi-BRC. You get a fifteen percent coupon whatever happens, but never more. As long as no stock touches 65 percent of its starting price, you get your thousand back. If one does, you may get shares instead. [→] Fifteen percent: more than three times the risk-free rate. [→] But is it enough for the risk you take? Let's take a closer look at the product.";
+  const NOTES_PR = "But banks sell a product for exactly this view: a worst-of multi barrier reverse convertible, or Multi-BRC. You get a fifteen percent coupon whatever happens, but never more. As long as no stock touches 65 percent of its starting price, you get your thousand back. If one does, you may get shares instead. It belongs to the yield-enhancement family: you give up upside for a high, fixed coupon. In Swiss terms, it's category 1230, a barrier reverse convertible, and one of the bestsellers in Switzerland. [→] Fifteen percent: more than three times the risk-free rate. [→] But is it enough for the risk you take? Let's take a closer look at the product.";
   const QUESTION = "But is it fair for the risk you take on?";
   Deck.addSlide({
     id: "hook-product", section: "product", steps: 2, secs: secsFor(NOTES_PR, 2),

@@ -206,62 +206,6 @@
     .slide .prd-co>svg g.dots circle{fill:var(--dc);stroke:var(--term-bg);stroke-width:2}
   `);
 
-  // ================= brc-family: where the product sits in the Swiss Derivative Map =================
-  // Labels verbatim from the Swiss Structured Products Association's Swiss Derivative Map, January 2026 (v.26/1):
-  // 2-digit families, 4-digit categories. Drawn by us as plain boxes (no copy of the map's layout or graphics).
-  const FAM = [
-    { code: "11", name: "Capital protection", cats: ["1100", "1130", "1135", "1140"] },
-    { code: "12", name: "Yield enhancement", y: true, cats: [["1200", "Discount Certificate"], ["1210", "Barrier Discount Certificate"],
-      ["1220", "Reverse Convertible"], ["1230", "Barrier Reverse Convertible"], ["1255", "Conditional Coupon Reverse Convertible"],
-      ["1260", "Conditional Coupon Barrier Reverse Convertible"]] },
-    { code: "13", name: "Participation", cats: ["1300", "1310", "1320", "1330", "1340"] },
-    { code: "14", name: "Investment products with additional credit risk", cats: ["1400", "1410", "1420", "1430"] },
-    { code: "20", name: "Leverage", cats: ["2100", "2110", "2200", "2210", "2300"] }
-  ];
-  const OUR_CAT = "1230";
-
-  Deck.addSlide({
-    id: "brc-family", section: "product", steps: 2, secs: 15,
-    title: "What is a Multi-BRC?",
-    subtitle: "BRCs are part of Yield Enhancement products",
-    sources: "Swiss Structured Products Association (2026); UBS AG (2018); Bloomberg (2026); own Excel model, sheets 1–2; own illustration",
-    notes: `Our product belongs to the yield-enhancement family: [→] you give up upside for a high, fixed coupon. In Swiss terms, it's category 1230, [→] a barrier reverse convertible, modelled on a real UBS note from 2018.`,
-    render(body) {
-      const col = fm => fm.y
-        ? `<section class="prd-fc y"><div class="prd-fc-h"><span class="prd-fc-c">${fm.code}</span><span class="prd-fc-n">${fm.name}</span></div>
-            <p class="prd-fc-t" data-step="1">You give up upside for a high, fixed coupon</p>
-            <div class="prd-cats">${fm.cats.map(([c, n]) => `<div class="prd-cat${c === OUR_CAT ? " me" : ""}"><b>${c}</b><span>${n}</span></div>`).join("")}</div></section>`
-        : `<section class="prd-fc"><span class="prd-fc-c">${fm.code}</span><span class="prd-fc-n">${fm.name}</span>
-            <div class="prd-fc-k">${fm.cats.map(c => `<i>${c}</i>`).join("")}</div></section>`;
-      // the last step: a short recap of the product, the same terms as on hook-product (step 2, with category 1230)
-      const tile = (k, v, s) => `<div class="prd-kt"><span class="k">${k}</span><span class="v">${v}</span><span class="s">${s}</span></div>`;
-      const stocks = B.names.map((nm, k) => `<i><span class="prd-dot" style="background:var(--c-${B.tickers[k].toLowerCase()}-light)"></span>${nm}</i>`).join("");
-      body.innerHTML = `
-        <div class="prd-fam">
-          <div class="prd-fam-g g1">Investment Products</div><div class="prd-fam-g g2">Leverage products</div>
-          ${FAM.map(col).join("")}
-          <section class="prd-key" data-step="2">
-            <p class="prd-key-h"><span class="g">Multi-BRC</span></p>
-            <div class="prd-key-t">
-              ${tile("NOMINAL", "USD " + f0(NOM), "(=Issue price)")}
-              ${tile("MATURITY", B.T + " year", "<i>Initial fixing date: 6 Oct 2026</i><i>Expiration: 6 Oct 2027</i>")}
-              ${tile("KICK-IN BARRIER", KI, "of underlying’s reference price")}
-              ${tile("UNDERLYINGS", "Worst of " + B.names.length, stocks)}
-              ${tile("ISSUER", "UBS", "simulated with UBS as the issuer")}
-            </div>
-            <div class="prd-key-c">
-              <span class="big">${CPN_PCT} p.a.</span>
-              <div><span class="k">SEMI-ANNUAL COUPON</span><span class="t"><b>${N_CPN} × ${HALF}</b> per USD ${f0(NOM)}</span></div>
-              <div class="rf"><span class="k">RISK-FREE RATE</span><span class="t"><b>${R_TXT}%</b> continuously compounded ≈ ${R_YEAR}% a year</span></div>
-            </div>
-          </section>
-        </div>`;
-      const root = body.querySelector(".prd-fam");
-      return {
-        step(i) { root.classList.toggle("s1", i >= 1); root.classList.toggle("s2", i >= 2); }
-      };
-    }
-  });
 
   // ================= brc-payoff: the payoff diagram gains one feature per click =================
   // step 3's example (own illustration): Microsoft touches 65% during the year and ends at 95%; Adobe never touches but
