@@ -1,0 +1,180 @@
+/* Design system: HSG presentation template (light slides) + white data panels.
+   Colours (group feedback, 27 Oct 2026): a blend of HSG greens + black + white, and white backgrounds for every chart
+   and animation. The old orange / red / blue / yellow / purple tokens keep their names, so the section files still work,
+   but now hold greens, greys or black (see the comments).
+   One fixed 1920x1080 stage; every size below is in stage pixels. */
+:root{
+  /* HSG template */
+  --green:#00802F;        /* active tab, chips, outlines, emphasis */
+  --green-ink:#1F3B2D;    /* titles, badges */
+  --green-mid:#5FA77A;    /* secondary chart lines */
+  --green-soft:#CFE6D6;   /* soft numbers, highlights */
+  --green-light:#E4F1E8;  /* formula boxes */
+  --orange:#00802F;       /* emphasis (was orange; now HSG green) */
+  --orange-light:#E3E7E5; /* the "other" box next to a green one, e.g. the put (was light orange; now grey) */
+  --orange-ink:#1F3B2D;   /* emphasised text (was dark orange; now dark green) */
+  --red-ink:#1A1D1B;      /* kick-in / loss (was red; now black) */
+  --red-soft:#E9ECEA;     /* kick-in / loss boxes (was light red; now light grey) */
+  --card:#E8ECEB;         /* grey cards */
+  --tab:#EEF0EF;          /* inactive tabs */
+  --ink:#1A1D1B;
+  --muted:#6B716E;
+  --rule:#8E9592;
+  --rule-light:#D5DAD8;
+
+  /* data panels (were dark "terminal" panels; now white) */
+  --term-bg:#FFFFFF;
+  --term-panel:#F4F7F5;   /* panel header bar, ticker */
+  --term-line:#DCE1DF;    /* grid lines, panel borders */
+  --term-text:#1A1D1B;
+  --term-muted:#6B716E;
+  --amber:#00802F;        /* panel accent (was amber; now HSG green) */
+  --term-green:#00802F;
+  --term-red:#1A1D1B;     /* was red; now black */
+  --term-yellow:#5FA77A;  /* was yellow; now mid green */
+  --term-blue:#1F3B2D;    /* was blue; now dark green */
+  /* the three underlyings: three greens, dark to light (black is kept for the kick-in) */
+  --c-adbe:#1F3B2D; --c-aapl:#00802F; --c-msft:#8CCAA1;
+  --c-adbe-light:#1F3B2D; --c-aapl-light:#00802F; --c-msft-light:#529069;   /* the same on text: Microsoft darker, so it reads on white and grey */
+
+  --f-head:"Raleway", Arial, sans-serif;
+  --f-body:Arial, Helvetica, sans-serif;
+  --f-mono:"JetBrains Mono", Consolas, "Courier New", monospace;
+  --f-math:"Cambria Math", "STIX Two Math", "Latin Modern Math", Cambria, math;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0;background:#fff;overflow:hidden}  /* white, so non-16:9 screens show no dark bars */
+body{font-family:var(--f-body);color:var(--ink)}
+#viewport{position:fixed;inset:0;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:50% 50%;background:#fff;overflow:hidden}
+
+/* ---------- slides ---------- */
+.slide{position:absolute;inset:0;background:#fff;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s}
+.slide.active{opacity:1;visibility:visible}
+/* build-in: elements with data-step="n" appear at step n; --d staggers them */
+.slide [data-step]{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease;transition-delay:calc(var(--d,0) * 90ms)}
+.slide [data-step].on{opacity:1;transform:none}
+.slide.instant,.slide.instant *{transition:none!important}
+
+/* standard slide chrome */
+.s-head{position:absolute;left:88px;right:88px;top:56px}
+.s-title{font-variant-numeric:lining-nums;font:700 60px/1.12 var(--f-head);color:var(--green-ink);margin:0;padding-right:360px}
+.s-rule{height:2px;background:var(--rule);opacity:.75;margin-top:12px}
+.s-sub{font:300 30px/1.3 var(--f-head);color:var(--muted);margin:10px 0 0;font-variant-numeric:lining-nums}
+.s-mark{position:absolute;right:88px;top:40px;text-align:right;font:600 17px/1.35 var(--f-head);color:var(--green-ink);letter-spacing:.02em}
+.s-mark b{display:block;font:800 21px var(--f-head);color:var(--green)}
+.s-lecture{position:absolute;right:88px;top:154px;display:flex;align-items:center;gap:8px;font:400 18px var(--f-body);color:var(--green-ink);background:none;border:0;padding:0;pointer-events:none}
+.s-lecture svg{width:22px;height:22px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.s-lecture b{font-weight:700;color:var(--green)}
+.s-body{position:absolute;left:88px;right:88px;top:232px;height:740px}
+.s-tabs{position:absolute;left:88px;right:88px;top:994px;height:42px;display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.s-tabs button{font:400 18px var(--f-body);letter-spacing:.02em;color:#6f7572;background:var(--tab);border:0;cursor:pointer;padding:0}
+.s-tabs button.on{background:var(--green);color:#fff;font-weight:700}
+.s-tabs button:not(.on):hover{background:#D5E6DB;color:var(--green-ink)}
+.s-sources{position:absolute;left:88px;right:160px;top:1042px;font:15px/1.22 var(--f-body);color:#555;margin:0}
+.s-num{position:absolute;right:88px;top:1046px;font:16px var(--f-body);color:#9aa09d}
+
+/* ---------- components ---------- */
+.label{font-variant-numeric:lining-nums;font:700 26px/1.2 var(--f-head);color:var(--ink);letter-spacing:.01em;text-transform:uppercase;margin:0 0 18px}
+.minor{font-variant-numeric:lining-nums;font:300 24px/1.2 var(--f-head);color:var(--muted);text-transform:uppercase;letter-spacing:.02em;margin:0 0 14px}
+.minor::before{content:"";display:block;width:84px;height:4px;background:var(--green-ink);margin-bottom:10px}
+.card{background:var(--card);border-radius:10px;padding:18px 24px;font-size:22px;line-height:1.35}
+.icard{display:flex;align-items:center;gap:20px;background:var(--card);border-radius:10px;padding:14px 24px 14px 14px;font-size:22px;line-height:1.35}
+.badge{width:64px;height:64px;border-radius:50%;background:var(--green-ink);color:#fff;display:grid;place-items:center;flex:none}
+.badge svg{width:34px;height:34px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.panel{position:relative;border:2px solid var(--green);border-radius:3px;padding:52px 32px 26px}
+.panel>.panel-title{position:absolute;top:-18px;left:16px;background:#fff;padding:0 14px;font:700 26px/1.2 var(--f-head);color:var(--ink);text-transform:uppercase;margin:0}
+.fbox{position:relative;background:var(--green-light);border-radius:10px;padding:22px 28px;font-family:var(--f-math);font-size:34px;text-align:center}
+.fbox.orange{background:var(--orange-light)}
+.fbox.gray{background:var(--card)}
+.chip{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font:700 18px var(--f-body);color:#fff;background:var(--green);padding:5px 26px;letter-spacing:.04em}
+.chip.orange{background:var(--orange)}
+.hl{color:var(--orange);font-weight:700}
+.g{color:var(--green);font-weight:700}
+.bul{list-style:none;padding:0;margin:0;font-size:23px;line-height:1.4}
+.bul li{position:relative;padding-left:26px;margin:0 0 12px}
+.bul li::before{content:"";position:absolute;left:4px;top:.6em;width:8px;height:8px;background:#333}
+.num{width:56px;height:56px;border-radius:50%;background:var(--green-ink);color:#fff;font:700 28px var(--f-head);display:grid;place-items:center;flex:none;font-variant-numeric:lining-nums}
+.num.soft{background:var(--green-soft);color:var(--green-ink)}
+.vars{display:grid;grid-template-columns:70px 1fr;gap:8px 14px;font-size:21px;align-items:baseline}
+.vars math{font-size:24px}
+math{font-family:var(--f-math)}
+.fbox math{font-size:36px}
+/* where this lives in our Excel (sheet / cells): a small Excel-green tag on the corner of a formula box */
+.xlref{position:absolute;right:10px;bottom:-12px;font:700 13px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:#fff;background:#1D6F42;border-radius:3px;padding:5px 8px;white-space:nowrap;z-index:1}
+
+/* ---------- data panels (white since 27 Oct 2026; the class names come from the old dark terminal look) ---------- */
+.term{background:var(--term-bg);color:var(--term-text);border-radius:6px;font-family:var(--f-mono);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 0 1.5px var(--term-line)}
+.term-bar{display:flex;align-items:center;gap:18px;height:44px;flex:none;padding:0 16px;background:var(--term-panel);border-bottom:1px solid var(--term-line);font-size:17px;letter-spacing:.04em;white-space:nowrap}
+.term-fn{color:#fff;background:var(--green);padding:2px 10px;font-weight:700}
+.term-title{color:var(--green-ink);font-weight:700}
+.term-meta{margin-left:auto;color:var(--term-muted)}
+.term-body{flex:1;position:relative;min-height:0}
+.term-body canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.term-stats{display:flex;gap:34px;padding:12px 18px;border-top:1px solid var(--term-line);flex:none}
+.term-stats .k{font-size:16px;color:var(--term-muted);letter-spacing:.06em;text-transform:uppercase}
+.term-stats .v{font-size:30px;color:var(--amber);font-weight:700;font-variant-numeric:tabular-nums}
+.tk{height:40px;flex:none;border-top:1px solid var(--term-line);overflow:hidden;white-space:nowrap;display:flex;align-items:center;background:var(--term-panel);font-size:18px}
+.tk-track{display:inline-flex;gap:56px;padding-right:56px;animation:tk var(--tk-dur,40s) linear infinite}
+.tk-track span{white-space:nowrap}
+@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tk .lab{color:var(--term-muted)} .tk .val{color:var(--amber);font-weight:700} .tk .up{color:var(--term-green)} .tk .dn{color:var(--term-red)}
+.t-amber{color:var(--amber)} .t-green{color:var(--term-green)} .t-red{color:var(--term-red)} .t-yellow{color:var(--term-yellow)} .t-blue{color:var(--term-blue)} .t-muted{color:var(--term-muted)}
+
+/* ---------- presenter HUD (hidden in record mode) ---------- */
+#hud{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#e8ece9;font:13px/1.4 var(--f-mono);padding:6px 14px;border-radius:20px;z-index:10;user-select:none;white-space:nowrap}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:36vh;overflow:auto;background:#0f1312;color:#e6ebe8;font:18px/1.55 var(--f-body);padding:14px 24px 46px;z-index:9;border-top:3px solid var(--green)}
+#notes .meta{font:12px var(--f-mono);color:#9fb0a8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+body.rec #hud,body.rec #notes{display:none!important}
+#hud{transition:opacity .4s}
+body.idle #hud{opacity:0}
+body.static .slide,body.static .slide *{transition:none!important;animation:none!important}
+body.rec{cursor:none}
+@media (prefers-reduced-motion: reduce){.tk-track{animation:none}}
+
+/* ---------- interactive elements: one look for everything you can click ----------
+   Rule: clickable = rounded pill with a shadow (light slides: HSG green, dark panels: amber),
+   or an underlined link with an arrow. Labels and tags are always flat, square and shadow-free. */
+.ui-btn{display:inline-flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:10px;font:700 20px/1.2 var(--f-body);color:#fff;background:var(--green);border:0;border-radius:999px;padding:10px 24px 10px 18px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.22),0 6px 16px rgba(0,128,47,.28);transition:transform .15s,box-shadow .15s,background .15s;white-space:nowrap}
+.ui-btn:hover{background:#006B27;transform:translateY(-1px);box-shadow:0 3px 0 rgba(0,0,0,.22),0 10px 22px rgba(0,128,47,.34)}
+.ui-btn:active{transform:translateY(1px)}
+.ui-btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.ui-btn .ic{display:inline-block;font-size:1.15em;line-height:1}
+.term-meta .ui-btn{margin-left:12px;vertical-align:middle}
+.ui-btn.small{font-size:16px;padding:6px 16px 6px 12px;gap:7px}
+.ui-btn.term{background:var(--green);color:#fff;font-family:var(--f-mono);letter-spacing:.04em;box-shadow:0 2px 0 rgba(0,0,0,.22),0 6px 16px rgba(0,128,47,.28)}
+.ui-btn.term:hover{background:#006B27}
+.ui-btn.term.sel{background:#fff;color:var(--green);box-shadow:0 0 0 2px var(--green)}
+.ui-btn[disabled]{background:#E3E7E5;color:#7C8481;box-shadow:none;cursor:not-allowed;transform:none}
+.ui-drag{font:700 15px var(--f-mono);color:var(--amber);letter-spacing:.06em}
+.slide a{color:var(--green);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px}
+.slide a:hover{color:#006B27;text-decoration-thickness:2.5px}
+.slide a.ext::after{content:" \2197";font-size:.85em}
+/* press H: outline everything that reacts to a click */
+body.show-ui .slide.active :is(button:not([disabled]),input,a,[data-go],.ui-btn){outline:3px dashed var(--orange);outline-offset:4px;animation:uiPulse 1s ease-in-out infinite alternate}
+@keyframes uiPulse{from{outline-color:var(--orange)}to{outline-color:rgba(0,128,47,.25)}}
+body.rec .ui-hint{display:none}
+
+/* ---------- scroll mode (?mode=scroll): one long page, each slide pinned while its steps build ---------- */
+#corner{position:fixed;top:8px;right:14px;z-index:20;display:flex;gap:10px;transition:opacity .4s}
+#corner .ui-btn{text-decoration:none}
+body.idle #corner{opacity:.25}
+body.idle #corner:hover{opacity:1}
+body.rec #corner{display:none}
+/* auto-update notice (live site only) */
+#updatePill{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:30;font:700 14px var(--f-mono);letter-spacing:.06em;color:#fff;background:var(--green-ink);padding:8px 18px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:none}
+html.scroll-mode{height:auto;overflow-x:hidden;overflow-y:auto}
+body.scroll-mode{height:auto;overflow:visible}  /* body must not be a scroll container, or the slides cannot stay pinned */
+body.scroll-mode{background:#fff}
+.sc-track{position:relative}
+.sc-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sc-box{position:relative;width:calc(1920px * var(--s,1));height:calc(1080px * var(--s,1));flex:none;box-shadow:0 0 0 1px #E3E7E5}  /* hairline edge between slides on the white page */
+.sc-frame{position:absolute;left:0;top:0;width:1920px;height:1080px;transform:scale(var(--s,1));transform-origin:0 0;background:#fff;overflow:hidden}
+body.scroll-mode .slide{opacity:1;visibility:visible}
+.sc-dots{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:2}
+.sc-dots i{width:9px;height:9px;border-radius:50%;background:rgba(26,29,27,.18);transition:background .2s}  /* grey dots: the page is white */
+.sc-dots i.on{background:var(--orange)}
+.sc-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);font:700 15px var(--f-mono);letter-spacing:.08em;color:#fff;background:rgba(0,0,0,.55);padding:6px 14px;border-radius:999px;animation:scHint 1.6s ease-in-out infinite;pointer-events:none}
+@keyframes scHint{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
+body.rec .sc-dots{display:none}

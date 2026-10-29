@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/
+.vercel/
+# recordings and exports stay in the shared Drive, not in Git
+*.mp4
+*.mov
+*.wav
+*.m4a
+dist/

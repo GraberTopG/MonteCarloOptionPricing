@@ -1,0 +1,17 @@
+{
+  "name": "cf-monte-carlo",
+  "private": true,
+  "type": "module",
+  "description": "Corporate Finance group video: Monte Carlo web app",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "pdf": "node scripts/pdf.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "javascript-obfuscator": "^5.9.0"
+  },
+  "dependencies": {
+    "@vercel/functions": "^3.9.11"
+  }
+}
