@@ -133,7 +133,7 @@
       body.innerHTML = `
         <div class="lec v2 bt">
           <div class="lec-l">
-            <p class="label">Binomial tree (Cox-Ross-Rubinstein), one stock</p>
+            <p class="label">Binomial tree (Cox-Ross-Rubinstein) for one underlying</p>
             <div class="lec-cp">
               <div class="fbox"><span class="chip">UP AND DOWN</span>${MU}</div>
               <div class="fbox"><span class="chip">BACKWARD INDUCTION</span>${MF}</div>
