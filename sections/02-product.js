@@ -119,6 +119,7 @@
     .prd-tb.shr .sm{display:block;font-size:20px;line-height:1.3;color:var(--muted);margin-top:10px}
     .prd-tb.shr .exl{margin:12px 0 0;padding-top:10px;border-top:2px dashed var(--rule);font:21px/1.35 var(--f-body);color:var(--ink)}
     .prd-tb.shr .exl .eh{margin:0 0 2px;font-weight:700}
+    .prd-tb.shr .exl .ec{margin:0 0 2px;color:var(--ink)}
     .prd-tb.shr .exl .eg{display:grid;grid-template-columns:1fr auto;column-gap:16px}
     .prd-tb.shr .exl .r{text-align:right;font-variant-numeric:tabular-nums}
     .prd-tb.shr .exl .t{font-weight:700;border-top:1.5px solid var(--ink);margin-top:2px}
@@ -477,8 +478,9 @@
           <div class="prd-tb q" style="${pos(Q2)}" data-step="2"><span class="num">?</span><span>Is every stock at or above its strike, its starting price?</span></div>
           <div class="prd-tb cash" style="${pos(B1)};--d:2" data-step="2"><span class="num g">2a</span><div><b>USD 1,000 in cash</b><span class="cpn">+ USD ${CPN} coupons</span><span class="tt">= USD ${f0(NOM + CPN)}</span></div></div>
           <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><span class="num k">2b</span><div><b>Shares of the worst stock</b><span class="cpn">+ USD ${CPN} coupons</span>
-            <span class="sm">Conversion ratio = USD 1,000 ÷ starting price: whole shares delivered, the fraction paid in cash</span>
-            <div class="exl" data-step="4"><p class="eh">e.g. Adobe worst, −${f0((1 - EX_WORST) * 100)}%: USD ${fx(S0w)} → ${fx(ST)}</p>
+            <span class="sm">Whole shares delivered, the fraction paid in cash</span>
+            <div class="exl" data-step="4"><p class="eh">e.g. Adobe worst, −${f0((1 - EX_WORST) * 100)}%: USD ${fx(S0w)} × ${f0(EX_WORST * 100)}% = ${fx(ST)}</p>
+              <p class="ec">Conversion ratio: 1,000 ÷ ${fx(S0w)} = ${U.fmt(RATIO_W, 4)} shares</p>
               <div class="eg"><span>${WHOLE} Adobe shares delivered</span><span class="r">${fx(WHOLE * ST)}</span>
               <span>${U.fmt(FRAC, 4)} share paid in cash</span><span class="r">${fx(FRAC * ST)}</span>
               <span>Coupons 2 × ${HALF}</span><span class="r">${fx(CPN)}</span>
