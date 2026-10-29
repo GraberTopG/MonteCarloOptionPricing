@@ -546,7 +546,7 @@
     id: "brc-paths", section: "product", steps: 3, secs: 40,
     title: "The three scenarios simulated",
     subtitle: "Three simulated paths of the worst underlying, one per scenario",
-    sources: "Own simulation",
+    sources: "Own illustration",
     notes: NOTES_PA,
     render(body) {
       // the chart over the top of the body, the three outcome cards in a row under it (each appears when its year has ended)
