@@ -42,8 +42,8 @@
     /* ---------- hook 1: the past year of prices ---------- */
     .hk-px{position:relative;height:100%}
     /* the chart starts lower and is a little shorter: the two-line title pushes the subtitle down */
-    .hk-px canvas{position:absolute;left:0;top:36px;width:100%;height:574px;display:block}
-    .hk-goal{position:absolute;left:0;right:0;bottom:0;height:112px;padding-right:32px}
+    .hk-px canvas{position:absolute;left:0;top:150px;bottom:0;width:100%;height:calc(100% - 150px);display:block}
+    .hk-goal{position:absolute;left:0;right:0;top:44px;height:96px;padding-right:32px}
     .hk-goal p{margin:0}
     .hk-gk{flex:none;font:700 32px var(--f-body);color:var(--green-ink);white-space:nowrap}
     .hk-gv{flex:1;min-width:0;font-size:30px;line-height:1.3}
@@ -294,85 +294,121 @@
     }
   });
 
-  // ================= hook 1: the past year of prices (our Excel, sheet 3) =================
-  const H = XL.hist, LAST = H.dates.length - 1;
+  // ================= hook 1: two years of prices, then an illustrative consensus path to expiry =================
+  // history: our Excel, sheet 3 (7 Oct 2024 – 6 Oct 2026); the future year is a made-up "consensus" path for illustration only
+  const H = XL.hist2, LAST = H.dates.length - 1, FUT = B.steps, XMAX = LAST + FUT;   // one trading day = one x step, also ahead
   const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const dayTxt = d => `${+d.slice(8)} ${MON[+d.slice(5, 7) - 1]} ${d.slice(0, 4)}`;   // "2026-10-06" → "6 Oct 2026"
-  const MONTHS = H.dates.map((d, i) => i > 0 && d.slice(5, 7) !== H.dates[i - 1].slice(5, 7) ? i : -1).filter(i => i > 0);   // first trading day of each month
-  const CHG = H.px.map(p => (p[LAST] / p[0] - 1) * 100);   // 1-year change: ADBE −31.9%, AAPL +29.7%, MSFT +1.1%
-  const NOTES_PX = "Hi everyone. It's October 2026, and you have a thousand dollars to invest for one year. Adobe trades at 238 dollars, Apple at 333 and Microsoft at 534. [→] After a rough year for Adobe, you expect a quiet one: no crash, no big rally.";
+  // ticks: the first trading day of every quarter in the history, then every quarter (63 trading days) ahead
+  const QTR = H.dates.map((d, i) => i > 0 && d.slice(5, 7) !== H.dates[i - 1].slice(5, 7) && ["01", "04", "07", "10"].includes(d.slice(5, 7)) ? i : -1).filter(i => i > 0);
+  const FUT_T = [1, 2, 3].map(q => ({ i: LAST + 63 * q, m: (9 + 3 * q) % 12, y: 2026 + Math.floor((9 + 3 * q) / 12) }));   // Jan, Apr, Jul 2027
+  const ONE_YEAR_AGO = H.dates.indexOf("2025-10-06");
+  const CHG = H.px.map(p => (p[LAST] / p[ONE_YEAR_AGO] - 1) * 100);   // past year: ADBE −31.9%, AAPL +29.7%, MSFT +1.1%
+  // illustrative consensus at expiry, % of today's price: sideways to slightly down (not real analyst targets)
+  const CONS = [-0.04, -0.02, -0.01];
+  const consPath = (s, j) => {   // a gentle path from today to the illustrative end value, with a little seeded wiggle
+    const t = j / FUT, end = 1 + CONS[s];
+    return H.px[s][LAST] * (1 + (end - 1) * t + 0.012 * Math.sin(t * Math.PI * (2 + s)) * Math.sin(t * Math.PI));
+  };
+  const NOTES_PX = "Hi everyone. It's October 2026, and you have a thousand dollars to invest for one year. You expect a quiet year: 86 percent of analysts rate our three stocks HOLD. [→] Here is the past: Adobe now trades at 238 dollars, Apple at 333 and Microsoft at 534. And looking ahead to October 2027, the consensus sees them moving sideways or slightly down.";
   Deck.addSlide({
     id: "hook-prices", section: "hook", steps: 1, secs: secsFor(NOTES_PX, 1),
-    title: "The starting point: USD 1,000 to invest for an expected sideways or slightly down year",
-    subtitle: "Daily closing prices of Adobe, Apple and Microsoft from 6 Oct 2025 to 6 Oct 2026",
-    sources: "Bloomberg (2026); own Excel model, sheet 3",
+    title: "Assumption: USD 1,000 to invest and sideways or slightly down year expected",
+    subtitle: "Daily closing prices from 7 Oct 2024 to 6 Oct 2026, and an illustrative consensus path to expiry",
+    sources: "Bloomberg (2026); own Excel model, sheet 3; consensus path: own illustration, not analyst targets",
     notes: NOTES_PX,
     render(body) {
       body.innerHTML = `
         <div class="hk-px">
-          <canvas></canvas>
-          <div class="icard hk-goal" data-step="1">
+          <div class="icard hk-goal">
             <div class="badge">${U.icon("avg")}</div>
             <p class="hk-gk">USD ${NOM} · ${B.T} year</p>
             <span class="sep"></span>
             <p class="hk-gv">Consensus: 86% of analysts issue a HOLD rating for the three underlyings; no growth catalyst ahead and downside risks already priced in</p>
           </div>
+          <canvas></canvas>
         </div>`;
       const cv = body.querySelector("canvas");
       const COL = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];
-      let k = 1, a = null;
+      let k = 0, a = null;   // k: 0 = only the card (before the click), 0..1 the chart drawing in, 1 = all
       function draw() {
         const c = U.canvas(cv); if (!c) return;
         const { ctx, w, h } = c;
-        const f = { x: 96, y: 50, w: w - 96 - 290, h: h - 50 - 50 };
+        ctx.clearRect(0, 0, w, h);
+        if (k <= 0) return;
+        ctx.globalAlpha = Math.min(1, k * 8);
+        const f = { x: 96, y: 50, w: w - 96 - 300, h: h - 50 - 46 };
         const { X, Y } = U.axes(ctx, f, {
-          theme: "light", xMin: 0, xMax: LAST, yMin: 150, yMax: 600, yTicks: [200, 300, 400, 500, 600],
-          xTicks: [0, ...MONTHS], xFmt: i => i ? MON[+H.dates[i].slice(5, 7) - 1] + (H.dates[i].slice(5, 7) === "01" ? " " + H.dates[i].slice(0, 4) : "") : dayTxt(H.dates[0]),
+          theme: "light", xMin: 0, xMax: XMAX, yMin: 150, yMax: 600, yTicks: [200, 300, 400, 500, 600],
+          xTicks: [0, ...QTR, ...FUT_T.map(t => t.i), XMAX],
+          xFmt: i => {
+            if (i === 0) return dayTxt(H.dates[0]);
+            if (i === XMAX) return "6 Oct 2027";
+            const ft = FUT_T.find(t => t.i === i);
+            const m = ft ? ft.m : +H.dates[i].slice(5, 7) - 1, y = ft ? ft.y : H.dates[i].slice(0, 4);
+            return MON[m] + (m === 0 ? " " + y : "");
+          },
           yLabel: "Closing price (USD)"
         });
         ctx.strokeStyle = U.css("--rule"); ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(f.x, f.y + f.h); ctx.lineTo(f.x + f.w, f.y + f.h); ctx.stroke();
-        // the pricing date at the right end
-        const xe = X(LAST);
-        ctx.setLineDash([6, 6]); ctx.strokeStyle = U.css("--green-ink"); ctx.globalAlpha = .55; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(xe, f.y - 8); ctx.lineTo(xe, f.y + f.h); ctx.stroke();
-        ctx.setLineDash([]); ctx.globalAlpha = 1;
-        ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 21px " + U.F.body; ctx.textAlign = "right"; ctx.textBaseline = "bottom";
-        ctx.fillText("Pricing date " + dayTxt(H.dates[LAST]), xe + 6, f.y - 14);
-        // the three price lines, drawn from left to right
-        const upto = Math.max(1, Math.round(LAST * k));
+        // the future year: a light band, "today" (issue date) and the expiry as vertical lines, labelled on top
+        const xt = X(LAST), xe = X(XMAX);
+        ctx.fillStyle = U.css("--green-light"); ctx.fillRect(xt, f.y, xe - xt, f.h);
+        const vline = (x, txt, al, dash) => {
+          ctx.setLineDash(dash ? [6, 6] : []); ctx.strokeStyle = U.css("--green-ink"); ctx.globalAlpha = Math.min(1, k * 8) * .6; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(x, f.y - 8); ctx.lineTo(x, f.y + f.h); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = Math.min(1, k * 8);
+          ctx.fillStyle = U.css("--green-ink"); ctx.font = "700 21px " + U.F.body; ctx.textAlign = al; ctx.textBaseline = "bottom";
+          ctx.fillText(txt, x + (al === "right" ? 6 : al === "left" ? -6 : 0), f.y - 14);
+        };
+        vline(xt, "Today: issue date, " + dayTxt(H.dates[LAST]), "center", true);
+        vline(xe, "Expiry, 6 Oct 2027", "right", false);
+        ctx.fillStyle = U.css("--muted"); ctx.font = "italic 19px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
+        ctx.fillText("consensus path, illustrative", (xt + xe) / 2, f.y + 10);
+        // the history (first 75% of the time), then the consensus paths (dashed)
+        const kh = Math.min(1, k / .75), kf = Math.max(0, (k - .75) / .25);
+        const upto = Math.max(1, Math.round(LAST * kh));
         H.px.forEach((p, s) => {
           const col = U.css(COL[s]);
           ctx.strokeStyle = col; ctx.lineWidth = 3.2; ctx.lineJoin = "round";
           ctx.beginPath(); ctx.moveTo(X(0), Y(p[0]));
           for (let i = 1; i <= upto; i++) ctx.lineTo(X(i), Y(p[i]));
           ctx.stroke();
+          if (kf > 0) {
+            const fu = Math.round(FUT * kf);
+            ctx.setLineDash([9, 7]); ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(X(LAST), Y(p[LAST]));
+            for (let j = 1; j <= fu; j++) ctx.lineTo(X(LAST + j), Y(consPath(s, j)));
+            ctx.stroke(); ctx.setLineDash([]);
+          }
           ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(upto), Y(p[upto]), 6.5, 0, 7); ctx.fill();
         });
-        // labels at the right end: today's price and the change over the year
-        const lab = Math.max(0, Math.min(1, (k - .9) / .1));
+        // labels at the right end: today's price and the change over the past year
+        const lab = Math.max(0, Math.min(1, (kf - .6) / .4));
         if (lab > 0) {
           ctx.globalAlpha = lab; ctx.textAlign = "left";
+          const ys = H.px.map((p, s) => Y(consPath(s, FUT)));
           H.px.forEach((p, s) => {
-            const y = Y(p[LAST]), x = xe + 22;
-            ctx.fillStyle = U.css(COL[s]); ctx.font = "700 28px " + U.F.body; ctx.textBaseline = "bottom";
+            const y = ys[s], x = xe + 20;
+            ctx.fillStyle = U.css(COL[s]); ctx.font = "700 26px " + U.F.body; ctx.textBaseline = "bottom";
             ctx.fillText(B.names[s] + " " + U.fmt(XL.S0[s], 2), x, y + 2);
             ctx.fillStyle = CHG[s] < 0 ? U.css("--red-ink") : U.css("--green");
-            ctx.font = "700 23px " + U.F.body; ctx.textBaseline = "top";
-            ctx.fillText((CHG[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CHG[s]), 1) + "% in 1 year", x, y + 6);
+            ctx.font = "700 21px " + U.F.body; ctx.textBaseline = "top";
+            ctx.fillText("today · " + (CHG[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CHG[s]), 1) + "% past year", x, y + 6);
           });
-          ctx.globalAlpha = 1;
         }
+        ctx.globalAlpha = 1;
       }
       return {
         resize: draw,
         step(i, o) {
           if (a) a.cancel(); a = null;
-          // the lines take 5 s (the group asked for a 2–3 times slower drawing than the 2 s before)
-          if (i === 0 && !o.instant) a = U.anim(5000, t => { k = t; draw(); }, { ease: U.ease.inOut });
+          if (i === 0) { k = 0; draw(); return; }
+          // after the click: the history draws in 5 s, then the consensus paths
+          if (!o.instant) a = U.anim(6500, t => { k = Math.max(.001, t); draw(); }, { ease: U.ease.inOut });
           else { k = 1; draw(); }
         },
-        leave() { if (a) a.cancel(); a = null; k = 1; }
+        leave() { if (a) a.cancel(); a = null; k = 0; }
       };
     }
   });
