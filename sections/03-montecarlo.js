@@ -49,6 +49,7 @@
     .mc-key .hl{color:var(--green-ink)}
 
     /* ---------- 1) mc-origin ---------- */
+    .slide[data-id="mc-sample"] .s-title{font-size:46px;white-space:nowrap}
     .slide[data-id="mc-origin"] .s-title{font-size:50px;white-space:nowrap}
     .mc-o{display:grid;grid-template-columns:400px minmax(0,1fr);column-gap:48px;height:100%}
     .mc-o-h{display:flex;flex-direction:column;gap:32px;padding:4px 40px 0 0;border-right:2px solid var(--rule-light);min-width:0}
@@ -304,13 +305,12 @@
 
   Deck.addSlide({
     id: "mc-sample", section: "mc", steps: 2, secs: 31,
-    title: "Monte Carlo: averaging the payoffs of random paths",
-    subtitle: "The price is a discounted expected payoff, estimated by averaging simulated years",
+    title: "Monte Carlo pricing: simulate paths, average payoffs, discount",
+    subtitle: "Instead of rolling a die, we simulate a whole year of share prices, 2,000 times",
     lecture: "Lecture 4, slide 15",
     sources: "Arnold (2026), slides 11 and 15; explanation adapted from The Synthetic Mind (2026); own simulation",
     notes: "Our lecture prices an option as its expected payoff in a risk-neutral world, discounted at the risk-free rate. More on that at the end. [→] For our payoff, which depends on the whole year, the expectation is an integral over hundreds of random daily moves. Monte Carlo's answer: don't calculate it, sample it. [→] Draw random paths, compute each payoff, and average. The law of large numbers makes this average converge to the true value.",
     render(body) {
-      twoLines(body);
       const box = (icon, txt, d) => `<div class="box" data-step="2" style="--d:${d}"><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
       body.innerHTML = `
         <div class="mc-sa">
