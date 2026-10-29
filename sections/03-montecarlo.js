@@ -315,12 +315,12 @@
     sources: "Arnold (2026), slides 11 and 15; explanation adapted from The Synthetic Mind (2026); own simulation",
     notes: "How do we apply this to an option? In three steps. [→] Step one: sample a random path, a whole year of daily share prices. We do that 2,000 times. [→] Step two: compute each path's payoff and discount it at the risk-free rate. That's how our lecture prices an option: its expected payoff in a risk-neutral world, discounted. [→] Step three: average them all. By the law of large numbers, the average converges to the true price.",
     render(body) {
-      const box = (k, icon, txt) => `<div class="box"><span class="n">${k}</span><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
+      const box = (k, icon, txt) => `<div class="box" data-step="${k}"><span class="n">${k}</span><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
       body.innerHTML = `
         <div class="mc-sa">
-          <div class="mc-flow">${box(1, "dice", "Sample a random path")}<span class="ar">→</span>${box(2, "check", "Compute its discounted payoff")}<span class="ar">→</span>${box(3, "avg", "Average them all")}</div>
+          <div class="mc-flow">${box(1, "dice", "Sample a random path")}<span class="ar" data-step="2">→</span>${box(2, "check", "Compute its discounted payoff")}<span class="ar" data-step="3">→</span>${box(3, "avg", "Average them all")}</div>
           <div class="mc-sa-lo">
-            <figure class="mc-sa-chart">
+            <figure class="mc-sa-chart" data-step="1">
               <p class="mc-sa-h"><span class="n">1</span>Sample random paths</p>
               <canvas></canvas>
               <figcaption>${fmt(FAN.n, 0)} simulated years of one stock (volatility ${fmt(M.sigma * 100, 0)}%, like Apple; risk-free rate ${fmt(M.r * 100, 2)}%): each line is one year</figcaption>
