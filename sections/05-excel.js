@@ -386,7 +386,7 @@
   // the four steps of the Excel part (step 2 in two slides, 2a and 2b), its table of contents: only the title and one
   // small picture made from our data. The step slides take their titles from here
   const STEPS = [
-    { n: "1", t: "Step 1: Volatility &amp; Correlation", v: "inputs" },
+    { n: "1", t: "Step 1: Solving the Missing Inputs", v: "inputs" },   // the plan's card and xl-input, xl-rho (the group, 1 Nov 2026)
     { n: "2a", t: "Step 2a: GBM applied", v: "gbm" },
     { n: "2b", t: "Step 2b: Correlating the Z with Cholesky", v: "shocks" },
     { n: "3", t: "Step 3: One Simulated Year", v: "year" },
