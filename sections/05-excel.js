@@ -43,10 +43,10 @@
   const BASE = XL.sens[0][1];
   const SENS = XL.sens.slice(1, 9).map(([lab, fv]) => ({ lab, fv, d: BASE - fv }));
   const bySize = (p, q) => Math.abs(q.d) - Math.abs(p.d);
-  // the Cholesky clouds (xl-corr, and one of them on brc-steps): 1,000 seeded days of independent draws, mixed with the
+  // the Cholesky clouds (xl-corr, and one of them on brc-steps): 2,000 seeded draws of independent numbers, mixed with the
   // weights of sheet 4, step D (XL.mix); own simulation
   const M = XL.mix, f2 = x => fmt(x, 2);
-  const NC = 1000, CO_SEED = 240;   // a seed whose 1,000 days show the target correlations to two decimals
+  const NC = 2000, CO_SEED = 439;   // a seed whose 2,000 draws show the target correlations to two decimals
   const CE = [0, 1, 2].map(() => new Float64Array(NC));
   { const norm = U.normal(U.rng(CO_SEED)); for (let i = 0; i < NC; i++) for (let j = 0; j < 3; j++) CE[j][i] = norm(); }
   const corr = (x, y) => { let mx = 0, my = 0; for (let i = 0; i < NC; i++) { mx += x[i]; my += y[i]; } mx /= NC; my /= NC; let a = 0, b = 0, c = 0; for (let i = 0; i < NC; i++) { const p = x[i] - mx, q = y[i] - my; a += p * q; b += p * p; c += q * q; } return a / Math.sqrt(b * c); };
@@ -58,7 +58,7 @@
     return y;
   };
   const RHO_MEAS = [1, 2].map(k => corr(CE[0], mixY(k, 1)));
-  const RHO_AM = corr(mixY(1, 1), mixY(2, 1));                // Apple vs Microsoft on the same days: 0.14 (target 0.14)
+  const RHO_AM = corr(mixY(1, 1), mixY(2, 1));                // Apple vs Microsoft on the same draws: 0.14 (target 0.14)
   const rhoTxt = r => Math.abs(r) < 0.005 ? "0.00" : f2(r).replace("-", "−");
 
   Deck.addStyle(`
@@ -448,7 +448,7 @@
     ctx.fillStyle = U.css("--muted"); ctx.font = "15px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
     [-3, 0, 3].forEach(z => ctx.fillText(z < 0 ? "−" + -z : String(z), X(z), Y(0) + 6));
   }
-  // the cloud of step 2b: Adobe's and Microsoft's correlated shocks on 1,000 days (the lower cloud of xl-corr)
+  // the cloud of step 2b: Adobe's and Microsoft's correlated shocks on 2,000 draws (the lower cloud of xl-corr)
   const Z_MSFT = mixY(2, 1);
   function miniCloud(cv) {
     const c = cv && U.canvas(cv); if (!c) return;
@@ -775,7 +775,7 @@
               <span class="xlref">Excel · sheet 4, step D · sheet 8, H49</span>
             </div>
           </div>
-          ${U.term({ fn: "CORR", title: `${fmt(NC, 0)} SIMULATED DAYS`, meta: "OWN SIMULATION", body: "<div><canvas></canvas></div><div><canvas></canvas></div>",
+          ${U.term({ fn: "CORR", title: `${fmt(NC, 0)} SIMULATED PATHS`, meta: "OWN SIMULATION", body: "<div><canvas></canvas></div><div><canvas></canvas></div>",
             stats: `<div class="xl-co-am" data-step="2"><b class="pr">${TK[1]} vs ${TK[2]}</b> · CORRELATION <b class="rv" data-am>${rhoTxt(RHO_AM)}</b> · TARGET ${f2(XM.rho[1][2])}</div>` })}
         </div>`;
       const rows = [...body.querySelectorAll(".xl-co-row")], cvs = [...body.querySelectorAll("canvas")], am = body.querySelector("[data-am]");
@@ -814,7 +814,7 @@
         ctx.font = "700 44px " + U.F.mono; ctx.fillStyle = U.css("--amber"); ctx.fillText(rhoTxt(r), rx, f.y + 166);
         ctx.font = "500 17px " + U.F.mono; ctx.fillStyle = U.css("--term-muted"); ctx.fillText(`TARGET ${f2(m > 0 ? XM.rho[0][k] : 0)}`, rx, f.y + 196);
       }
-      // Apple vs Microsoft from the same days (shown from step 2, when Microsoft is mixed)
+      // Apple vs Microsoft from the same draws (shown from step 2, when Microsoft is mixed)
       const pair = () => { am.textContent = rhoTxt(st[0] >= 1 && st[1] >= 1 ? RHO_AM : corr(mixY(1, st[0]), mixY(2, st[1]))); };
       const draw = () => { plot(0); plot(1); pair(); };
       // coming forward from xl-gbm: its Z flies up into the shock on top, then splits into the three Z of the rows
