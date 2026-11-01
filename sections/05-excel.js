@@ -575,7 +575,6 @@
     id: "xl-gbm", section: "excel", steps: 3, secs: 28, liveSecs: 25,
     title: STEPS[1].t,
     subtitle: "The lecture's geometric Brownian motion, one small time step at a time",
-    lecture: "Lecture 4, slides 11 and 15",
     sources: "Arnold (2026), slides 11 and 15; own illustration",
     // live Excel follows (sheet 7): liveSecs = its narration (54 words) / 145 × 60 + 3 s for the one Excel screen
     notes: "Step two: how do we simulate a stock? With the lecture's geometric Brownian motion: tomorrow's price is today's price, plus a drift, plus a random shock. "
