@@ -78,7 +78,6 @@
     .mc-o-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
     .mc-o-lg{display:flex;justify-content:flex-end;gap:28px;font:19px var(--f-body);color:var(--ink)}
     .mc-o-lg span:first-child{color:var(--green);font-weight:700}
-    .mc-o-chart figcaption{margin-top:6px;font:21px var(--f-body);color:var(--muted)}
     .mc-o-r{display:flex;flex-direction:column;gap:30px;min-width:0}
     .mc-o-res{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:20px 26px;font-size:26px}
     .mc-o-res .chk{margin:14px 0 0;padding-top:14px;border-top:2px solid var(--rule-light);font:22px/1.35 var(--f-body);color:var(--ink)}
@@ -247,7 +246,6 @@
               <figure class="mc-o-chart">
                 <div class="mc-o-lg"><span><i class="mc-lg"></i>Average so far</span><span data-step="2"><i class="mc-lg d"></i>Exact E(X) = 3.5</span></div>
                 <canvas></canvas>
-                <figcaption>${fmt(ROLL.n, 0)} simulated rolls of a fair die: each dot is one roll, the line the average so far</figcaption>
               </figure>
               <div class="mc-o-r">
                 <div class="card mc-o-res" data-step="1" style="--d:58"><span>average of ${fmt(ROLL.n, 0)} rolls</span><b>≈ 3.5</b>
