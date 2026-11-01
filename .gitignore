@@ -7,3 +7,4 @@ node_modules/
 *.wav
 *.m4a
 dist/
+.streamlit/secrets.toml

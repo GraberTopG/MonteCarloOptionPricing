@@ -73,13 +73,15 @@ The list of sources and references is on the last slide and in `sections/07-refe
 
 ## Viewing the presentation
 
-The published site is protected by a group password (`middleware.js`, set as `SITE_PASSWORD` in the Vercel project settings). Locally it is a static site with no build step. Open `index.html` through any local web server, for example:
+**Online (Streamlit Community Cloud):** `streamlit_app.py` shows the whole web app behind the group password (Streamlit secret `SITE_PASSWORD`, set in the app's settings, never in this repo). Every push to `main` updates it automatically, with no daily limit.
+
+**Locally:** it is a static site with no build step. Open `index.html` through any local web server, for example:
 
 ```bash
 python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
-or deploy the folder as-is on Vercel, GitHub Pages or Netlify.
+or, with the password page as online: `pip install streamlit` and `streamlit run streamlit_app.py` (put `SITE_PASSWORD = "…"` in `.streamlit/secrets.toml`, which Git ignores).
 
 **Controls:** ← / → or scroll to move through the slides · `N` speaker notes · `F` full screen · `H` show clickable elements
