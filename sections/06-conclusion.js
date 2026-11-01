@@ -153,7 +153,6 @@
   // e^(∓0.5826·σ·√Δt). Our down barrier: 65% checked daily ≈ 65% × e^(−0.5826·σ·√Δt) watched continuously (the bias).
   // The term sheet's kick-in is continuous (sheet 1 C28), so the correction checks daily against 65% × e^(+0.5826·σ·√Δt).
   const BGK_BETA = 0.5826, DT = 1 / XL.steps, BGK_SHIFT = BGK_BETA * XM.sigma[0] * Math.sqrt(DT);   // Adobe
-  const BGK_BIAS = B.kickIn * 100 * Math.exp(-BGK_SHIFT);   // ≈ 63.9%: what our daily 65% acts like
   const BGK_FIX = B.kickIn * 100 * Math.exp(BGK_SHIFT);     // ≈ 66.1%: the daily barrier that prices the continuous 65%
   const SENS = name => { const s = XL.sens.find(x => x[0] === name); if (!s) console.error("conc-limits: no sensitivity " + name); return s ? s[1] : NaN; };
   const FV_BASE = SENS("Base case"), FV_RHO_DN = SENS("ρ −0.1"), FV_RHO_UP = SENS("ρ +0.1");
@@ -209,7 +208,29 @@
       ${pts.map(([v, lab, c]) => `<text x="${X(v).toFixed(1)}" y="40" text-anchor="middle" class="lab">${lab}</text><circle cx="${X(v).toFixed(1)}" cy="64" r="9" class="${c}"/><text x="${X(v).toFixed(1)}" y="102" text-anchor="middle" class="val ${c}">${fmt(v, 0)}</text>`).join("")}
     </svg>`;
   })();
-  const BGK_F = `<math><mn>${KI}%</mn><mo>×</mo><msup><mi>e</mi><mrow><mo>+</mo><mn>${BGK_BETA}</mn><mi>σ</mi><msqrt><mrow><mi mathvariant="normal">Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup><mo>≈</mo><mn>${fmt(BGK_FIX, 1)}%</mn></math>`;
+  // next step 1, the barrier correction as a picture: the daily check moves up from the true 65% to ≈ 66.1%, so a
+  // daily close just above 65% (where the path dipped below it in between) is caught (Broadie et al., 1997)
+  const BGK_FIG = (() => {
+    const W = 300, H = 128, yK = 100, yF = 68, days = [38, 50, 58, 84, 56, 42], xs = days.map((_, i) => 14 + i * 46);
+    const rnd = U.rng(5), pts = [];
+    for (let i = 0; i < days.length - 1; i++) for (let k = 0; k < 10; k++) {
+      const u = k / 10, bump = Math.sin(Math.PI * u);
+      pts.push([xs[i] + (xs[i + 1] - xs[i]) * u, days[i] + (days[i + 1] - days[i]) * u + (rnd() - .5) * 10 * bump]);
+    }
+    pts.push([xs[xs.length - 1], days[days.length - 1]]);
+    const c = xs[3], ax = 10;
+    return `<svg class="cc-lsvg cc-bgk" viewBox="0 0 ${W} ${H}" aria-hidden="true">
+      <line x1="0" x2="${W - 64}" y1="${yK}" y2="${yK}" class="bar"/><text x="${W}" y="${yK + 7}" text-anchor="end" class="bar">${KI}%</text>
+      <line x1="0" x2="${W - 64}" y1="${yF}" y2="${yF}" class="fix"/><text x="${W}" y="${yF + 7}" text-anchor="end" class="fix">${fmt(BGK_FIX, 1)}%</text>
+      <path d="M${ax} ${yK - 4}V${yF + 8}M${ax - 6} ${yF + 14}L${ax} ${yF + 6}L${ax + 6} ${yF + 14}" class="up"/>
+      <text x="${ax + 12}" y="${(yK + yF) / 2 + 7}" class="fix">+${fmt(BGK_FIX - B.kickIn * 100, 1)} pts</text>
+      <path d="${polyD(pts)}" class="px"/>
+      ${xs.map((x, i) => `<circle cx="${x}" cy="${days[i]}" r="6" class="day"/>`).join("")}
+      <circle cx="${c}" cy="${days[3]}" r="11" class="hit"/>
+      <text x="${c}" y="${yK + 26}" text-anchor="middle" class="fix">caught</text>
+      <text x="0" y="16" class="lab"><tspan class="dot">●</tspan> daily check, against ${fmt(BGK_FIX, 1)}%</text>
+    </svg>`;
+  })();
 
   // limit 4, the simulation error: the 95% interval of the fair value,
   // fv ± 1.96 × standard error of the put (Read Me C29 = sheet 10 C39 ± 1.96 × sheet 11 F26), in USD per 1,000
@@ -241,7 +262,7 @@
 
   const LIMITS = [
     { l: { h: "Daily barrier check", p: "Once a day, not continuously", fig: DIP },
-      n: { h: "Barrier correction", p: "Broadie et al. (1997)", fig: `<div class="cc-fx">${BGK_F}<small>our daily ${KI}% acts like a continuous ${fmt(BGK_BIAS, 1)}%;<br>to price the continuous ${KI}%,<br>check daily against ≈&nbsp;${fmt(BGK_FIX, 1)}%<br>(Adobe, σ&nbsp;=&nbsp;${fmt(XM.sigma[0] * 100, 0)}%, Δt&nbsp;=&nbsp;1/${XL.steps})</small></div>` } },
+      n: { h: "Barrier correction", p: "Broadie et al. (1997)", fig: BGK_FIG } },
     { l: { h: "One flat volatility", p: "One σ per stock, no smile", fig: SMILE },
       n: { h: "Stochastic volatility", p: "Volatility moves at random, too", fig: SVOL } },
     { l: { h: "Correlation from past data", p: "One year of daily returns",
@@ -280,9 +301,11 @@
     .cc-lsvg text.flat{fill:var(--green-ink);stroke:none;font-weight:700}
     .cc-lsvg circle.b{fill:var(--green-ink)} .cc-lsvg circle.o{fill:var(--orange)}
     .cc-lsvg text.val{font:700 26px var(--f-body);fill:var(--ink)} .cc-lsvg text.val.o{fill:var(--orange-ink)}
-    .cc-fx{background:#fff;border-radius:8px;padding:6px 16px;text-align:center;width:430px}
-    .cc-fx math{font-size:28px}
-    .cc-fx small{display:block;margin-top:4px;font:18px/1.22 var(--f-body);color:var(--muted)}
+    .cc-lsvg.cc-bgk{width:300px}
+    .cc-lsvg .fix{stroke:var(--green);stroke-width:2.5;stroke-dasharray:8 6}
+    .cc-lsvg text.fix{fill:var(--green-ink);stroke:none;font-weight:700}
+    .cc-lsvg .up{fill:none;stroke:var(--green);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+    .cc-lsvg circle.hit{fill:none;stroke:var(--green);stroke-width:3}
     .cc-lsvg.cc-csvg{width:300px;height:80px}
     .cc-lsvg .ci{fill:none;stroke:var(--green);stroke-width:3.5;stroke-linecap:round}
     .cc-lsvg text.end{font:700 22px var(--f-body);fill:var(--ink)}
