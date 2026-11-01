@@ -1,5 +1,5 @@
 /* Recap of the lecture's Black-Scholes formula (Lecture 4, slide 7, redrawn) and what it assumes; it opens the
-   "why Monte Carlo" part of the video (brc-why-mc in 02-product.js follows it through after:).
+   "why Monte Carlo" part of the video.
    Owner: script + web-app team. Classes are prefixed .lec- */
 (function () {
   const U = Deck.util;
@@ -114,7 +114,7 @@
 
   // ================= bt-recap: the lecture's binomial tree (Lecture 4, slide 10), same layout as bs-recap =================
   // Cox-Ross-Rubinstein as in the lecture/Hull: u = e^(σ√Δt), d = 1/u, p = (e^(rΔt) − d)/(u − d), backward induction.
-  // Size: a recombining tree for one stock has k + 1 nodes after k steps; for three stocks (k + 1)^3 (as on brc-why-mc).
+  // Size: a recombining tree for one stock has k + 1 nodes after k steps; for three stocks (k + 1)^3.
   const BT = U.BRC, BT_N = BT.steps, BT_DIM = BT.tickers.length;
   const btNodes = (days, dim) => { let s = 0; for (let k = 0; k <= days; k++) s += Math.pow(k + 1, dim); return s; };
   const BT_BN = btNodes(BT_N, BT_DIM) / 1e9, BT_ONE = btNodes(BT_N, 1);
