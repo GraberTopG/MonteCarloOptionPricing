@@ -252,6 +252,14 @@
     .xl-co-row.cur .xl-co-n,.xl-co-row.done .xl-co-n{opacity:1}
     .xl-co-k{border-radius:3px;transition:background-color .4s,box-shadow .4s,color .4s}
     .xl-co-row.cur .xl-co-k{background:#BFE0C9;box-shadow:0 0 0 4px #BFE0C9;color:#00692A}
+    /* the shock of step 2a on top, with its Z; the same green Z in the three rows (the group, 1 Nov 2026). Coming from
+       xl-gbm, its Z flies up here and splits into the three (.xl-co-fly, on the stage above both slides) */
+    .xl-co-recall{display:flex;align-items:center;gap:24px;border:2px solid var(--green);border-radius:10px;padding:10px 22px;background:#fff}
+    .xl-co-from{font:700 17px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--green);padding:6px 10px;white-space:nowrap}
+    .xl-co-recall math{font-size:34px}
+    .xl-co-recall p{margin:0;font:22px/1.3 var(--f-body);color:#4E5552}
+    .xl-co-z{border-radius:3px;background:#BFE0C9;box-shadow:0 0 0 4px #BFE0C9;color:#00692A}
+    .xl-co-fly{position:absolute;left:0;top:0;z-index:60;pointer-events:none;transform-origin:0 0}
     /* the textbook's notation, a small note at the bottom of the box, left of the Excel tag */
     .xl-co-hull{position:absolute;left:26px;right:470px;bottom:12px;margin:0;font:18px/1.3 var(--f-body);color:var(--muted);text-align:left}
     .xl-co-hull math{font-size:21px}
@@ -719,7 +727,7 @@
 
   // ================= 4) xl-corr: step 2, correlated shocks =================
   // Cholesky mixing weights of sheet 4, step D (XL.mix), two decimals on screen
-  const zL = k => `<msub><mi style="color:var(${LIGHT[k]})">Z</mi><mtext style="color:var(${LIGHT[k]})">${TK[k]}</mtext></msub>`;
+  const zL = k => `<msub><mi class="xl-co-z">Z</mi><mtext style="color:var(${LIGHT[k]})">${TK[k]}</mtext></msub>`;
   const eps = j => `<msub><mi>ε</mi><mn>${j}</mn></msub>`;
   const kk = (x, hi) => `<mn${hi ? ' class="xl-co-k"' : ""}>${f2(x)}</mn>`;
   const CO_ROWS = [
@@ -731,12 +739,12 @@
   ];
 
   Deck.addSlide({
-    id: "xl-corr", section: "excel", steps: 2, secs: 24, liveSecs: 8,
-    title: "Step 2b: GBM applied with Cholesky",
-    subtitle: "Our stocks don’t move independently, so we mix the random numbers",
+    id: "xl-corr", section: "excel", steps: 2, secs: 27, liveSecs: 8,
+    title: "Step 2b: Correlating the Z with Cholesky",
+    subtitle: "The Z of the shock, one per stock: we mix them so our stocks move together",
     sources: "own simulation",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
-    notes: "But these numbers are independent, and our stocks are not. So we mix them, with the Cholesky method. Adobe keeps its own random number. "
+    notes: "Remember the Z in the shock: each stock needs its own. But our random numbers are independent, and our stocks are not. So we mix them, with the Cholesky method. Adobe keeps its own random number. "
       + "[→] Apple takes 0.22 of Adobe's, exactly their correlation, plus 0.98 of its own. "
       + "[→] Microsoft mixes all three. Now our simulated stocks move together just like the real ones. "
       + "[Excel: the same numbers in sheet 4, step D (cells C37 and C40), and in sheet 8, cells E35 and C40, which the formula in cell H49 uses]",
@@ -744,6 +752,9 @@
       body.innerHTML = `
         <div class="xl-co">
           <div class="xl-co-l">
+            <div class="xl-co-recall"><span class="xl-co-from">From step 2a</span>
+              <math><mtext>Shock</mtext><mo>=</mo><mi>σ</mi><mo>·</mo>${S_t}<mo>·</mo><msqrt>${DT}</msqrt><mo>·</mo><mi class="xl-co-z">Z</mi></math>
+              <p>one <b>Z</b> per stock, and they must move together</p></div>
             <div class="card xl-co-intro"><math>${eps(1)}<mo>,</mo>${eps(2)}<mo>,</mo>${eps(3)}</math>: three <b>independent</b> random numbers a day, from sheet 7</div>
             <div class="fbox xl-co-box"><span class="chip">CHOLESKY: MIX THE RANDOM NUMBERS</span>
               ${CO_ROWS.map((r, k) => `<div class="xl-co-row" style="border-left-color:var(${LIGHT[k]})">
@@ -794,9 +805,33 @@
       // Apple vs Microsoft from the same days (shown from step 2, when Microsoft is mixed)
       const pair = () => { am.textContent = rhoTxt(st[0] >= 1 && st[1] >= 1 ? RHO_AM : corr(mixY(1, st[0]), mixY(2, st[1]))); };
       const draw = () => { plot(0); plot(1); pair(); };
+      // coming forward from xl-gbm: its Z flies up into the shock on top, then splits into the three Z of the rows
+      const stage = document.getElementById("stage"), zDst = [...body.querySelectorAll(".xl-co-z")];
+      let flying = [], wait = 0;
+      const land = () => { clearTimeout(wait); flying.forEach(g => g.remove()); flying = []; zDst.forEach(z => { z.style.visibility = ""; }); };
+      function fly(src, dst, delay) {
+        const S = stage.getBoundingClientRect(), k = S.width / stage.offsetWidth;   // the stage's scale
+        const box = el => { const r = el.getBoundingClientRect(); return { x: (r.left - S.left) / k, y: (r.top - S.top) / k, h: r.height / k }; };
+        const g = document.createElement("div"); g.className = "xl-co-fly";
+        g.innerHTML = `<math style="font-size:${getComputedStyle(src).fontSize}"><mi class="xl-co-z">Z</mi></math>`;
+        stage.appendChild(g); flying.push(g);
+        const from = box(src), to = box(dst), off = box(g.querySelector("mi")), sc = to.h / from.h;
+        g.style.left = (from.x - off.x) + "px"; g.style.top = (from.y - off.y) + "px";
+        dst.style.visibility = "hidden";
+        g.animate([{ transform: "none" }, { transform: `translate(${to.x - from.x + off.x * (1 - sc)}px,${to.y - from.y + off.y * (1 - sc)}px) scale(${sc})` }],
+          { duration: 750, delay, easing: "cubic-bezier(.55,0,.25,1)", fill: "forwards" })
+          .finished.then(() => { dst.style.visibility = ""; g.remove(); flying = flying.filter(x => x !== g); }, () => {});
+      }
       return {
         step(i, o) {
           if (a) { a.cancel(); a = null; }
+          land();
+          const prev = body.closest(".slide").previousElementSibling, src = prev && prev.dataset.id === "xl-gbm" && prev.querySelector(".xl-gb-z");
+          if (i === 0 && o.dir === 1 && !o.instant && src && !document.body.classList.contains("scroll-mode")) {
+            fly(src, zDst[0], 0);
+            zDst.slice(1).forEach(z => { z.style.visibility = "hidden"; });
+            wait = setTimeout(() => zDst.slice(1).forEach((z, k) => fly(zDst[0], z, k * 160)), 760);   // once the first Z has landed
+          }
           rows.forEach((r, k) => { r.classList.toggle("ghost", k > i); r.classList.toggle("cur", k === i); r.classList.toggle("done", k < i); });
           target = [i >= 1 ? 1 : 0, i >= 2 ? 1 : 0];
           const j = i - 1;
@@ -808,7 +843,7 @@
         },
         resize() { U.tightenRoots(body); draw(); },
         // leaving in the middle of a mix (scroll mode, fast clicking) ends it, so a return shows the step's end state
-        leave() { if (a) { a.cancel(); a = null; st[0] = target[0]; st[1] = target[1]; draw(); } }
+        leave() { land(); if (a) { a.cancel(); a = null; st[0] = target[0]; st[1] = target[1]; draw(); } }
       };
     }
   });
