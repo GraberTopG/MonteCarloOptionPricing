@@ -7,7 +7,7 @@
                    Excel: the workbook's Read Me and sheet tabs with the colour legend (the template, assignment 2a)
    - xl-input      step 1, left on both step-1 slides: the missing inputs and how we solved them. Here: Black-Scholes is
                    missing r, then σ; the implied volatility, the σ with the lowest RMSE (5.2), then live Excel: sheets 5, 6
-   - xl-rho        step 1: dividends and UBS's spread from Bloomberg; the correlation from two years of prices (Bloomberg
+   - xl-rho        step 1: dividends and UBS's spread from Bloomberg; the correlation from one year of prices (Bloomberg
                    HP), then live Excel: sheet 4
    - xl-gbm        step 2: the lecture's GBM in discrete time steps (5.3), then live Excel: sheet 7
    - xl-corr       step 2: correlated shocks with Cholesky (5.3), then live Excel: sheets 4 and 8
@@ -516,7 +516,7 @@
       val: perStock(XM.sigma, v => pct(v, 0)) },
     { k: "q", sym: "<mi>δ</mi>", n: "Dividend yields", h: "<b>Bloomberg lookup</b>", val: perStock(XM.q, v => pct(v, 2)) },
     { k: "cds", sym: "<msub><mi>s</mi><mtext>UBS</mtext></msub>", n: "Issuer spread (UBS)", h: "<b>Bloomberg lookup</b>: UBS's CDS, for the bond part", val: pct(XM.cds, 2) },
-    { k: "rho", sym: "<mi>ρ</mi>", n: "Correlation matrix", h: "<b>2 years of daily prices</b> (Bloomberg HP)", val: "→" }
+    { k: "rho", sym: "<mi>ρ</mi>", n: "Correlation matrix", h: "<b>1 year of daily prices</b> (Bloomberg HP)", val: "→" }
   ];
   const miList = () => `<div class="xl-mi"><p class="label">Missing inputs and how we solved them</p>
     ${MI_ROWS.map(r => `<div class="xl-mi-row v-${r.k}" data-k="${r.k}">
@@ -582,18 +582,17 @@
   // r and σ come solved from xl-input; top to bottom: click 1 the two other lookups (δ and UBS's spread), clicks 2-3 the
   // correlation
   const MI_RHO = { r: [0, 0, []], sg: [0, 0, []], q: [1, 1, [1]], cds: [1, 1, [1]], rho: [2, 3, [2, 3]] };
-  // the HP card: the two years of daily closes (sheet 3), each stock from 100%; shaded, the last year, whose 252 daily
-  // returns give the correlation (sheet 4)
-  const H2 = XL.hist2, H2_N = H2.dates.length, H2_WIN = H2.dates.indexOf(XL.hist.dates[0]);
-  const H2_L = H2.px.map(p => p.map(v => v / p[0])), H2_LO = Math.min(...H2_L.flat()), H2_HI = Math.max(...H2_L.flat());
+  // the HP card: the one year of daily closes whose 252 daily returns give the correlation (sheet 3 rows 256-507, sheet 4),
+  // each stock from 100% (the group, 1 Nov 2026: say only the year we use)
+  const H1 = XL.hist, H1_N = H1.dates.length;
+  const H1_L = H1.px.map(p => p.map(v => v / p[0])), H1_LO = Math.min(...H1_L.flat()), H1_HI = Math.max(...H1_L.flat());
   function hpChart(cv) {
     const c = cv && U.canvas(cv); if (!c) return;
-    const { ctx, w, h } = c, X = i => i / (H2_N - 1) * w, Y = v => 4 + (h - 8) * (1 - (v - H2_LO) / (H2_HI - H2_LO));
-    ctx.fillStyle = U.css("--green-light"); ctx.fillRect(X(H2_WIN), 0, w - X(H2_WIN), h);
+    const { ctx, w, h } = c, X = i => i / (H1_N - 1) * w, Y = v => 4 + (h - 8) * (1 - (v - H1_LO) / (H1_HI - H1_LO));
     ctx.lineJoin = "round"; ctx.lineWidth = 2;
     [1, 0, 2].forEach(k => {
       ctx.strokeStyle = U.css(DARK[k]); ctx.beginPath();
-      H2_L[k].forEach((v, i) => i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)));
+      H1_L[k].forEach((v, i) => i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)));
       ctx.stroke();
     });
   }
@@ -610,8 +609,8 @@
     // live Excel follows (sheet 4): liveSecs = its narration (29 words) / 145 × 60 + 3 s for the Excel screen
     notes: "To simulate our product we need a few more inputs than Black-Scholes. "
       + "[→] The dividends and UBS's issuer spread we looked up on Bloomberg. "
-      + "[→] For the correlation, we downloaded two years of daily prices with the Bloomberg function HP. "
-      + "[→] From the last year of daily returns we build the correlation matrix. "
+      + "[→] For the correlation, we used one year of daily prices, downloaded with the Bloomberg function HP. "
+      + "[→] From these daily returns we build the correlation matrix. "
       + "[Excel: sheet 4, correlation matrix] "
       + "For the correlation of our three stocks, there's no market price, so sheet four measures it from one year of daily returns. Adobe and Microsoft move together the most.",
     render(body) {
@@ -621,9 +620,9 @@
           <div class="xl-rh-r">
             <p class="label" data-step="2">The correlation</p>
             <div class="xl-in-card" data-step="2" style="--d:1"><span class="xl-in-bb">BLOOMBERG HP</span>
-              <h4>Two years of daily prices</h4><p>${dmy(H2.dates[0])} – ${dmy(H2.dates[H2_N - 1])}</p>
+              <h4>One year of daily prices</h4><p>${dmy(H1.dates[0])} – ${dmy(H1.dates[H1_N - 1])}</p>
               <div class="xl-rh-cv"><canvas></canvas></div>
-              <p>shaded: the last ${fmt(XL.steps, 0)} daily returns, used for <math>${vc("rho", "<mi>ρ</mi>")}</math> (sheet 4)</p></div>
+              <p>${fmt(XL.steps, 0)} daily returns, used for <math>${vc("rho", "<mi>ρ</mi>")}</math> (sheet 4)</p></div>
             <span class="xl-in-arw" data-step="3">${ARROW}</span>
             <div class="xl-in-card out" data-step="3" style="--d:1"><h4><math>${vc("rho", "<mi>ρ</mi>")}</math>Correlation matrix</h4>
               ${RHO_T}<p>Adobe and Microsoft move together the most</p></div>
