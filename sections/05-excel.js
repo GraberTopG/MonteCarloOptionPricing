@@ -311,11 +311,10 @@
     .xl-py-row .num{width:40px;height:40px;font-size:21px}
     .xl-py-row b{font:700 24px/1.2 var(--f-head);color:var(--ink)}
     .xl-py-row p{margin:4px 0 0;font:20px/1.3 var(--f-body);color:#4E5552}
-    .xl-py-pay{flex:1.6;display:flex;flex-direction:column;justify-content:center;gap:8px;margin-top:14px;padding:26px 18px 50px}
+    .xl-py-pay{flex:1.6;display:flex;flex-direction:column;justify-content:center;gap:8px;margin-top:14px;padding:30px 18px}
     .xl-py-pay math{font-size:29px}
     .xl-py-pay p{margin:0;font:19px/1.3 var(--f-body);color:#4E5552;text-align:center}
-    .xl-py .xlref{font-size:18px;padding:6px 10px;bottom:12px;right:14px}   /* inside the box, readable on video */
-    .xl-py-path{flex:1;display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:center;background:#fff;border:2px solid var(--rule-light);border-radius:10px;padding:10px 22px;min-height:0}
+    .xl-py-path{flex:1;display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;align-items:center;background:#fff;border:2px solid var(--rule-light);border-radius:10px;padding:10px 22px;min-height:0}
     .xl-py-path svg{width:100%;height:auto;display:block}
     .xl-py-h{display:flex;align-items:center;gap:14px;margin:0 0 10px;font:700 28px/1.1 var(--f-head);color:var(--green-ink)}
     .xl-py-facts{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:baseline;font:20px/1.3 var(--f-body)}
@@ -1031,16 +1030,22 @@
   const KI_USD = XL.S0.map(s => s * KI);                     // the kick-in levels: 154.91, 216.32, 347.35
   const PUT1_T = 1000 * (1 - P1.worstPerf / 100);            // path 1 at expiry: 1,000 − Microsoft's shares worth 577 = 423
   // each stock's lowest price as a bar down from its start, against the 65% kick-in line (a ring where it touches)
-  const PY_HI = 1.12, PY_LO = 0.45;
+  const PY_HI = 1.12, PY_LO = 0.40;
+  // one path's lowest price per stock, as a bar down from the start (100%): black if it reached the kick-in zone (≤ 65%),
+  // green if not; the zone below 65% shaded, every value on a white halo so the dashed barrier never runs through it
   function lowChart(mins) {
-    const top = 14, bot = 196, Y = v => top + (PY_HI - v) / (PY_HI - PY_LO) * (bot - top), X = j => 112 + j * 80;
-    const line = (v, st, lab) => `<line x1="56" x2="292" y1="${Y(v)}" y2="${Y(v)}" style="${st}"/><text x="48" y="${Y(v) + 6}" text-anchor="end" style="font:18px Arial;fill:#6B716E">${lab}</text>`;
-    return `<svg viewBox="0 0 300 232" aria-hidden="true">
-      ${line(1, "stroke:#8E9592;stroke-width:1.5", pct(B.strike, 0))}
-      ${mins.map((m, j) => `<rect x="${X(j) - 19}" y="${Y(1)}" width="38" height="${(Y(m) - Y(1)).toFixed(1)}" rx="2" style="fill:var(${DARK[j]})"/>
-        ${m <= KI ? `<circle cx="${X(j)}" cy="${Y(m).toFixed(1)}" r="10" style="fill:none;stroke:#1A1D1B;stroke-width:3"/>` : ""}
-        <text x="${X(j)}" y="${(Y(m) + 30).toFixed(1)}" text-anchor="middle" style="font:700 18px Arial;fill:#1A1D1B">${pct(m, 1)}</text>
-        <text x="${X(j)}" y="226" text-anchor="middle" style="font:700 17px Arial;fill:var(${LIGHT[j]})">${TK[j]}</text>`).join("")}
+    const top = 46, bot = 206, Y = v => top + (PY_HI - v) / (PY_HI - PY_LO) * (bot - top), X = j => 140 + j * 92;
+    const x0 = 72, x1 = 372, halo = "paint-order:stroke;stroke:#fff;stroke-width:6px;stroke-linejoin:round";
+    const line = (v, st, lab) => `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" style="${st}"/><text x="${x0 - 8}" y="${Y(v) + 6}" text-anchor="end" style="font:700 17px Arial;fill:#1A1D1B">${lab}</text>`;
+    return `<svg viewBox="0 0 380 242" aria-hidden="true">
+      <text x="0" y="18" style="font:700 18px Arial;fill:#1A1D1B">Lowest price of each stock</text>
+      <text x="0" y="38" style="font:16px Arial;fill:#6B716E">% of its start · grey = kick-in zone</text>
+      <rect x="${x0}" y="${Y(KI)}" width="${x1 - x0}" height="${(bot - Y(KI)).toFixed(1)}" style="fill:#E9EBEA"/>
+      ${line(1, "stroke:#8E9592;stroke-width:1.5", "100%")}
+      ${mins.map((m, j) => { const hit = m <= KI;
+        return `<rect x="${X(j) - 23}" y="${Y(1)}" width="46" height="${(Y(m) - Y(1)).toFixed(1)}" rx="3" style="fill:${hit ? "var(--red-ink)" : "var(--green-mid)"}"/>
+        <text x="${X(j)}" y="${(Y(m) + 24).toFixed(1)}" text-anchor="middle" style="font:700 19px Arial;fill:${hit ? "#1A1D1B" : "var(--green-ink)"};${halo}">${pct(m, 1)}</text>
+        <text x="${X(j)}" y="${bot + 30}" text-anchor="middle" style="font:700 18px Arial;fill:#1A1D1B">${TK[j]}</text>`; }).join("")}
       ${line(KI, "stroke:#1A1D1B;stroke-width:2.5;stroke-dasharray:8 5", KI_TXT)}
     </svg>`;
   }
@@ -1049,7 +1054,7 @@
   Deck.addSlide({
     id: "xl-pay", section: "excel", after: "xl-year", steps: 2, secs: 56, liveSecs: 6,
     title: STEPS[3].t,
-    subtitle: "Sheet 8, rows 306–325: did a stock touch its barrier, and what does the put pay in today's money?",
+    subtitle: "Did a stock touch its barrier, and what does the put pay in today's money?",
     sources: "own Excel model, sheet 8 (paths 1 and 2,000)",
     // live Excel follows: sheet 8, rows 306–325, for path 1 and path 2,000 (two screens, no narration of their own)
     notes: "Step four: what does this year pay? MIN finds each stock's lowest price, and IF checks whether it touched the barrier. MIN and MATCH find the worst stock at the end. After a touch, if that stock ends below its start, the put pays what the investor loses: a thousand dollars minus the value of the shares, discounted to today. "
@@ -1061,15 +1066,15 @@
       body.innerHTML = `
         <div class="xl-py">
           <div class="xl-py-l">
-            <p class="label">What sheet 8 checks on every path</p>
+            <p class="label">What are we checking on every path</p>
             <div class="xl-py-row"><span class="num">1</span><div><b><span class="xl-fn">MIN</span>Lowest price</b><p>of each stock over the ${NDAY} days</p></div></div>
             <div class="xl-py-row"><span class="num">2</span><div><b><span class="xl-fn">IF</span>Kick-in?</b><p>did the lowest price touch ${KI_TXT} of the start?</p></div></div>
             <div class="xl-py-row"><span class="num">3</span><div><b><span class="xl-fn">MIN · MATCH</span>Worst stock</b><p>the lowest <math><msub><mi>S</mi><mi>T</mi></msub><mo>/</mo><mi>K</mi></math> at expiry</p></div></div>
             <div class="fbox xl-py-pay"><span class="chip">THE PUT, IN TODAY'S MONEY</span>${PAY_F}
-              <p>after a kick-in, the investor's loss on the worst stock; <math><msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup></math> = ${fmt(DF, 4)}</p>
-              <span class="xlref">Excel · sheet 8, rows 306–325</span></div>
+              <p>after a kick-in, the investor's loss on the worst stock; <math><msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup></math> = ${fmt(DF, 4)}</p></div>
           </div>
           <div class="xl-py-r">
+            <p class="label">2 practical examples</p>
             <div class="xl-py-path" data-step="1">${lowChart(P1_MIN)}
               <div><p class="xl-py-h">Path 1 <span class="xl-tag mis">kick-in</span></p>
                 <dl class="xl-py-facts">${fact("Kick-in", `${TK[0]} <small>day ${P1.kiDay[0]}</small> · ${TK[2]} <small>day ${P1.kiDay[2]}</small>`)}
