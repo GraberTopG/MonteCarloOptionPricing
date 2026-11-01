@@ -302,15 +302,19 @@
 
 
   // ================= brc-payoff: the payoff diagram gains one feature per click =================
-  // step 3's example (own illustration): Microsoft touches 65% during the year and ends at 95%; Adobe never touches but
-  // ends worst at 80%, so the investor gets Adobe shares worth 800 (the same 20% fall as on brc-tree)
-  const PO_EX = [{ k: 0, low: 0.72, fin: EX_WORST }, { k: 2, low: B.kickIn, fin: 0.95 }, { k: 1, low: 0.90, fin: 1.20 }];
+  // step 3's example: the same 2b year as on brc-paths and the title (seed 7, U.simYears in 00-title.js): one stock (with
+  // our inputs Adobe) breaks through the 65% barrier and then recovers to 80%, the worst final level, so the investor gets
+  // its shares worth 800 (the same 20% fall as on brc-tree); the two others never touch. One row per stock, the worst on top
+  const poEx = () => {
+    const y = U.simYears(7).bad, ks = [0, 1, 2].sort((p, q) => y.fins[p] - y.fins[q]);
+    return ks.map(k => ({ k, low: y.los[k], fin: y.fins[k] }));
+  };
   Deck.addSlide({
     id: "brc-payoff", section: "product", after: "brc-paths", steps: 3, secs: 60,   // after the tree and the simulated years: concrete first, then the option view
     title: "The Payoff Chart of the Multi-BRC",
     subtitle: "Built in three steps: reverse convertible, barrier, worst-of principle",
     sources: "Own illustration, inspired by Vontobel (2026), Swissquote (2026)",
-    notes: `Now let's put all scenarios into one picture: a payoff diagram, the way the lecture draws options. Let's build it in three steps. [→] Step one: a reverse convertible on one stock. The catch: if the stock ends below its starting price, you're paid back in shares, not cash. In option terms, you own a bond and have sold a put; the part of the coupon above normal interest is what the bank pays you for it. Including the coupons, you only lose money if the stock ends below 85 percent. [→] Step two: the barrier. Now the put only kicks in if the stock touches 65 percent of its starting price. It becomes a down-and-in put. If the stock never gets there, you get your thousand back. The barrier gives you a 35 percent safety buffer. [→] Step three: three stocks, and the worst-of principle. One touch by any of them is enough, and you get shares of the worst one, which isn't always the one that touched. So three stocks don't make it safer. They give you three chances to hit a barrier.`,
+    notes: `Now let's put all scenarios into one picture: a payoff diagram, the way the lecture draws options. Let's build it in three steps. [→] Step one: a reverse convertible on one stock. The catch: if the stock ends below its starting price, you're paid back in shares, not cash. In option terms, you own a bond and have sold a put; the part of the coupon above normal interest is what the bank pays you for it. Including the coupons, you only lose money if the stock ends below 85 percent. [→] Step two: the barrier. Now the put only kicks in if the stock touches 65 percent of its starting price. It becomes a down-and-in put. If the stock never gets there, you get your thousand back. The barrier gives you a 35 percent safety buffer. [→] Step three: three stocks, and the worst-of principle. One touch by any of them is enough, and you get shares of the worst one. In our example, Adobe breaks through the barrier and then recovers to minus 20 percent: you get Adobe shares worth 800 dollars, plus the coupons. And it doesn't have to be the stock that touched: any touch counts, the worst one is paid out. So three stocks don't make it safer. They give you three chances to hit a barrier.`,
     render(body) {
       const card = (k, h, p) => `<div class="prd-po-c" data-step="${k}"><span class="num">${k}</span><div><h4>${h}</h4><p>${p}</p></div></div>`;
       body.innerHTML = `
@@ -335,10 +339,11 @@
       const cv = body.querySelector("canvas"), cards = [...body.querySelectorAll(".prd-po-c")];
       const S = { k1: 0, k2: 0, k3: 0 };
       const lerp = (t, a0, a1) => Math.max(0, Math.min(1, (t - a0) / (a1 - a0)));
-      let a = null;
+      let a = null, PO_EX = null;
       function draw() {
         const c = U.canvas(cv); if (!c) return;
         const { ctx, w, h } = c;
+        if (!PO_EX) PO_EX = poEx();
         ctx.lineCap = "butt";   // the payoff line below sets round caps; the next frame's axes must not inherit them
         const green = U.css("--green"), muted = U.css("--muted"), oink = U.css("--orange-ink"), orange = U.css("--orange");
         const loss = U.css("--red-ink"), ink = U.css("--ink"), grey = U.css("--rule");   // kick-in and shares black, the put grey
@@ -461,7 +466,7 @@
             ctx.beginPath(); ctx.arc(X(xr), y, 11, 0, 7); ctx.fill();
             if (lo <= bk) { ctx.strokeStyle = loss; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(X(lo), y, 14, 0, 7); ctx.stroke(); }
             ctx.restore();
-            const ta = lerp(t, .8, 1), worst = e.fin === EX_WORST;
+            const ta = lerp(t, .8, 1), worst = j === 0;
             text(B.tickers[e.k] + " " + f0(fi) + "%" + (worst ? " · worst" : ""), X(fi) + 20, y, { b: true, c: col, a: ta });
             if (lo <= bk) text("touched " + KI, X(lo) + 16, y + 30, { b: true, c: loss, a: ta });   // under the bar, clear of the barrier line
           });
