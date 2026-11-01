@@ -1,7 +1,8 @@
 /* Section "excel" (assignment part 2, script section 5): the Excel walkthrough. Owner: Excel team.
    Slides, in the order of the final video script (the group records live Excel between them, see each slide's notes
    and liveSecs):
-   - brc-steps     the plan: the seven steps of the walkthrough, each with a small picture from our data (5.1); then live
+   - brc-steps     the plan: a recap of the theory (bond − put, the simulation in three moves), then (click) the seven steps,
+                   each with a small picture from our data (5.1); then live
                    Excel: the workbook's Read Me and sheet tabs with the colour legend (the template, assignment 2a)
    - xl-input      step 1: Black-Scholes needs a volatility (5.2), then live Excel: sheets 5, 6 and 4
    - xl-gbm        step 2: the lecture's GBM in discrete time steps (5.3), then live Excel: sheet 7
@@ -13,7 +14,6 @@
   const U = Deck.util, B = U.BRC, XL = U.XL, XM = XL.model, P1 = XL.path1;
   const fmt = U.fmt, pct = (x, d) => fmt(x * 100, d) + "%";
   const sgn = (x, d) => (x >= 0 ? "+" : "−") + fmt(Math.abs(x), d);
-  const neg = (x, d) => (x < 0 ? "−" : "") + fmt(Math.abs(x), d);         // with a true minus sign
   const TK = B.tickers;
   const LIGHT = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];   // stock colours for text
   const DARK = ["--c-adbe", "--c-aapl", "--c-msft"];                      // stock colours for lines and bars
@@ -58,49 +58,43 @@
     .xl-tag.mis{background:var(--ink)}
 
     /* ---------- brc-steps ---------- */
-    .xl-st{display:flex;flex-direction:column;gap:24px;height:100%}
+    .xl-st{display:flex;flex-direction:column;gap:20px;height:100%}
     .xl-st-in{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease;transition-delay:calc(.2s + var(--k) * 170ms)}
     .xl-st.on .xl-st-in{opacity:1;transform:none}
-    .xl-st-head{display:flex;align-items:center;justify-content:center;gap:30px;padding:22px 28px 14px;flex:none}
-    .xl-st-head math{font-size:44px}
-    .xl-st-head .sep{width:2px;height:50px;background:var(--rule);opacity:.6}
-    .xl-st-only{font:30px/1.2 var(--f-body);color:var(--ink)}
+    /* the seven cards wait for the click (step 1) */
+    .xl-st.on .xl-st-list:not(.on) .xl-st-in{opacity:0;transform:translateY(18px);transition-delay:0s}
+    .xl-st-head{display:flex;flex-direction:column;gap:22px;padding:36px 30px 26px;flex:none}
+    .xl-st-head .chip{top:-24px;font-size:26px;padding:7px 40px}
+    .xl-st-eq{display:flex;align-items:center;justify-content:center;gap:30px}
+    .xl-st-head math{font-size:50px}
+    .xl-st-head .sep{width:2px;height:56px;background:var(--rule);opacity:.6}
+    .xl-st-only{font:34px/1.2 var(--f-body);color:var(--ink)}
     .xl-st-put{color:var(--orange-ink)}
-    /* seven cards: number and sheets, title, what it does, and a small picture made from our data */
+    /* the simulation in three moves (the narration's "to price it ..."): an icon each, joined by arrows */
+    .xl-st-flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
+    .xl-st-flow li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;text-wrap:balance;font:24px/1.3 var(--f-body);color:#4E5552}
+    .xl-st-flow strong{color:var(--ink)}
+    .xl-st-ic{width:80px;height:80px;border-radius:50%;background:var(--green);display:grid;place-items:center;margin-bottom:12px}
+    .xl-st-ic svg{width:46px;height:46px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    .xl-st-flow b{font:700 30px/1.15 var(--f-head);color:var(--green-ink);margin-bottom:4px;white-space:nowrap}
+    /* the arrow from the move before: from 10px right of its circle to 10px left of this one (the grid gap is 40px) */
+    .xl-st-flow li+li::before{content:"";position:absolute;top:39px;left:calc(10px - 50%);width:calc(100% - 75px);height:2.5px;background:var(--green-mid)}
+    .xl-st-flow li+li::after{content:"";position:absolute;top:31px;left:calc(50% - 65px);border:9px solid transparent;border-left:15px solid var(--green-mid);border-right:0}
+    /* seven cards, the table of contents of the Excel part: number and sheets, title, one small picture from our data */
     .xl-st-list{list-style:none;margin:0;padding:0;flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px}
-    .xl-st-c{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--card);border-radius:10px;padding:12px}
+    .xl-st-c{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0;background:var(--card);border-radius:10px;padding:12px}
     .xl-st-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-    .xl-st-top .num{width:40px;height:40px;font-size:22px}
-    .xl-st-t{margin:10px 0 0;font:700 23px/1.15 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums;min-height:2.3em}
-    .xl-st-k{margin:6px 0 10px;font:19px/1.25 var(--f-body);color:#4E5552;min-height:3.75em}
-    .xl-st-v{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;background:#fff;border-radius:8px;padding:10px 10px 8px}
-    .xl-st-vl{margin:0;font:16px/1.25 var(--f-body);color:var(--muted)}
-    .xl-st-vl math{font-size:19px}
-    .xl-st-vx{margin:0;font:17px/1.3 var(--f-body);color:var(--ink)}
+    .xl-st-top .num{width:36px;height:36px;font-size:20px}
+    .xl-st-t{margin:0;font:700 22px/1.15 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums;min-height:3.45em}   /* three lines: "Step 2: …" is the longest, the pictures line up */
+    .xl-st-v{flex:1;min-height:0;display:flex;flex-direction:column;background:#fff;border-radius:8px;padding:12px 10px}
     .xl-st-cv{position:relative;flex:1;min-height:0}
     .xl-st-cv canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-    /* 1: the implied volatilities as bars, the correlations as a small matrix */
-    .xl-st-bars{display:grid;grid-template-columns:repeat(3,1fr);align-items:end;height:172px;border-bottom:1.5px solid var(--rule);margin:0 2px}
+    /* 1: the implied volatilities as bars */
+    .xl-st-bars{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);align-items:end;border-bottom:1.5px solid var(--rule);margin:0 2px}
     .xl-st-bars>div{display:flex;flex-direction:column;align-items:center}
-    .xl-st-bars b{font:700 19px var(--f-body);margin-bottom:4px}
-    .xl-st-bars i{display:block;width:38px;border-radius:2px 2px 0 0}
-    .xl-st-tk{display:grid;grid-template-columns:repeat(3,1fr);margin:0 2px 8px;text-align:center;font:700 16px var(--f-mono)}
-    .xl-st-rho{border-collapse:separate;border-spacing:3px;margin:0 auto;font:700 17px var(--f-mono)}
-    .xl-st-rho th{font:700 16px var(--f-mono);padding:2px 3px}
-    .xl-st-rho td{text-align:center;padding:7px 8px;border-radius:3px;color:var(--ink)}
-    /* 2: random numbers (grey cells, as in the workbook) become correlated shocks */
-    .xl-st-ez{display:grid;grid-template-columns:42px 1fr 16px 1fr;gap:6px 3px;align-items:center;font:500 16px var(--f-mono);font-variant-numeric:tabular-nums}
-    .xl-st-ez .h{text-align:center}
-    .xl-st-ez .h math{font-size:23px}
-    .xl-st-ez .tn{font:700 16px var(--f-mono)}
-    .xl-st-ez .c{text-align:right;padding:5px 5px;border:1px solid #9AA39F}
-    .xl-st-ez .c.e{background:#E7E7E7}
-    .xl-st-ez .c.z{background:var(--green-light);border-color:var(--green-mid)}
-    .xl-st-ez .ar{text-align:center;font:700 17px var(--f-body);color:var(--green-ink)}
-    /* 3: path 1 at the end of the year */
-    .xl-st-end{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
-    .xl-st-end span{display:flex;flex-direction:column;font:700 16px var(--f-mono)}
-    .xl-st-end b{font:700 20px var(--f-body)}
+    .xl-st-bars b{font:700 20px var(--f-body);margin-bottom:4px}
+    .xl-st-bars i{display:block;width:44px;border-radius:2px 2px 0 0}
+    .xl-st-tk{display:grid;grid-template-columns:repeat(3,1fr);margin:6px 2px 0;text-align:center;font:700 17px var(--f-mono)}
     /* 6: bond − put = fair value, as a waterfall */
     .xl-st-wf{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:26px 2px 0}
     .xl-st-wf>div{position:relative;border-bottom:1.5px solid var(--rule);margin-bottom:26px}
@@ -110,14 +104,10 @@
     .xl-st-wf .bond .bar{background:var(--green-ink)}
     .xl-st-wf .put .bar{background:var(--orange-light);border:1.5px dashed var(--rule);border-radius:2px}
     .xl-st-wf .fv .bar{background:var(--green)}
-    /* 7: the two engine checks and the eight sensitivities */
-    .xl-st-chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;font:17px/1.2 var(--f-body)}
-    .xl-st-chk li{display:flex;align-items:center;gap:7px}
-    .xl-st-chk svg{width:21px;height:21px;flex:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-    .xl-st-chk svg circle{fill:var(--green);stroke:none}
+    /* 7: the eight sensitivities, largest first */
     .xl-st-tor{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-around;margin:2px 0}
     .xl-st-tor::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1.5px solid var(--rule)}
-    .xl-st-tor span{position:relative;height:13px}
+    .xl-st-tor span{position:relative;height:16px}
     .xl-st-tor i{position:absolute;top:0;bottom:0;border-radius:1px;background:var(--green-ink)}
     .xl-st-tor i.p{left:50%} .xl-st-tor i.n{right:50%}
     .xl-st-tor i.v{background:var(--green)}
@@ -315,54 +305,40 @@
   const hline = (ctx, x0, x1, y, col, w, dash) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.setLineDash(dash || []); ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); ctx.restore(); };
 
   // ================= 1) brc-steps: the plan =================
-  // the seven steps, named like the step slides (the group's feedback, 27 Oct 2026), each with a small picture made from
-  // our three stocks' data: the Excel's inputs, its path 1, its results and sensitivities
-  const STEPS = [
-    { t: "The missing inputs", k: "volatility and correlation", s: [3, 4, 5, 6], v: "inputs" },
-    { t: "How do we simulate a stock?", k: "random numbers and correlated shocks", s: [7, 4, 8], v: "shocks" },
-    { t: "The engine, one simulated year", k: `day by day: ${NDAY} trading days, 3 stocks`, s: [8], v: "year" },
-    { t: "Barrier and payoff", k: `did a stock touch ${KI_TXT}? what does the put pay?`, s: [8], v: "barrier" },
-    { t: `${fmt(XL.paths, 0)} paths with a data table`, k: "one engine, run once for every path", s: [9], v: "fan" },
-    { t: "The fair value", k: "bond − average put, with a 95% interval", s: [10, 11], v: "value" },
-    { t: "Checks and sensitivities", k: "two extreme barriers · which input matters most", s: [11, 9], v: "checks" }
+  // the box on top, a recap of the theory before Excel: bond − put, and the simulation in three moves (the narration's
+  // "to price it ..." condensed), named and drawn like the three moves of mc-sample and mc-paths
+  const FLOW = [
+    { t: "Sample a random path", k: "we use <strong>GBM</strong> for the <strong>three stocks</strong> over the next year", ic: U.icon("dice") },
+    { t: "Compute its discounted payoff", k: "did any stock touch its <strong>barrier</strong>? What does the <strong>put</strong> pay at the end?", ic: U.icon("check") },
+    // x̄, the sample mean
+    { t: "Repeat and average them all", k: `over <strong>${fmt(XL.paths, 0)} paths</strong>, the average discounted payoff is the <strong>price of the put</strong>`,
+      ic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 5h9"/><text x="12" y="19.5" text-anchor="middle" style="font:italic 19px var(--f-math);fill:#fff;stroke:none">x</text></svg>' }
   ];
-  const RES = XL.res, R1 = P1.rows[0];
-  const VOL_PX = 130;                                        // bar height of a 50% volatility
-  const rhoCell = x => `<td style="background:rgba(0,128,47,${(x * 0.6).toFixed(2)})">${f2(x)}</td>`;   // darker = more correlated
+  // the seven steps, the table of contents of the Excel part: only the title and one small picture made from our three
+  // stocks' data (the group, 1 Nov 2026; these titles are this slide's own, the step slides keep theirs for now)
+  const STEPS = [
+    { t: "Step 1: Volatility &amp; Correlation", v: "inputs" },
+    { t: "Step 2: Random Numbers &amp; Correlated Shocks", v: "shocks" },
+    { t: "Step 3: One Simulated Year", v: "year" },
+    { t: "Step 4: Barrier &amp; Discounted Payoff", v: "barrier" },
+    { t: `Step 5: ${fmt(XL.paths, 0)} Paths`, v: "fan" },
+    { t: "Step 6: The Fair Value", v: "value" },
+    { t: "Step 7: Checks &amp; Sensitivities", v: "checks" }
+  ];
+  const RES = XL.res;
+  const VOL_PX = 165;                                        // bar height of a 50% volatility
   const WF_TOP = 1150;                                       // top of the waterfall, USD
   const wfBar = (cls, lo, hi, val, lab) => `<div class="${cls}"><span class="bar" style="bottom:${(lo / WF_TOP * 100).toFixed(1)}%;height:${((hi - lo) / WF_TOP * 100).toFixed(1)}%"><b>${val}</b></span><span class="lab">${lab}</span></div>`;
-  const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12"/><path d="M6.8 12.4l3.4 3.4 7-7.2" fill="none"/></svg>';
-  // the engine checks of sheet 11 (rows 10 and 11): put = bond − value, 0 with the kick-in at 0%, the plain worst-of put at 100%
-  const CHECKS = [[XL.sens[9][1], 0], [XL.sens[10][1], 1]].map(([fv, ki]) => ({ ki: pct(ki, 0), put: Math.abs(RES.bond - fv) }));
   const TOR = SENS.slice().sort(bySize), TOR_MAX = Math.abs(TOR[0].d);
-  const PUT1 = 1000 * (1 - P1.worstPerf / 100);              // path 1: 1,000 minus Microsoft's shares worth 577 = 423
   const VIS = {
-    inputs: `<p class="xl-st-vl">implied volatility <math><mi>σ</mi></math></p>
-      <div class="xl-st-bars">${XM.sigma.map((s, k) => `<div><b style="color:var(${LIGHT[k]})">${Math.round(s * 100)}%</b><i style="height:${(s / 0.5 * VOL_PX).toFixed(0)}px;background:var(${DARK[k]})"></i></div>`).join("")}</div>
-      <div class="xl-st-tk">${TK.map((t, k) => `<span style="color:var(${LIGHT[k]})">${t}</span>`).join("")}</div>
-      <p class="xl-st-vl">correlation <math><mi>ρ</mi></math></p>
-      <table class="xl-st-rho"><tr><th></th><th style="color:var(${LIGHT[1]})">${TK[1]}</th><th style="color:var(${LIGHT[2]})">${TK[2]}</th></tr>
-        <tr><th style="color:var(${LIGHT[0]})">${TK[0]}</th>${rhoCell(XM.rho[0][1])}${rhoCell(XM.rho[0][2])}</tr>
-        <tr><th style="color:var(${LIGHT[1]})">${TK[1]}</th><td></td>${rhoCell(XM.rho[1][2])}</tr></table>`,
-    shocks: `<div class="xl-st-ez"><span></span><span class="h"><math><mi>ε</mi></math></span><span></span><span class="h"><math><mi>Z</mi></math></span>
-        ${[0, 1, 2].map(k => `<span class="tn" style="color:var(${LIGHT[k]})">${TK[k]}</span><span class="c e">${neg(R1.eps[k], 2)}</span><span class="ar">→</span><span class="c z">${neg(R1.z[k], 2)}</span>`).join("")}</div>
-      <p class="xl-st-vl">path 1, day 1, mixed with Cholesky</p>
-      <div class="xl-st-cv"><canvas data-v="cloud"></canvas></div>
-      <p class="xl-st-vl">${fmt(NC, 0)} days: <math><mi>Z</mi></math> of ${TK[0]} and ${TK[2]}</p>`,
-    year: `<div class="xl-st-cv"><canvas data-v="year"></canvas></div>
-      <div class="xl-st-end">${[0, 1, 2].map(k => `<span style="color:var(${LIGHT[k]})">${TK[k]}<b>${pct(LV[k][NDAY], 0)}</b></span>`).join("")}</div>
-      <p class="xl-st-vl">path 1 of our Excel, day&nbsp;${NDAY}</p>`,
-    barrier: `<div class="xl-st-cv"><canvas data-v="barrier"></canvas></div>
-      <p class="xl-st-vx">${[2, 0].map(k => TK[k]).join(", ")} touch ${KI_TXT}</p>
-      <p class="xl-st-vx"><b>the put pays ${fmt(PUT1, 0)}</b></p>`,
-    fan: `<div class="xl-st-cv"><canvas data-v="fan"></canvas></div>
-      <p class="xl-st-vl">${fmt(XL.paths, 0)} simulated years: the worst of the three stocks, day by day</p>`,
-    value: `<div class="xl-st-wf">${wfBar("bond", 0, RES.bond, fmt(RES.bond, 0), "bond")}${wfBar("put", RES.fv, RES.bond, "−" + fmt(RES.put, 0), "put")}${wfBar("fv", 0, RES.fv, fmt(RES.fv, 0), "fair value")}</div>
-      <p class="xl-st-vx">fair value ≈ <b>${fmt(RES.fv, 0)}</b><br>≈ bond ${fmt(RES.bond, 0)} − put ${fmt(RES.put, 0)}</p>`,
-    checks: `<ul class="xl-st-chk">${CHECKS.map(c => `<li>${CHECK}<span>kick-in ${c.ki}: put ${fmt(c.put, 0)}</span></li>`).join("")}</ul>
-      <p class="xl-st-vl">change in the put:</p>
-      <div class="xl-st-tor">${TOR.map(s => `<span><i class="${s.d >= 0 ? "p" : "n"}${/^Vol /.test(s.lab) ? " v" : ""}" style="width:${(Math.abs(s.d) / TOR_MAX * 48).toFixed(1)}%"></i></span>`).join("")}</div>
-      <p class="xl-st-vl">largest: volatility <span class="g">± 5 pp</span></p>`
+    inputs: `<div class="xl-st-bars">${XM.sigma.map((s, k) => `<div><b style="color:var(${LIGHT[k]})">${Math.round(s * 100)}%</b><i style="height:${(s / 0.5 * VOL_PX).toFixed(0)}px;background:var(${DARK[k]})"></i></div>`).join("")}</div>
+      <div class="xl-st-tk">${TK.map((t, k) => `<span style="color:var(${LIGHT[k]})">${t}</span>`).join("")}</div>`,
+    shocks: `<div class="xl-st-cv"><canvas data-v="cloud"></canvas></div>`,
+    year: `<div class="xl-st-cv"><canvas data-v="year"></canvas></div>`,
+    barrier: `<div class="xl-st-cv"><canvas data-v="barrier"></canvas></div>`,
+    fan: `<div class="xl-st-cv"><canvas data-v="fan"></canvas></div>`,
+    value: `<div class="xl-st-wf">${wfBar("bond", 0, RES.bond, fmt(RES.bond, 0), "bond")}${wfBar("put", RES.fv, RES.bond, "−" + fmt(RES.put, 0), "put")}${wfBar("fv", 0, RES.fv, fmt(RES.fv, 0), "fair value")}</div>`,
+    checks: `<div class="xl-st-tor">${TOR.map(s => `<span><i class="${s.d >= 0 ? "p" : "n"}${/^Vol /.test(s.lab) ? " v" : ""}" style="width:${(Math.abs(s.d) / TOR_MAX * 48).toFixed(1)}%"></i></span>`).join("")}</div>`
   };
   // the level labels (100%, 65%) right of the small charts: the charts leave room for the widest one
   const LVL_FONT = "16px " + U.F.body;
@@ -437,14 +413,15 @@
   }
 
   Deck.addSlide({
-    id: "brc-steps", section: "excel", steps: 0, secs: 26, liveSecs: 38,
+    id: "brc-steps", section: "excel", steps: 1, secs: 44, liveSecs: 38,
     title: "Pricing the Multi-BRC in seven steps",
     subtitle: "Our plan for the Excel model, from the market data to the fair value",
     sources: "Arnold (2026), slide 15; own simulation",
-    // the roadmap stays on screen while the narration runs: no clicks, the steps build in on entry. Then live Excel: the
-    // workbook's Read Me and sheet tabs (the template, assignment 2a; until 27 Oct 2026 a slide of its own).
+    // on entry only the box (bond − put, the simulation in three moves); one click brings in the seven steps. Then live
+    // Excel: the workbook's Read Me and sheet tabs (the template, assignment 2a; until 27 Oct 2026 a slide of its own).
     // liveSecs = that narration (84 words) / 145 × 60 + 3 s for the Excel screen
-    notes: "Before we open Excel, here's the plan. Remember: bond minus put, and only the put needs a simulation. We simulate the three stocks day by day for a year and ask: did any stock touch its barrier, and what does the put pay? We discount each payoff, repeat this two thousand times, and average. For that we need each stock's volatility and their correlation. "
+    notes: "Before we open Excel, here is the plan. Our product is a bond minus a put. The bond is easy. The hard part is the put. To price it, we simulate the three stocks over the next year, day by day. On each path, we ask: did any stock touch its barrier? And if so, what does the put pay at the end? We do this two thousand times, take the average and discount it to today. "
+      + "[→] For the simulation we need two inputs: how much each stock moves, its volatility, and how the stocks move together, their correlation. At the end, we check our results. "
       + "[Excel: the workbook: the Read Me, then the sheet tabs block by block, with the colour legend (yellow inputs, grey random numbers, white calculated)] "
       + "Our template has twelve sheets: a Read Me, then five blocks. "
       + "Sheets one and two hold the product terms and the Bloomberg market data of the sixth of October. "
@@ -454,13 +431,14 @@
     render(body) {
       body.innerHTML = `
         <div class="xl-st">
-          <div class="fbox xl-st-head xl-st-in" style="--k:0"><span class="chip">THE PLAN</span>
-            <math><mtext>fair value</mtext><mo>=</mo><mtext>bond</mtext><mo>−</mo><mtext class="xl-st-put">put</mtext></math>
-            <span class="sep"></span><span class="xl-st-only">only the <span class="hl">put</span> needs a simulation</span></div>
-          <ol class="xl-st-list">${STEPS.map((s, i) => `
-            <li class="xl-st-c xl-st-in" style="--k:${i + 1}">
-              <div class="xl-st-top"><span class="num">${i + 1}</span>${tabs(s.s, "sm")}</div>
-              <p class="xl-st-t">${s.t}</p><p class="xl-st-k">${s.k}</p>
+          <div class="fbox xl-st-head xl-st-in" style="--k:0"><span class="chip">RECAP</span>
+            <div class="xl-st-eq"><math><mtext>fair value</mtext><mo>=</mo><mtext>bond</mtext><mo>−</mo><mtext class="xl-st-put">put</mtext></math>
+              <span class="sep"></span><span class="xl-st-only">only the <span class="hl">put</span> needs a simulation</span></div>
+            <ol class="xl-st-flow">${FLOW.map((f, i) => `<li class="xl-st-in" style="--k:${i + 1}"><span class="xl-st-ic">${f.ic}</span><b>${f.t}</b>${f.k ? `<span>${f.k}</span>` : ""}</li>`).join("")}</ol></div>
+          <ol class="xl-st-list" data-step="1">${STEPS.map((s, i) => `
+            <li class="xl-st-c xl-st-in" style="--k:${i}">
+              <div class="xl-st-top"><span class="num">${i + 1}</span></div>
+              <p class="xl-st-t">${s.t}</p>
               <div class="xl-st-v">${VIS[s.v]}</div></li>`).join("")}
           </ol>
         </div>`;
@@ -468,7 +446,8 @@
       body.querySelectorAll("canvas[data-v]").forEach(c => { cv[c.dataset.v] = c; });
       const draw = () => { miniCloud(cv.cloud); miniYear(cv.year, false); miniYear(cv.barrier, true); miniFan(cv.fan); };
       if (window.requestIdleCallback) window.requestIdleCallback(() => fanData()); else setTimeout(fanData, 600);
-      return { step(i, o) { replay(root, "on", o); }, resize() { draw(); } };
+      // the box builds in on entry; the click only brings in the cards (data-step), so the box doesn't replay
+      return { step(i, o) { if (!i || !root.classList.contains("on")) replay(root, "on", o); }, resize() { draw(); } };
     }
   });
 
