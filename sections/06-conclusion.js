@@ -331,6 +331,7 @@
      ====================================================================================================== */
   const FAIR_CPN = XL.res.fairCoupon, PAID = XL.coupon * 100, FV = XL.res.fv, GAP = NOMINAL - FV;
   const CPN_MAX = 25;   // top of the coupon chart, % p.a.
+  const WF_TOP = 1150, wfY = v => (v / WF_TOP * 100).toFixed(2) + "%";   // the value's waterfall, USD (top of the chart)
   // which of the 2,000 paths of sheet 9 end below 1,000 with the coupons included: XL.below.mask, 4 paths per hex digit,
   // most significant bit first, path 1 first
   const N_PATHS = XL.paths;
@@ -360,8 +361,9 @@
 
   Deck.addStyle(`
     .cc-en{display:flex;flex-direction:column;gap:16px;height:100%}
-    .cc-ecols{flex:1;min-height:0;display:grid;grid-template-columns:470px 470px 1fr;grid-template-rows:minmax(0,1fr) auto;column-gap:24px;row-gap:14px}
-    .cc-ecol:nth-child(3){grid-column:3;grid-row:1 / span 2}   /* the simulated years: next to the coupon, the value and the strip */
+    .cc-ecols{flex:1;min-height:0;display:grid;grid-template-columns:450px 560px 1fr;grid-template-rows:minmax(0,1fr) auto;column-gap:24px;row-gap:14px}
+    .cc-ecol:nth-child(1),.cc-ecol:nth-child(2){grid-row:1 / span 2}   /* the coupon and the value: the full height, so the waterfall reads */
+    .cc-ecol:nth-child(3){grid-column:3;grid-row:1}   /* the simulated years, with the volatility strip under them */
     .cc-ecol{display:flex;flex-direction:column;gap:12px;min-width:0}
     .cc-ecol>.panel{flex:1;min-height:0;display:flex;flex-direction:column;padding:44px 30px 16px}
     .cc-cap{margin:0;height:68px;font:26px/1.3 var(--f-body);color:var(--ink)}
@@ -381,6 +383,25 @@
     .cc-gap small{font:22px/1.2 var(--f-body);color:var(--red-ink)}
     .cc-gap .above{position:absolute;left:0;right:0;bottom:calc(100% + 6px);text-align:center;font:800 40px/1 var(--f-head);color:var(--red-ink);font-variant-numeric:lining-nums}
     .cc-xl{display:grid;grid-template-columns:1fr 1fr;column-gap:46px;padding:8px 22px 0;text-align:center;font:700 24px var(--f-body);color:var(--ink)}
+    /* the value as a waterfall (the group, 1 Nov 2026): bond − put = fair value, against the 1,000 the investor pays; the
+       75 between them is what the bank keeps. The bars grow in turn, then the line and the gap appear */
+    .cc-wf{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);column-gap:24px;margin:54px 84px 0 106px;border-bottom:3px solid var(--ink)}
+    .cc-wf>div:not(.cc-wf-ip){position:relative}
+    .cc-wf .bar{position:absolute;left:0;right:0;border-radius:4px 4px 0 0;transform-origin:50% 100%;transform:scaleY(0);transition:transform .9s cubic-bezier(.2,.7,.2,1) calc(.2s + var(--k,0) * .3s)}
+    .cc-wf .bar b{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:6px;font:800 34px/1 var(--f-head);font-variant-numeric:lining-nums;color:var(--ink);white-space:nowrap;opacity:0;transition:opacity .4s ease calc(.9s + var(--k,0) * .3s)}
+    .cc-wf .bond .bar{background:var(--green-ink)}
+    .cc-wf .put .bar{background:var(--orange-light);border:2px dashed var(--rule);border-radius:4px;transform-origin:50% 0}
+    .cc-wf .put .bar b{bottom:auto;top:28%;transform:translate(-50%,-50%);margin:0}   /* above the 1,000 line */
+    .cc-wf .fv .bar{background:var(--orange)}
+    .cc-wf .fv .bar b{bottom:auto;top:12px;margin:0;color:#fff}   /* inside its bar: the 1,000 line runs just above it */
+    .cc-ecol.on .cc-wf .bar{transform:none}
+    .cc-ecol.on .cc-wf .bar b{opacity:1}
+    .cc-wf-ip{position:absolute;left:-106px;right:-84px;border-top:2.5px dashed var(--ink);opacity:0;transition:opacity .4s ease 1.3s}
+    .cc-wf-ip span{position:absolute;left:0;bottom:6px;width:96px;font:700 20px/1.2 var(--f-body);color:var(--ink)}
+    .cc-wf-gap{position:absolute;right:-24px;width:14px;border:3px solid var(--red-ink);border-left:0;opacity:0;transition:opacity .4s ease 1.4s}
+    .cc-wf-gap span{position:absolute;left:22px;top:50%;transform:translateY(-50%);font:800 34px/1 var(--f-head);font-variant-numeric:lining-nums;color:var(--red-ink)}
+    .cc-ecol.on .cc-wf-ip,.cc-ecol.on .cc-wf-gap{opacity:1}
+    .cc-wf-x{display:grid;grid-template-columns:repeat(3,1fr);column-gap:24px;margin:8px 84px 0 106px;text-align:center;font:700 24px var(--f-body);color:var(--ink)}
     .cc-term{flex:1;min-height:0}
     .cc-term .term-body canvas{left:18px;top:16px;width:calc(100% - 36px);height:calc(100% - 32px)}
     .cc-term .term-stats{justify-content:space-between;gap:16px;padding:10px 20px}
@@ -388,7 +409,7 @@
     .cc-term .term-stats .v.t-red{color:var(--term-red)} .cc-term .term-stats .v.t-green{color:var(--term-green)}
     /* the volatility strip under the coupon and the value: what the bank keeps at three volatilities, as three mini bars
        to scale (black, like the 75 the bank keeps) */
-    .cc-vol{grid-column:1 / span 2;grid-row:2;display:grid;grid-template-columns:auto 1fr;column-gap:24px;row-gap:5px;align-items:center;background:var(--green-light);border-radius:10px;padding:11px 26px}
+    .cc-vol{grid-column:3;grid-row:2;display:grid;grid-template-columns:auto 1fr;column-gap:24px;row-gap:5px;align-items:center;background:var(--green-light);border-radius:10px;padding:11px 26px}
     .cc-vt{font:22px/1.2 var(--f-body);color:var(--ink);white-space:nowrap}
     .cc-vt b{font-weight:700}
     .cc-vb{position:relative;height:16px}
@@ -425,12 +446,14 @@
             </div>
             <div class="cc-ecol" data-step="1">
               <section class="panel"><h3 class="panel-title">The value</h3>
-                <div class="cc-chart">
-                  ${bar(FV / NOMINAL, "fair", "≈ " + fmt(FV, 0), 0,
-                    `<div class="cc-gap late" style="--b:${(FV / NOMINAL).toFixed(4)};--t:1"><span class="above">${fmt(GAP, 0)}</span></div>`)}
-                  ${bar(1, "real", fmt(NOMINAL, 0), 1)}
+                <div class="cc-wf">
+                  <div class="bond"><span class="bar" style="--k:0;bottom:0;height:${wfY(XL.res.bond)}"><b>${fmt(XL.res.bond, 0)}</b></span></div>
+                  <div class="put"><span class="bar" style="--k:1;bottom:${wfY(FV)};height:${wfY(XL.res.put)}"><b>−${fmt(XL.res.put, 0)}</b></span></div>
+                  <div class="fv"><span class="bar" style="--k:2;bottom:0;height:${wfY(FV)}"><b>${fmt(FV, 0)}</b></span>
+                    <span class="cc-wf-gap" style="bottom:${wfY(FV)};height:${wfY(GAP)}"><span>${fmt(GAP, 0)}</span></span></div>
+                  <div class="cc-wf-ip" style="bottom:${wfY(NOMINAL)}"><span>you pay ${fmt(NOMINAL, 0)}</span></div>
                 </div>
-                <div class="cc-xl"><span>worth</span><span>you pay</span></div>
+                <div class="cc-wf-x"><span>bond</span><span>put</span><span>worth</span></div>
               </section>
               <p class="cc-cap">The bank keeps <b class="r">${fmt(GAP, 0)}</b> (we assume: hedging, risk, margin)</p>
             </div>
