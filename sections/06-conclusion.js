@@ -228,7 +228,6 @@
       ${xs.map((x, i) => `<circle cx="${x}" cy="${days[i]}" r="6" class="day"/>`).join("")}
       <circle cx="${c}" cy="${days[3]}" r="11" class="hit"/>
       <text x="${c}" y="${yK + 26}" text-anchor="middle" class="fix">caught</text>
-      <text x="0" y="16" class="lab"><tspan class="dot">●</tspan> daily check, against ${fmt(BGK_FIX, 1)}%</text>
     </svg>`;
   })();
 
