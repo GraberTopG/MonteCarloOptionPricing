@@ -1,7 +1,7 @@
 /* Wrap-up and outlook (script section 6, assignment 3). Owner: video team.
    - conc-sum: the video in four lines: Monte Carlo · the Multi-BRC · why Monte Carlo · the Excel recipe
-   - conc-limits: three limits of our model, each with its next step, then the simulation error (a limit of the
-     estimate, not of the model, so it is set apart) and the two further limits listed in the workbook's Read Me
+   - conc-limits: four limits, each with its next step (the fourth, the simulation error, one per click like the
+     others), then the two further limits listed in the workbook's Read Me
    - conc-enough: is 15% enough? fair coupon, fair value (what the bank keeps at other volatilities is on xl-sens) and how
      many of our 2,000 simulated years end below 1,000
    The end card (sections/00-title.js) follows with after: "conc-enough". Excel numbers: Deck.util.XL (sections/excel-data.js). */
@@ -211,7 +211,7 @@
   })();
   const BGK_F = `<math><mn>${KI}%</mn><mo>×</mo><msup><mi>e</mi><mrow><mo>+</mo><mn>${BGK_BETA}</mn><mi>σ</mi><msqrt><mrow><mi mathvariant="normal">Δ</mi><mi>t</mi></mrow></msqrt></mrow></msup><mo>≈</mo><mn>${fmt(BGK_FIX, 1)}%</mn></math>`;
 
-  // the simulation error (a limit of the estimate, not of the model): the 95% interval of the fair value,
+  // limit 4, the simulation error: the 95% interval of the fair value,
   // fv ± 1.96 × standard error of the put (Read Me C29 = sheet 10 C39 ± 1.96 × sheet 11 F26), in USD per 1,000
   const FV0 = XL.res.fv, CI = XL.res.ci;
   if (Math.abs(CI[0] - (FV0 - 1.96 * XL.res.putSE)) > 0.01 || Math.abs(CI[1] - (FV0 + 1.96 * XL.res.putSE)) > 0.01)
@@ -236,7 +236,7 @@
         ${whisker(c - half * k, c + half * k, y, "ci")}<circle cx="${c}" cy="${y}" r="7" class="b"/>`).join("")}
     </svg>`;
   })();
-  const EXTRA = { l: { h: "Simulation error", p: `${fmt(XL.paths, 0)} paths; ${fmt(FV0, 0)} is an estimate`, fig: CI_FIG },
+  const SIM_ERR = { l: { h: "Simulation error", p: `${fmt(XL.paths, 0)} paths; ${fmt(FV0, 0)} is an estimate`, fig: CI_FIG },
     n: { h: "More paths", p: "4× the paths halve the interval", fig: MORE_FIG } };
 
   const LIMITS = [
@@ -246,7 +246,8 @@
       n: { h: "Stochastic volatility", p: "Volatility moves at random, too", fig: SVOL } },
     { l: { h: "Correlation from past data", p: "One year of daily returns",
         fig: `<div class="cc-rho">${RHO.map(r => `<div><span><b style="color:var(${LIGHT[r.a]})">${TK[r.a]}</b> · <b style="color:var(${LIGHT[r.b]})">${TK[r.b]}</b></span><span class="v">ρ = ${fmt(r.v, 2)}</span></div>`).join("")}</div>` },
-      n: { h: "Stress test (sheet 11)", p: "Fair value with correlation ± 0.1", fig: STRESS } }
+      n: { h: "Stress test (sheet 11)", p: "Fair value with correlation ± 0.1", fig: STRESS } },
+    SIM_ERR
   ];
 
   Deck.addStyle(`
@@ -282,12 +283,6 @@
     .cc-fx{background:#fff;border-radius:8px;padding:6px 16px;text-align:center;width:430px}
     .cc-fx math{font-size:28px}
     .cc-fx small{display:block;margin-top:4px;font:18px/1.22 var(--f-body);color:var(--muted)}
-    /* the simulation error: set apart from the model's three limits (thin rule, un-numbered badge), a shorter row */
-    .cc-ldiv{flex:none;border-top:2px solid var(--rule-light)}
-    .cc-lrow.extra{flex:none;height:100px}
-    .cc-lrow.extra .cc-lcard{padding:8px 22px}
-    .cc-lrow.extra .cc-lcard h3{margin-bottom:6px}
-    .cc-lrow.extra>.num svg{width:30px;height:30px;fill:none;stroke:var(--green-ink);stroke-width:3;stroke-linecap:round}
     .cc-lsvg.cc-csvg{width:300px;height:80px}
     .cc-lsvg .ci{fill:none;stroke:var(--green);stroke-width:3.5;stroke-linecap:round}
     .cc-lsvg text.end{font:700 22px var(--f-body);fill:var(--ink)}
@@ -299,28 +294,26 @@
   `);
 
   Deck.addSlide({
-    id: "conc-limits", section: "conclusion", steps: 2, secs: 24,
+    id: "conc-limits", section: "conclusion", steps: 3, secs: 30,
     title: "Limits and next steps",
-    subtitle: "Three limits of our model, and what fixes each one.",
+    subtitle: "Four limits of our model, and what fixes each one.",
     sources: "Broadie et al. (1997); own illustration",
-    notes: "Our model has limits. We check the barrier once a day, not continuously; a barrier correction fixes most of that. [→] We use one flat volatility per stock and ignore the smile, where every strike has its own volatility. Stochastic volatility is the next step. [→] And our correlation comes from past data, so we stress-test it.",
+    notes: "Our model has limits. We check the barrier once a day, not continuously; a barrier correction fixes most of that. [→] We use one flat volatility per stock and ignore the smile, where every strike has its own volatility. Stochastic volatility is the next step. [→] And our correlation comes from past data, so we stress-test it. [→] Finally, 925 is an estimate from two thousand paths: give or take nine dollars at ninety-five percent. Four times the paths would halve that.",
     render(body) {
       const card = (c, cls, i, d) => `<div class="cc-lcard ${cls}" data-step="${i}" style="--d:${d}"><div><h3>${c.h}</h3><p>${c.p}</p></div><div>${c.fig}</div></div>`;
-      const row = (r, badge, i, d, extra) => `
-            <div class="cc-lrow${extra ? " extra" : ""}">
-              <div class="num${extra ? " soft" : ""}" data-step="${i}" style="--d:${d}">${badge}</div>
+      const row = (r, badge, i, d) => `
+            <div class="cc-lrow">
+              <div class="num" data-step="${i}" style="--d:${d}">${badge}</div>
               ${card(r.l, "", i, d)}
               <div class="cc-larr" data-step="${i}" style="--d:${d + 4}">${ARROW}</div>
               ${card(r.n, "next", i, d + 6)}
             </div>`;
-      // the model's three limits (numbered), then, with the last step, the simulation error set apart and the Read Me line
+      // the four limits, one per click, then (with the last) the Read Me line
       body.innerHTML = `
         <div class="cc-lim">
           <div class="cc-lhead"><span></span><span>Limitation</span><span>Next step</span></div>
           ${LIMITS.map((r, i) => row(r, i + 1, i, 0)).join("")}
-          <div class="cc-ldiv" data-step="2" style="--d:8"></div>
-          ${row(EXTRA, `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>`, 2, 9, true)}
-          <p class="cc-lnote" data-step="2" style="--d:17">Two more limitations are in the workbook’s Read Me: the discounting choice and the option maturity gap.</p>
+          <p class="cc-lnote" data-step="3" style="--d:12">Two more limitations are in the workbook’s Read Me: the discounting choice and the option maturity gap.</p>
         </div>`;
       return { step() {}, resize() { U.tightenRoots(body); } };
     }
