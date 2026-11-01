@@ -2,7 +2,7 @@
    - conc-sum: the video in four lines: Monte Carlo · the Multi-BRC · why Monte Carlo · the Excel recipe
    - conc-limits: three limits of our model, each with its next step, then the simulation error (a limit of the
      estimate, not of the model, so it is set apart) and the two further limits listed in the workbook's Read Me
-   - conc-enough: is 15% enough? fair coupon, fair value, what the bank keeps at other volatilities (sheet 11) and how
+   - conc-enough: is 15% enough? fair coupon, fair value (what the bank keeps at other volatilities is on xl-sens) and how
      many of our 2,000 simulated years end below 1,000
    The end card (sections/00-title.js) follows with after: "conc-enough". Excel numbers: Deck.util.XL (sections/excel-data.js). */
 (function () {
@@ -346,24 +346,12 @@
   })();
   const PCT_BELOW = Math.round(XL.below.pct);   // 45
   const COLS = 50, ROWS = N_PATHS / COLS;        // the waffle: 50 × 40 squares, path 1 top left, row by row
-  // what the bank keeps (1,000 − fair value, in % of 1,000) with every volatility 5 points lower, today, 5 points higher
-  // (sheet 11 scenarios 2, 1 and 3: 2.7%, 7.5%, 12.2%)
-  const KEEP = ["Vol −5 pp", "Base case", "Vol +5 pp"].map(n => {
-    const s = XL.sens.find(x => x[0] === n);
-    if (!s) console.error("conc-enough: no sensitivity " + n);
-    return s ? (NOMINAL - s[1]) / NOMINAL * 100 : NaN;
-  });
-  const VOLS = [
-    `Volatility −5 pts → bank keeps <b>≈${fmt(KEEP[0], 0)}%</b>`,
-    `Today → <b>≈${fmt(KEEP[1], 1)}%</b> (USD ${fmt(GAP, 0)} of USD ${fmt(NOMINAL, 0)})`,
-    `Volatility +5 pts → bank keeps <b>≈${fmt(KEEP[2], 0)}%</b>`
-  ];
 
   Deck.addStyle(`
     .cc-en{display:flex;flex-direction:column;gap:16px;height:100%}
     .cc-ecols{flex:1;min-height:0;display:grid;grid-template-columns:450px 560px 1fr;grid-template-rows:minmax(0,1fr) auto;column-gap:24px;row-gap:14px}
     .cc-ecol:nth-child(1),.cc-ecol:nth-child(2){grid-row:1 / span 2}   /* the coupon and the value: the full height, so the waterfall reads */
-    .cc-ecol:nth-child(3){grid-column:3;grid-row:1}   /* the simulated years, with the volatility strip under them */
+    .cc-ecol:nth-child(3){grid-column:3;grid-row:1 / span 2}   /* the simulated years: the full height (what the bank keeps at other volatilities is on xl-sens) */
     .cc-ecol{display:flex;flex-direction:column;gap:12px;min-width:0}
     .cc-ecol>.panel{flex:1;min-height:0;display:flex;flex-direction:column;padding:44px 30px 16px}
     .cc-cap{margin:0;height:68px;font:26px/1.3 var(--f-body);color:var(--ink)}
@@ -407,14 +395,6 @@
     .cc-term .term-stats{justify-content:space-between;gap:16px;padding:10px 20px}
     .cc-term .term-stats .v{font-size:30px}
     .cc-term .term-stats .v.t-red{color:var(--term-red)} .cc-term .term-stats .v.t-green{color:var(--term-green)}
-    /* the volatility strip under the coupon and the value: what the bank keeps at three volatilities, as three mini bars
-       to scale (black, like the 75 the bank keeps) */
-    .cc-vol{grid-column:3;grid-row:2;display:grid;grid-template-columns:auto 1fr;column-gap:24px;row-gap:5px;align-items:center;background:var(--green-light);border-radius:10px;padding:11px 26px}
-    .cc-vt{font:22px/1.2 var(--f-body);color:var(--ink);white-space:nowrap}
-    .cc-vt b{font-weight:700}
-    .cc-vb{position:relative;height:16px}
-    .cc-vb i{position:absolute;left:0;top:0;bottom:0;width:calc(var(--w) * 100%);background:var(--red-ink);border-radius:0 3px 3px 0;clip-path:inset(0 100% 0 0);transition:clip-path .7s cubic-bezier(.2,.7,.2,1) calc(1.4s + var(--k,0) * .15s)}
-    .cc-vol.on .cc-vb i{clip-path:inset(0)}
     .cc-warn{flex:none;height:96px;background:var(--orange-light);font-size:26px;padding:14px 26px 14px 16px}
     .cc-warn .badge{background:var(--orange)}
     .cc-warn b{color:var(--ink)}
@@ -465,7 +445,6 @@
                   <div><div class="k">Share below</div><div class="v t-red" data-c="share">0%</div></div>` })}
               <p class="cc-cap"><b class="r">${PCT_BELOW}%</b> of our simulated years end below USD ${fmt(NOMINAL, 0)}, coupons included</p>
             </div>
-            <div class="cc-vol" data-step="1" style="--d:12">${VOLS.map((t, k) => `<span class="cc-vt">${t}</span><span class="cc-vb"><i style="--w:${(KEEP[k] / Math.max(...KEEP)).toFixed(4)};--k:${k}"></i></span>`).join("")}</div>
           </div>
           <div class="icard cc-warn" data-step="3"><div class="badge">${U.icon("warn")}</div>
             <div><b>Risk-neutral numbers, not a forecast:</b> if stocks earn more, the real chance of a loss is lower</div>
