@@ -15,7 +15,7 @@
    - xl-pay        step 4: what sheet 8 checks on every path; path 1 (kick-in, 404) and path 2,000 (none, 0) (5.5),
                    then live Excel: steps 5 and 6 (sheets 9, 10 and 11; the waterfall of the fair value is on conc-enough)
    - xl-sens       sensitivity analysis, a bonus after the four steps (not on the plan slide): which input moves the put
-                   most (sheet 11), volatility highlighted; the engine checks (live Excel first) in a row under the chart
+                   most (sheet 11), volatility highlighted; the engine checks (live Excel first) in a row above the chart
    All numbers and formulas come from Deck.util.XL (sections/excel-data.js). Classes are prefixed .xl- */
 (function () {
   const U = Deck.util, B = U.BRC, XL = U.XL, XM = XL.model, P1 = XL.path1;
@@ -312,10 +312,11 @@
     /* ---------- xl-sens ---------- */
     .xl-se{display:flex;flex-direction:column;gap:16px;height:740px}
     .xl-se .term{flex:1;min-height:0;min-width:0}
-    /* the engine checks under the chart, side by side (the group, 1 Nov 2026) */
-    .xl-se-checks{flex:none;display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
+    /* the engine checks first, above the chart, side by side (the group, 1 Nov 2026): first we trust the engine, then we
+       ask what moves the put */
+    .xl-se-checks{order:-1;flex:none;display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
     .xl-se-checks h4{margin:0 8px 0 0;align-self:center;font:700 22px/1.2 var(--f-head);color:var(--ink);text-transform:uppercase;letter-spacing:.01em}
-    .xl-se-ck{display:grid;grid-template-columns:34px 1fr auto;column-gap:14px;align-items:center;background:var(--card);border-radius:10px;padding:12px 20px}
+    .xl-se-ck{display:grid;grid-template-columns:34px 1fr auto;column-gap:14px;align-items:center;background:var(--green-light);border-radius:10px;padding:12px 20px}
     .xl-se-ck .ok{width:32px;height:32px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font:700 19px/1 var(--f-body)}
     .xl-se-ck b{display:block;font:700 21px/1.2 var(--f-body);color:var(--ink)}
     .xl-se-ck small{display:block;margin-top:2px;font:17px/1.25 var(--f-body);color:var(--muted)}
@@ -1062,7 +1063,7 @@
   Deck.addSlide({
     // a bonus after the four steps, in the Excel section but not a step: not on the plan slide (the group, 1 Nov 2026)
     id: "xl-sens", section: "excel", steps: 1, secs: 15, liveSecs: 27,
-    title: "Sensitivity Analysis",
+    title: "Bonus Step: Sensitivity Analysis",
     subtitle: `Volatility drives the price: ±5 points move the put by up to ${VOL_MAX} USD, correlation by only ${RHO_MAX}`,
     notes: "[Excel: sheet 11, the engine-check rows (scenarios 10 and 11); next to them, the average of sheet 9, column D (select D13:D2012 and read the average in the status bar)] "
       + "Can we trust the engine? We test two extreme cases. With the barrier at zero, it's never touched, so the put must be worth nothing. And it is. With the barrier at 100 percent, it's always touched, so we must get the plain worst-of put from column D of sheet nine: 227 dollars. Exactly what we get. "
