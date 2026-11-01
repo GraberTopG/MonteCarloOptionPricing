@@ -573,7 +573,7 @@
 
   Deck.addSlide({
     id: "xl-gbm", section: "excel", steps: 3, secs: 28, liveSecs: 25,
-    title: STEPS[1].t,
+    title: "Step 2a: GBM applied",
     subtitle: "The lecture's geometric Brownian motion, one small time step at a time",
     sources: "Arnold (2026), slides 11 and 15; own illustration",
     // live Excel follows (sheet 7): liveSecs = its narration (54 words) / 145 × 60 + 3 s for the one Excel screen
@@ -637,7 +637,7 @@
 
   Deck.addSlide({
     id: "xl-corr", section: "excel", steps: 2, secs: 24, liveSecs: 8,
-    title: STEPS[1].t,
+    title: "Step 2b: GBM applied with Cholesky",
     subtitle: "Our stocks don’t move independently, so we mix the random numbers",
     sources: "own simulation",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
