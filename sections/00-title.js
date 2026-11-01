@@ -522,16 +522,6 @@
             ctx.fillStyle = CONS[s] < 0 ? "#B3261E" : U.css("--muted");
             ctx.fillText((CONS[s] < 0 ? "−" : "+") + U.fmt(Math.abs(CONS[s]) * 100, 1) + "%", x + ctx.measureText(nm).width, y);
           });
-          // the summary under the three targets, like a total line: a rule, a flat-to-down arrow and the verdict
-          const yb = Math.max(...H.px.map((p, s) => Y(consPath(s, FUT)))) + 34, x0 = xe + 20, AVG = CONS.reduce((t, v) => t + v, 0) / CONS.length * 100;
-          ctx.strokeStyle = U.css("--ink"); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0, yb); ctx.lineTo(x0 + 280, yb); ctx.stroke();
-          // two bullet points: the verdict and the average change
-          const bullet = (y, txt) => {
-            ctx.fillStyle = U.css("--ink"); ctx.beginPath(); ctx.arc(x0 + 5, y, 4.5, 0, 7); ctx.fill();
-            ctx.font = "700 20px " + U.F.body; ctx.textBaseline = "middle"; ctx.textAlign = "left"; ctx.fillText(txt, x0 + 18, y);
-          };
-          bullet(yb + 28, "Sideways to slightly down");
-          bullet(yb + 60, "Average change: " + (AVG < 0 ? "−" : "+") + U.fmt(Math.abs(AVG), 1) + "%");
         }
         ctx.globalAlpha = 1;
       }
