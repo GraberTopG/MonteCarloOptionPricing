@@ -556,7 +556,7 @@
           ${cashBox(A1, "1")}
           ${cashBox(B1, "2a")}
           <div class="prd-tb shr" style="${pos(C1)}" data-step="3"><div class="hd"><span class="num k">2b</span><b>Shares of the worst stock</b></div>
-            <span class="sm">If a barrier is breached and a stock ends below its strike, investors get the worst performer in whole shares, plus cash for the fraction</span>
+            <span class="sm">The barrier is breached + stock ends below its strike, investors get the worst performer in whole shares, plus cash for the fraction</span>
             <div class="exl"><p class="eh">Scenario: Adobe at USD ${fx(ST)} (−${f0((1 - EX_WORST) * 100)}%)</p>
               <div class="eg"><span>Conversion ratio (nominal / start)</span><span class="r">${U.fmt(RATIO_W, 4)}</span>
               <span>${WHOLE} Adobe shares delivered</span><span class="r">${fx(WHOLE * ST)}</span>
