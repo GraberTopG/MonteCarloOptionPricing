@@ -135,12 +135,62 @@
     .slide[data-id="hook-product"] .s-title{font-size:52px;white-space:nowrap}   /* the long title on one line */
   `);
 
+  // the simulated years of a seed: the fan of 160 years and the three highlighted ones (good = 1, mid = 2a, bad = 2b),
+  // computed once per seed and shared by every slide that shows them (title, brc-paths, the example of brc-payoff)
+  const YEARS = {};
+  function simYears(seed) {
+    if (YEARS[seed]) return YEARS[seed];
+    const n = B.steps, FAN = 160;
+    const norm = U.normal(U.rng(seed)), fan = [];
+    for (let p = 0; p < FAN; p++) {
+      const sc = U.simBRC(norm);
+      const w = new Float64Array(n + 1);
+      let lo = Infinity;
+      for (let t = 0; t <= n; t++) { w[t] = Math.min(sc.paths[0][t], sc.paths[1][t], sc.paths[2][t]); lo = Math.min(lo, w[t]); }
+      // each stock's lowest and final level, for the example year of the payoff chart (brc-payoff in 02-product.js)
+      const los = sc.paths.map(q => Math.min(...q)), fins = sc.paths.map(q => q[n]);
+      fan.push({ w, lo, los, fins, end: sc.worst, ki: sc.ki, kiDay: sc.kiDay, kiAsset: sc.kiAsset, worstAsset: sc.worstAsset });
+    }
+    // 1: a year that stays well above the kick-in level and ends near its start
+    const good = fan.find(f => !f.ki && f.lo > .78 && f.end > .97 && f.end < 1.2) || fan.find(f => !f.ki);
+    // 2b (the example of brc-tree and brc-payoff too): one stock, Adobe if possible (as on brc-tree), breaks through the
+    // kick-in level and then recovers to about 80%, clearly the worst final level (the two others never touch and end
+    // above 83%); the year ending nearest 80%, after its lowest day tilted smoothly onto exactly 80% (with our inputs a
+    // change of about 4%), so every slide shows the same 20% fall
+    const EX = .80, near = fan.filter(f => f.ki && f.kiAsset === f.worstAsset && f.kiDay > 90 && f.kiDay < 190 && f.end > .75 && f.end < .85
+      && f.los.every((l, k) => k === f.kiAsset || l > B.kickIn) && f.fins.every((v, k) => k === f.kiAsset || v > .83))
+      .sort((p, q) => (p.kiAsset !== 0) - (q.kiAsset !== 0) || Math.abs(p.end - EX) - Math.abs(q.end - EX));
+    // the earlier 2b rule (ends below 60%), still used to place 2a, so 2a stays the year it always was
+    const bad0 = fan.find(f => f.ki && f.kiDay > 90 && f.kiDay < 190 && f.end < .6) || fan.find(f => f.ki);
+    let bad = near[0];
+    if (bad) {
+      const t0 = bad.w.indexOf(bad.lo), r = EX / bad.end;
+      for (let t = t0 + 1; t <= n; t++) bad.w[t] *= Math.pow(r, (t - t0) / (n - t0));
+      bad.fins[bad.worstAsset] = bad.end = EX;
+    } else bad = bad0;
+    // the third: touches the kick-in level but ends above the strike (rare, so we keep simulating until one turns up)
+    const okMid = f => f.ki && f.kiDay > 40 && f.kiDay < 200 && f.end > 1.05 && f.end < 1.35 && f.w[n - 15] > .97   // ends clearly above the strike
+      && (!bad0 || Math.abs(f.kiDay - bad0.kiDay) > 45) && (!good || Math.abs(f.end - good.end) > .1);   // its touch and its end apart from the others'
+
+    let mid = fan.find(okMid);
+    for (let p = 0; !mid && p < 50000; p++) {
+      const sc = U.simBRC(norm);
+      if (!sc.ki || sc.worst < 1.05) continue;
+      const w = new Float64Array(n + 1);
+      for (let t = 0; t <= n; t++) w[t] = Math.min(sc.paths[0][t], sc.paths[1][t], sc.paths[2][t]);
+      const f = { w, end: sc.worst, ki: sc.ki, kiDay: sc.kiDay };
+      if (okMid(f)) mid = f;
+    }
+    return (YEARS[seed] = { fan, good, mid, bad });
+  }
+
   // ---------- the right half of the title and the end card: a Monte Carlo picture of our product ----------
   // 2,000 seeded years (the number of paths in our Excel), each the worst of the three stocks day by day: a faint fan of
   // the first 160, one year that never comes near the kick-in level (green), one that touches it (black, with a ring at
   // the touch), and at the right where the worst stock ends after one year: 1,000 back (green) or shares (black).
   // Art from our own model, no results quoted.
   // o.full: the chart across the whole slide (title); otherwise right of the green diagonal (end card)
+
   function pathsArt(root, seed, o = {}) {
     // o.steps: the fan is shown at once and the three highlighted years draw one per click, each with its cards
     root.insertAdjacentHTML("beforeend", o.inBody ? `<div class="tt-chart" style="position:absolute;inset:0"><canvas style="width:100%;height:100%"></canvas></div>`
@@ -148,40 +198,13 @@
       <div class="tt-right"><canvas></canvas></div>
       <svg class="tt-edge" viewBox="0 0 1920 1080"><line x1="1130" y1="0" x2="770" y2="1080" style="stroke:var(--green)" stroke-width="4"/></svg>`);
     const cv = root.querySelector(o.full || o.inBody ? ".tt-chart canvas" : ".tt-right canvas");
-    const n = B.steps, FAN = 160;
+    const n = B.steps;
     // the chart in stage pixels: days from X0 to X1, levels on Y (100% at y Y1, SC px per 100%), the legend at y LY
     const X0 = o.X0 ?? 1130, X1 = o.X1 ?? 1840, XR = o.XR ?? 1860, Y1 = o.Y1 ?? 540, SC = o.SC ?? 560, LY = o.LY ?? 1000;
     const X = i => X0 + i / n * (X1 - X0), Y = v => Y1 - (v - 1) * SC;
 
     let sim = null;   // simulated on the first draw (the end card only when it is shown)
-    function simulate() {
-      const norm = U.normal(U.rng(seed)), fan = [];
-      for (let p = 0; p < FAN; p++) {
-        const sc = U.simBRC(norm);
-        const w = new Float64Array(n + 1);
-        let lo = Infinity;
-        for (let t = 0; t <= n; t++) { w[t] = Math.min(sc.paths[0][t], sc.paths[1][t], sc.paths[2][t]); lo = Math.min(lo, w[t]); }
-        fan.push({ w, lo, end: sc.worst, ki: sc.ki, kiDay: sc.kiDay });
-      }
-      // the two highlighted years: one that stays well above the kick-in level and ends near its start, one that touches it
-      // mid-year and ends clearly below it
-      const good = fan.find(f => !f.ki && f.lo > .78 && f.end > .97 && f.end < 1.2) || fan.find(f => !f.ki);
-      const bad = fan.find(f => f.ki && f.kiDay > 90 && f.kiDay < 190 && f.end < .6) || fan.find(f => f.ki);
-      // the third: touches the kick-in level but ends above the strike (rare, so we keep simulating until one turns up)
-      const okMid = f => f.ki && f.kiDay > 40 && f.kiDay < 200 && f.end > 1.05 && f.end < 1.35 && f.w[n - 15] > .97   // ends clearly above the strike
-        && (!bad || Math.abs(f.kiDay - bad.kiDay) > 45) && (!good || Math.abs(f.end - good.end) > .1);   // its touch and its end apart from the others'
-
-      let mid = fan.find(okMid);
-      for (let p = 0; !mid && p < 50000; p++) {
-        const sc = U.simBRC(norm);
-        if (!sc.ki || sc.worst < 1.05) continue;
-        const w = new Float64Array(n + 1);
-        for (let t = 0; t <= n; t++) w[t] = Math.min(sc.paths[0][t], sc.paths[1][t], sc.paths[2][t]);
-        const f = { w, end: sc.worst, ki: sc.ki, kiDay: sc.kiDay };
-        if (okMid(f)) mid = f;
-      }
-      return { fan, good, mid, bad };
-    }
+    const simulate = () => simYears(seed);
 
     // the fan is drawn once into a layer at the canvas's own resolution; the animation only reveals it from left to right
     const layer = document.createElement("canvas");
@@ -338,6 +361,7 @@
     };
   }
   U.pathsArt = pathsArt;   // for the scenario-paths slide in 02-product.js
+  U.simYears = simYears;   // the same years for the example of the payoff chart (brc-payoff)
 
   // ================= title =================
   Deck.addSlide({
