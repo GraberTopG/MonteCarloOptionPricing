@@ -664,7 +664,7 @@
     </svg>`;
   })();
   // one time step as a picture: today's price, plus the drift (dark green), plus the shock (HSG green); own illustration,
-  // not to scale. Drawn at the panel's own size (560 × 220), so its text keeps its pixel size
+  // Drawn at the panel's own size (560 × 220), so its text keeps its pixel size
   const STEP_SVG = (() => {
     const xa = 92, xb = 330, y0 = 126, y1 = 90, y2 = 32, yd = 164, base = 184;
     const head = (x, y, dir, col) => `<polygon points="${x},${y} ${x - 9},${y + dir * 16} ${x + 9},${y + dir * 16}" fill="${col}"/>`;
@@ -683,7 +683,6 @@
         <line x1="${xa}" x2="${xb}" y1="${y0}" y2="${y2}" stroke="${ink}" stroke-width="3"/><circle cx="${xb}" cy="${y2}" r="9" fill="${ink}"/>${S(xb - 22, y2 - 6, "t+Δt", "end")}</g>
       <g class="p zz"><line x1="${xb - 28}" x2="${xb - 28}" y1="${y1}" y2="${yd - 14}" stroke="${green}" stroke-width="3" stroke-dasharray="6 5"/>${head(xb - 28, yd, -1, green)}
         ${lab(xb - 44, yd - 2, "or down: Z decides", `font:22px Arial;fill:${green};text-anchor:end`)}</g>
-      ${lab(548, 16, "not to scale", "font:18px Arial;fill:#8E9592;text-anchor:end")}
     </svg>`;
   })();
 
