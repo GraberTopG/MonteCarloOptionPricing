@@ -2,7 +2,7 @@
    Slides, in the order of the final video script (the group records live Excel between them, see each slide's notes
    and liveSecs):
    - brc-steps     the plan: a recap of the theory (bond − put, the simulation in three moves), then (click) the four steps
-                   (1, 2a, 2b, 3, 4) and the live-Excel end (2,000 paths → fair value),
+                   (1, 2a, 2b, 3, 4),
                    each with a small picture from our data (5.1); then live
                    Excel: the workbook's Read Me and sheet tabs with the colour legend (the template, assignment 2a)
    - xl-input      step 1, left on both step-1 slides: the missing inputs and how we solved them. Here: Black-Scholes is
@@ -93,9 +93,7 @@
     .xl-st-flow li+li::before{content:"";position:absolute;top:39px;left:calc(10px - 50%);width:calc(100% - 75px);height:2.5px;background:var(--green-mid)}
     .xl-st-flow li+li::after{content:"";position:absolute;top:31px;left:calc(50% - 65px);border:9px solid transparent;border-left:15px solid var(--green-mid);border-right:0}
     /* seven cards, the table of contents of the Excel part: number and sheets, title, one small picture from our data */
-    .xl-st-list{list-style:none;margin:0;padding:0;flex:1;min-height:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
-    .xl-st-end{background:var(--green-light)}
-    .xl-st-xl{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:4px;background:var(--green);color:#fff;font:700 15px/1 var(--f-body);letter-spacing:.06em}
+    .xl-st-list{list-style:none;margin:0;padding:0;flex:1;min-height:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
     .xl-st-c{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0;background:var(--card);border-radius:10px;padding:12px}
     .xl-st-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
     .xl-st-top .num{width:36px;height:36px;font-size:20px}
@@ -381,8 +379,7 @@
       ic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 5h9"/><text x="12" y="19.5" text-anchor="middle" style="font:italic 19px var(--f-math);fill:#fff;stroke:none">x</text></svg>' }
   ];
   // the four steps of the Excel part (step 2 in two slides, 2a and 2b), its table of contents: only the title and one
-  // small picture made from our data. The step slides take their titles from here. After step 4, live Excel runs the
-  // engine 2,000 times and gives the fair value (no slide of their own): the last card, without a number
+  // small picture made from our data. The step slides take their titles from here
   const STEPS = [
     { n: "1", t: "Step 1: Volatility &amp; Correlation", v: "inputs" },
     { n: "2a", t: "Step 2a: GBM applied", v: "gbm" },
@@ -390,7 +387,6 @@
     { n: "3", t: "Step 3: One Simulated Year", v: "year" },
     { n: "4", t: "Step 4: Barrier &amp; Discounted Payoff", v: "barrier" }
   ];
-  const STEP_END = { t: `Then in Excel: ${fmt(XL.paths, 0)} paths → fair value`, v: "fan" };
   const RES = XL.res;
   const VOL_PX = 165;                                        // bar height of a 50% volatility
   const VIS = {
@@ -400,7 +396,6 @@
     shocks: `<div class="xl-st-cv"><canvas data-v="cloud"></canvas></div>`,
     year: `<div class="xl-st-cv"><canvas data-v="year"></canvas></div>`,
     barrier: `<div class="xl-st-cv"><canvas data-v="barrier"></canvas></div>`,
-    fan: `<div class="xl-st-cv"><canvas data-v="fan"></canvas></div>`
   };
   // the level labels (100%, 65%) right of the small charts: the charts leave room for the widest one
   const LVL_FONT = "16px " + U.F.body;
@@ -427,35 +422,6 @@
     // the touches: the first close at or below 65% (Microsoft on day 166, Adobe on day 243)
     ctx.strokeStyle = ink; ctx.lineWidth = 2.5;
     [2, 0].forEach(k => { const d = P1.kiDay[k]; if (d === null) return; ctx.beginPath(); ctx.arc(X(d), Y(LV[k][d]), 8, 0, 7); ctx.stroke(); });
-  }
-  // the fan of step 5: 2,000 simulated years of our model (own simulation with the Excel's inputs), the worst of the
-  // three stocks each day. Simulated once, when the browser is idle or at the first draw (about 0.1 s)
-  const FAN_SEED = 7, FAN_LO = 0.3, FAN_HI = 1.5;
-  let FAN = null;
-  const fanData = () => {
-    if (FAN) return FAN;
-    const norm = U.normal(U.rng(FAN_SEED)), n = NDAY + 1, fan = new Float32Array(XL.paths * n);
-    for (let i = 0; i < XL.paths; i++) { const p = U.simBRC(norm).paths; for (let t = 0; t < n; t++) fan[i * n + t] = Math.min(p[0][t], p[1][t], p[2][t]); }
-    return (FAN = fan);
-  };
-  function miniFan(cv) {
-    const c = cv && U.canvas(cv); if (!c) return;
-    const { ctx, w, h } = c, f = { x: 2, y: 4, w: w - 2 - lvlRoom(ctx), h: h - 8 }, n = NDAY + 1, fan = fanData();
-    const X = t => f.x + t / NDAY * f.w, Y = v => f.y + f.h - (v - FAN_LO) / (FAN_HI - FAN_LO) * f.h;
-    ctx.save(); ctx.beginPath(); ctx.rect(f.x, f.y, f.w, f.h); ctx.clip();
-    ctx.strokeStyle = "rgba(31,59,45,.035)"; ctx.lineWidth = 1; ctx.lineJoin = "round";
-    for (let i = 0; i < XL.paths; i++) {
-      ctx.beginPath(); ctx.moveTo(X(0), Y(1));
-      for (let t = 3; t < n; t += 3) ctx.lineTo(X(t), Y(fan[i * n + t]));
-      ctx.lineTo(X(NDAY), Y(fan[i * n + NDAY])); ctx.stroke();
-    }
-    ctx.restore();
-    const muted = U.css("--term-muted"), ink = U.css("--ink");
-    hline(ctx, f.x, f.x + f.w, Y(1), muted, 1.5, [5, 4]);
-    hline(ctx, f.x, f.x + f.w, Y(KI), ink, 2, [7, 4]);
-    ctx.font = LVL_FONT; ctx.textBaseline = "middle"; ctx.textAlign = "left";
-    ctx.fillStyle = muted; ctx.fillText(pct(B.strike, 0), f.x + f.w + 8, Y(1));
-    ctx.fillStyle = ink; ctx.fillText(KI_TXT, f.x + f.w + 8, Y(KI));
   }
   // the bell curve of step 2a: Z ~ N(0,1), with the draw of path 1, day 1, Adobe (as on xl-gbm)
   function miniBell(cv) {
@@ -498,7 +464,7 @@
     title: "Pricing the Multi-BRC in four steps",
     subtitle: "Our plan for the Excel model, from the market data to the fair value",
     sources: "Arnold (2026), slide 15; own simulation",
-    // on entry only the box (bond − put, the simulation in three moves); one click brings in the four steps and the live-Excel end. Then live
+    // on entry only the box (bond − put, the simulation in three moves); one click brings in the four steps. Then live
     // Excel: the workbook's Read Me and sheet tabs (the template, assignment 2a; until 27 Oct 2026 a slide of its own).
     // liveSecs = that narration (84 words) / 145 × 60 + 3 s for the Excel screen
     notes: "Before we open Excel, here is the plan. Our product is a bond minus a put. The bond is easy. The hard part is the put. To price it, we simulate the three stocks over the next year, day by day. On each path, we ask: did any stock touch its barrier? And if so, what does the put pay at the end? We do this two thousand times, take the average and discount it to today. "
@@ -521,16 +487,11 @@
               <div class="xl-st-top"><span class="num">${s.n}</span></div>
               <p class="xl-st-t">${s.t}</p>
               <div class="xl-st-v">${VIS[s.v]}</div></li>`).join("")}
-            <li class="xl-st-c xl-st-end xl-st-in" style="--k:${STEPS.length}">
-              <div class="xl-st-top"><span class="xl-st-xl">LIVE IN EXCEL</span></div>
-              <p class="xl-st-t">${STEP_END.t}</p>
-              <div class="xl-st-v">${VIS[STEP_END.v]}</div></li>
           </ol>
         </div>`;
       const root = body.querySelector(".xl-st"), cv = {};
       body.querySelectorAll("canvas[data-v]").forEach(c => { cv[c.dataset.v] = c; });
-      const draw = () => { miniBell(cv.gbm); miniCloud(cv.cloud); miniYear(cv.year, false); miniYear(cv.barrier, true); miniFan(cv.fan); };
-      if (window.requestIdleCallback) window.requestIdleCallback(() => fanData()); else setTimeout(fanData, 600);
+      const draw = () => { miniBell(cv.gbm); miniCloud(cv.cloud); miniYear(cv.year, false); miniYear(cv.barrier, true); };
       // the box builds in on entry; the click only brings in the cards (data-step), so the box doesn't replay
       return { step(i, o) { if (!i || !root.classList.contains("on")) replay(root, "on", o); }, resize() { draw(); } };
     }
