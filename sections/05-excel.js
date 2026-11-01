@@ -12,7 +12,8 @@
    - xl-gbm        step 2: the lecture's GBM in discrete time steps (5.3), then live Excel: sheet 7
    - xl-corr       step 2: correlated shocks with Cholesky (5.3), then live Excel: sheets 4 and 8
    - xl-year       step 3: the engine's formula and path 1 (5.4), with the K49 shot in live Excel
-   - xl-pay        step 4: what sheet 8 checks on every path; path 1 (kick-in, 404) and path 2,000 (none, 0) (5.5),
+   - xl-pay        step 4: what sheet 8 checks on every path; example 1 (path 1: kick-in, 404) and example 2 (path 2,000:
+                   none, 0) (5.5),
                    then live Excel: steps 5 and 6 (sheets 9, 10 and 11; the waterfall of the fair value is on conc-enough)
    - xl-sens       sensitivity analysis, a bonus after the four steps (not on the plan slide): which input moves the put
                    most (sheet 11), volatility highlighted; the engine checks (live Excel first) in a row above the chart
@@ -288,7 +289,7 @@
     /* ---------- xl-pay (step 4) ---------- */
     /* Excel function names as small tags in the workbook's green */
     .xl-fn{display:inline-block;font:700 17px/1 var(--f-mono);letter-spacing:.03em;color:#fff;background:#1D6F42;border-radius:3px;padding:5px 8px;margin-right:12px;vertical-align:3px}
-    /* xl-pay: left, what sheet 8 checks on every path; right, path 1 (step 1) and path 2,000 (step 2) */
+    /* xl-pay: left, what sheet 8 checks on every path; right, example 1 (step 1) and example 2 (step 2) */
     .xl-py{display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);gap:48px;height:100%}
     .xl-py-l,.xl-py-r{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0}
     .xl-py .label{margin:0}
@@ -299,15 +300,17 @@
     .xl-py-pay{flex:1.6;display:flex;flex-direction:column;justify-content:center;gap:8px;margin-top:14px;padding:30px 18px}
     .xl-py-pay math{font-size:29px}
     .xl-py-pay p{margin:0;font:19px/1.3 var(--f-body);color:#4E5552;text-align:center}
+    .xl-ul{font:700 19px var(--f-body);color:var(--green-ink)}   /* the labels under the put's braces */
+    .xl-ul2 mtd{padding:0}
     .xl-py-path{flex:1;display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;align-items:center;background:#fff;border:2px solid var(--rule-light);border-radius:10px;padding:10px 22px;min-height:0}
     .xl-py-path svg{width:100%;height:auto;display:block}
     .xl-py-h{display:flex;align-items:center;gap:14px;margin:0 0 10px;font:700 28px/1.1 var(--f-head);color:var(--green-ink)}
-    .xl-py-facts{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:baseline;font:20px/1.3 var(--f-body)}
-    .xl-py-facts dt{color:var(--muted)}
-    .xl-py-facts dd{margin:0;color:var(--ink);font-weight:700}
-    .xl-py-facts dd small{font-size:18px;font-weight:400;color:var(--muted)}
-    .xl-py-pv{display:flex;align-items:baseline;gap:12px;margin-top:10px;padding-top:8px;border-top:1px solid var(--rule-light);font:20px/1.2 var(--f-body);color:var(--muted)}
-    .xl-py-pv b{font:700 40px/1 var(--f-body);color:var(--green-ink)}
+    /* next to each chart: three short facts (label in dark green, value in black, no grey notes), then the put today */
+    .xl-py-facts{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 18px;align-items:baseline;font:22px/1.3 var(--f-body)}
+    .xl-py-facts dt{font-weight:700;color:var(--green-ink)}
+    .xl-py-facts dd{margin:0;color:var(--ink)}
+    .xl-py-pv{display:flex;align-items:baseline;gap:12px;margin:12px 0 0;padding-top:10px;border-top:1px solid var(--rule-light);font:700 22px/1.2 var(--f-body);color:var(--green-ink)}
+    .xl-py-pv b{font:700 44px/1 var(--f-body)}
 
     /* ---------- xl-sens ---------- */
     .xl-se{display:flex;flex-direction:column;gap:16px;height:740px}
@@ -962,45 +965,53 @@
 
   // ================= 5b) xl-pay: step 4, barrier and discounted payoff =================
   // sheet 8, rows 306–325: MIN (lowest price, C306), IF (kick-in, C308), MIN/MATCH (worst performer), the down-and-in put
-  // payoff (C321) and its discount. Path 1 from XL.path1, path 2,000 from XL.path2000 (both chosen in sheet 9, F6)
+  // payoff (C321) and its discount. On the slide two examples (the group, 1 Nov 2026): example 1 is path 1 (XL.path1),
+  // example 2 is path 2,000 (XL.path2000), both chosen in sheet 9, F6
   const DF = Math.exp(-XM.r * B.T);                           // e^(−rT) = 0.9566 (sheet 8)
   const P1_ST = LV.map(l => l[NDAY]), P1_MIN = P1.min.map((m, k) => m / XL.S0[k]);
   const P2 = XL.path2000, P2_ST = P2.ST.map((s, k) => s / XL.S0[k]), P2_MIN = P2.min.map((m, k) => m / XL.S0[k]);
   const KI_USD = XL.S0.map(s => s * KI);                     // the kick-in levels: 154.91, 216.32, 347.35
-  const PUT1_T = 1000 * (1 - P1.worstPerf / 100);            // path 1 at expiry: 1,000 − Microsoft's shares worth 577 = 423
+  const PUT1_T = 1000 * (1 - P1.worstPerf / 100);            // example 1 at expiry: 1,000 − Microsoft's shares worth 577 = 423
   // each stock's lowest price as a bar down from its start, against the 65% kick-in line (a ring where it touches)
   const PY_HI = 1.12, PY_LO = 0.40;
-  // one path's lowest price per stock, as a bar down from the start (100%): black if it reached the kick-in zone (≤ 65%),
-  // green if not; the zone below 65% shaded, every value on a white halo so the dashed barrier never runs through it
+  // one example's lowest price per stock, as a bar down from the start (100%), against the dashed kick-in line at 65%
+  // (the group, 1 Nov 2026: no shaded zone). Black if it crossed the line, green if not; every bar shows its lowest
+  // level, on a white halo so the dashed line never runs through it
   function lowChart(mins) {
-    const top = 46, bot = 206, Y = v => top + (PY_HI - v) / (PY_HI - PY_LO) * (bot - top), X = j => 140 + j * 92;
-    const x0 = 72, x1 = 372, halo = "paint-order:stroke;stroke:#fff;stroke-width:6px;stroke-linejoin:round";
+    const top = 46, bot = 206, Y = v => top + (PY_HI - v) / (PY_HI - PY_LO) * (bot - top), X = j => 118 + j * 80;
+    const x0 = 72, x1 = 312, halo = "paint-order:stroke;stroke:#fff;stroke-width:6px;stroke-linejoin:round";
     const line = (v, st, lab) => `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" style="${st}"/><text x="${x0 - 8}" y="${Y(v) + 6}" text-anchor="end" style="font:700 17px Arial;fill:#1A1D1B">${lab}</text>`;
     return `<svg viewBox="0 0 380 242" aria-hidden="true">
       <text x="0" y="18" style="font:700 18px Arial;fill:#1A1D1B">Lowest price of each stock</text>
-      <text x="0" y="38" style="font:16px Arial;fill:#6B716E">% of its start · grey = kick-in zone</text>
-      <rect x="${x0}" y="${Y(KI)}" width="${x1 - x0}" height="${(bot - Y(KI)).toFixed(1)}" style="fill:#E9EBEA"/>
+      <text x="0" y="38" style="font:16px Arial;fill:#4E5552">% of its start price</text>
       ${line(1, "stroke:#8E9592;stroke-width:1.5", "100%")}
       ${mins.map((m, j) => { const hit = m <= KI;
         return `<rect x="${X(j) - 23}" y="${Y(1)}" width="46" height="${(Y(m) - Y(1)).toFixed(1)}" rx="3" style="fill:${hit ? "var(--red-ink)" : "var(--green-mid)"}"/>
         <text x="${X(j)}" y="${(Y(m) + 24).toFixed(1)}" text-anchor="middle" style="font:700 19px Arial;fill:${hit ? "#1A1D1B" : "var(--green-ink)"};${halo}">${pct(m, 1)}</text>
         <text x="${X(j)}" y="${bot + 30}" text-anchor="middle" style="font:700 18px Arial;fill:#1A1D1B">${TK[j]}</text>`; }).join("")}
       ${line(KI, "stroke:#1A1D1B;stroke-width:2.5;stroke-dasharray:8 5", KI_TXT)}
+      <text x="${x1 + 10}" y="${Y(KI) + 6}" style="font:700 17px Arial;fill:#1A1D1B">kick-in</text>
     </svg>`;
   }
-  const PAY_F = `<math display="block"><mtext>Put</mtext><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup><mo>·</mo><msub><mn>1</mn><mtext>kick-in</mtext></msub><mo>·</mo><mn>1,000</mn><mo>·</mo><mi>max</mi><mrow><mo>(</mo><mn>1</mn><mo>−</mo><mfrac><msubsup><mi>S</mi><mi>T</mi><mtext>worst</mtext></msubsup><mi>K</mi></mfrac><mo>,</mo><mn>0</mn><mo>)</mo></mrow></math>`;
+  // the put in three parts under braces, as the price on mc-sample: the discount, the kick-in and the investor's loss on
+  // the worst stock; the first two carry an invisible copy of the loss, so the three braces hang at the same depth
+  const LOSS = `<mn>1,000</mn><mo>·</mo><mi>max</mi><mrow><mo>(</mo><mn>1</mn><mo>−</mo><mfrac><msubsup><mi>S</mi><mi>T</mi><mtext>worst</mtext></msubsup><mi>K</mi></mfrac><mo>,</mo><mn>0</mn><mo>)</mo></mrow>`;
+  const PY_UL = t => `<mtr><mtd><mpadded class="xl-ul" height="0.95em" depth="0.3em"><mtext>${t}</mtext></mpadded></mtd></mtr>`;
+  const PY_BR = (inner, a, b, even) => `<munder><munder><mrow><mspace width="0.2em"></mspace>${inner}<mspace width="0.2em"></mspace>${even ? `<mpadded width="0"><mphantom>${LOSS}</mphantom></mpadded>` : ""}</mrow><mo>⏟</mo></munder><mtable class="xl-ul2">${PY_UL(a)}${PY_UL(b)}</mtable></munder>`;
+  const DOT = `<mo lspace="0.45em" rspace="0.45em">·</mo>`;
+  const PAY_F = `<math display="block"><mtext>Put</mtext><mo>=</mo>${PY_BR(`<msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup>`, "discount", `= ${fmt(DF, 4)}`, 1)}${DOT}${PY_BR(`<msub><mn>1</mn><mtext>kick-in</mtext></msub>`, "1 if kick-in,", "else 0", 1)}${DOT}${PY_BR(LOSS, "the investor's loss", "on the worst stock", 0)}</math>`;
 
   Deck.addSlide({
     id: "xl-pay", section: "excel", after: "xl-year", steps: 2, secs: 56, liveSecs: 63,
     title: STEPS[4].t,
     subtitle: "Did a stock touch its barrier, and what does the put pay in today's money?",
-    sources: "own Excel model, sheet 8 (paths 1 and 2,000)",
+    sources: "own Excel model, sheet 8 (example 1: path 1, example 2: path 2,000)",
     // live Excel follows: sheet 8 for paths 1 and 2,000 (two screens), then steps 5 and 6 (the data table of sheet 9,
     // sheets 10 and 11). liveSecs = their narration / 145 × 60 + 3 s per Excel screen (four)
     notes: "Step four: what does this year pay? MIN finds each stock's lowest price, and IF checks whether it touched the barrier. MIN and MATCH find the worst stock at the end. After a touch, if that stock ends below its start, the put pays what the investor loses: a thousand dollars minus the value of the shares, discounted to today. "
-      + "[→] Here's path one. Adobe and Microsoft both touch their barriers, and Microsoft ends worst, down 42 percent. So the investor gets Microsoft shares worth 577 dollars, and the put pays the difference: 423 dollars, or 404 in today's money. "
-      + "[→] Now path two thousand. Microsoft is down almost a third, but no barrier is touched. Adobe misses by less than two dollars! So the put pays nothing, and the investor gets the full thousand back. "
-      + "[Excel: sheet 8, rows 306–325; highlight MIN, IF, MIN/MATCH, payoff and discount in turn, for path 1 (sheet 9, cell F6 = 1), then path 2,000 (F6 = 2000; sheet 8 updates at once, no F9 needed)] "
+      + "[→] Here's our first example. Adobe and Microsoft both touch their barriers, and Microsoft ends worst, down 42 percent. So the investor gets Microsoft shares worth 577 dollars, and the put pays the difference: 423 dollars, or 404 in today's money. "
+      + "[→] Now a second example. Microsoft is down almost a third, but no barrier is touched. Adobe misses by less than two dollars! So the put pays nothing, and the investor gets the full thousand back. "
+      + "[Excel: sheet 8, rows 306–325; highlight MIN, IF, MIN/MATCH, payoff and discount in turn, for example 1 (sheet 9, cell F6 = 1), then example 2 (F6 = 2000; sheet 8 updates at once, no F9 needed)] "
       + "[Excel: sheet 9; Data → What-If Analysis → Data Table, column input cell F6. Recording note: data tables only recalculate with F9, and only in desktop Excel.] "
       + "Step five: one path is one roll of the dice. To get two thousand, we use an Excel data table: one copy of the engine, with the path number as the input cell. Excel runs it once for every path. "
       + "[Excel: sheet 10 from top to bottom: bond → put → fair value → fair coupon; then sheet 11, cell F26, the put's standard error of 4.58 dollars, with the caption \"95%: ± 1.96 × 4.58 ≈ ± 9\"] "
@@ -1014,23 +1025,22 @@
             <div class="xl-py-row"><span class="num">1</span><div><b><span class="xl-fn">MIN</span>Lowest price</b><p>of each stock over the ${NDAY} days</p></div></div>
             <div class="xl-py-row"><span class="num">2</span><div><b><span class="xl-fn">IF</span>Kick-in?</b><p>did the lowest price touch ${KI_TXT} of the start?</p></div></div>
             <div class="xl-py-row"><span class="num">3</span><div><b><span class="xl-fn">MIN · MATCH</span>Worst stock</b><p>the lowest <math><msub><mi>S</mi><mi>T</mi></msub><mo>/</mo><mi>K</mi></math> at expiry</p></div></div>
-            <div class="fbox xl-py-pay"><span class="chip">THE PUT, IN TODAY'S MONEY</span>${PAY_F}
-              <p>after a kick-in, the investor's loss on the worst stock; <math><msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup></math> = ${fmt(DF, 4)}</p></div>
+            <div class="fbox xl-py-pay"><span class="chip">THE PUT, IN TODAY'S MONEY</span>${PAY_F}</div>
           </div>
           <div class="xl-py-r">
-            <p class="label">2 practical examples</p>
+            <p class="label">Two practical examples</p>
             <div class="xl-py-path" data-step="1">${lowChart(P1_MIN)}
-              <div><p class="xl-py-h">Path 1 <span class="xl-tag mis">kick-in</span></p>
-                <dl class="xl-py-facts">${fact("Kick-in", `${TK[0]} <small>day ${P1.kiDay[0]}</small> · ${TK[2]} <small>day ${P1.kiDay[2]}</small>`)}
-                  ${fact("Worst", `${TK[P1.worst]} <small>ends at</small> ${pct(P1.worstPerf / 100, 1)}`)}
-                  ${fact("At expiry", `1,000 − ${fmt(1000 - PUT1_T, 0)} <small>(its shares)</small> = ${fmt(PUT1_T, 0)}`)}</dl>
-                <p class="xl-py-pv">today <b>${fmt(P1.payoff, 0)}</b> USD</p></div></div>
+              <div><p class="xl-py-h">Example 1 <span class="xl-tag mis">kick-in</span></p>
+                <dl class="xl-py-facts">${fact("Kick-in", `${TK[0]} · ${TK[2]}`)}
+                  ${fact("Worst", `${TK[P1.worst]} · ${pct(P1.worstPerf / 100, 1)}`)}
+                  ${fact("At expiry", `1,000 − ${fmt(1000 - PUT1_T, 0)} = ${fmt(PUT1_T, 0)}`)}</dl>
+                <p class="xl-py-pv">Put today <b>${fmt(P1.payoff, 0)}</b> USD</p></div></div>
             <div class="xl-py-path" data-step="2">${lowChart(P2_MIN)}
-              <div><p class="xl-py-h">Path ${fmt(XL.paths, 0)} <span class="xl-tag">no kick-in</span></p>
-                <dl class="xl-py-facts">${fact("Kick-in", `none <small>${TK[0]}'s low ${fmt(P2.min[0], 2)} vs ${fmt(KI_USD[0], 2)}</small>`)}
-                  ${fact("Worst", `${TK[P2.worst]} <small>ends at</small> ${pct(P2.worstPerf / 100, 1)}`)}
-                  ${fact("At expiry", `0 <small>(${fmt(P2.putNoBarrier, 0)} without the barrier)</small>`)}</dl>
-                <p class="xl-py-pv">today <b>0</b> USD · the investor gets 1,000 back</p></div></div>
+              <div><p class="xl-py-h">Example 2 <span class="xl-tag">no kick-in</span></p>
+                <dl class="xl-py-facts">${fact("Kick-in", `none · ${TK[0]} ${fmt(P2.min[0] - KI_USD[0], 2)} USD above`)}
+                  ${fact("Worst", `${TK[P2.worst]} · ${pct(P2.worstPerf / 100, 1)}`)}
+                  ${fact("At expiry", "0 · 1,000 back")}</dl>
+                <p class="xl-py-pv">Put today <b>0</b> USD</p></div></div>
           </div>
         </div>`;
       return { resize() { U.tightenRoots(body); } };
