@@ -1,7 +1,7 @@
 """Monte Carlo Option Pricing: the presentation, served through Streamlit Community Cloud.
 
 The slides are the same static web app as before (index.html, app.js, theme.css, sections/*.js). This file only
-1. asks for the group password (Streamlit secret SITE_PASSWORD, never stored in the repo), and
+1. asks for a group password only if the Streamlit secret SITE_PASSWORD is set (otherwise the site is open), and
 2. puts the whole web app, inlined into one HTML page, on the screen.
 
 Edit the slides in sections/*.js as usual: Streamlit picks up every push to main automatically.
@@ -33,10 +33,12 @@ def password_ok() -> bool:
     """Show a password box until the right group password was entered (kept for this browser session)."""
     if st.session_state.get("ok"):
         return True
-    secret = st.secrets.get("SITE_PASSWORD", "")
-    if not secret:
-        st.error("This site is locked because no group password has been set up yet (Streamlit secret SITE_PASSWORD).")
-        return False
+    try:
+        secret = st.secrets.get("SITE_PASSWORD", "")
+    except Exception:   # no secrets set up at all
+        secret = ""
+    if not secret:   # no password set: the presentation is open to everyone with the link
+        return True
     _, mid, _ = st.columns([1, 1, 1])
     with mid:
         st.markdown("<div style='height:18vh'></div>", unsafe_allow_html=True)
@@ -73,4 +75,7 @@ if password_ok():
     # stamp: the newest file time, so a new push is picked up even though the bundle is cached
     files = [ROOT / "index.html", ROOT / "app.js", ROOT / "theme.css", *sorted((ROOT / "sections").glob("*.js"))]
     stamp = max(f.stat().st_mtime for f in files)
-    components.html(bundle(stamp), height=880, scrolling=False)
+    if hasattr(st, "iframe"):   # Streamlit 1.5x and later (components.html is being retired)
+        st.iframe(bundle(stamp), height=880)
+    else:
+        components.html(bundle(stamp), height=880, scrolling=False)
