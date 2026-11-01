@@ -348,7 +348,7 @@
       const box = (k, icon, txt) => `<div class="box" data-step="${k}"><span class="n">${k}</span><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
       body.innerHTML = `
         <div class="mc-sa">
-          <div class="mc-flow">${box(1, "dice", "Sample a random path")}<span class="ar" data-step="2">→</span>${box(2, "check", "Compute its discounted payoff")}<span class="ar" data-step="3">→</span>${box(3, "avg", "Average them all")}</div>
+          <div class="mc-flow">${box(1, "dice", "Sample random paths")}<span class="ar" data-step="2">→</span>${box(2, "check", "Compute its discounted payoff")}<span class="ar" data-step="3">→</span>${box(3, "avg", "Average them all")}</div>
           <div class="mc-sa-lo">
             <figure class="mc-sa-chart">
               <span class="n mc-sa-n" data-step="1">1</span>
