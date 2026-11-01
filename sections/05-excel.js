@@ -14,8 +14,8 @@
    - xl-year       step 3: the engine's formula and path 1 (5.4), with the K49 shot in live Excel
    - xl-pay        step 4: what sheet 8 checks on every path; path 1 (kick-in, 404) and path 2,000 (none, 0) (5.5),
                    then live Excel: steps 5 and 6 (sheets 9, 10 and 11; the waterfall of the fair value is on conc-enough)
-   - xl-sens       part of the conclusion: the engine checks (live Excel first), then which input matters most (sheet 11),
-                   with the three checks in a row under the chart
+   - xl-sens       sensitivity analysis, a bonus after the four steps (not on the plan slide): which input moves the put
+                   most (sheet 11), volatility highlighted; the engine checks (live Excel first) in a row under the chart
    All numbers and formulas come from Deck.util.XL (sections/excel-data.js). Classes are prefixed .xl- */
 (function () {
   const U = Deck.util, B = U.BRC, XL = U.XL, XM = XL.model, P1 = XL.path1;
@@ -345,7 +345,8 @@
     .xl-se.s1 .xl-se-call{opacity:1}
     .xl-se.s1 .xl-se-row.hi .xl-se-bar{background:var(--amber);opacity:1}
     .xl-se.s1 .xl-se-row.hi .xl-se-lab{color:var(--amber);font-weight:700}
-    .xl-se.s1 .xl-se-row.rho .xl-se-lab{color:var(--amber)}
+    .xl-se.s1 .xl-se-row.rho .xl-se-lab{color:var(--term-text)}
+    .xl-se-row.rho .xl-se-call{color:var(--term-text)}   /* correlation: narrated, but small next to volatility (the only highlight) */
     .xl-se.s1 .xl-se-row.rho .xl-se-val{opacity:0;transition:opacity .2s ease}   /* gone before its callout fades in at the same place */
     .xl-se.s1 .xl-se-row:not(.hi):not(.rho){opacity:.4}
     .xl-se-z0{position:absolute;left:330px;right:0;top:0;bottom:0;pointer-events:none}
@@ -1042,7 +1043,12 @@
   const seName = l => l.replace(/^Vol /, "Volatility ").replace(/^ρ /, "Correlation ").replace(/^Historical vol$/, "Historical volatility");
   const VOL_UP = SENS.find(s => /^Vol \+/.test(s.lab));
   const PUT_UP = XL.res.put + VOL_UP.d;                     // 172.59 + 46.30 = 218.89
+  const VOL_DN = SENS.find(s => /^Vol −/.test(s.lab)), PUT_DN = XL.res.put + VOL_DN.d;   // 172.59 − 48.63 = 123.96
+  // the subtitle's message: the largest move of each input pair, in USD
+  const MAXD = re => Math.round(Math.max(...SENS.filter(s => re.test(s.lab)).map(s => Math.abs(s.d))));
+  const VOL_MAX = MAXD(/^Vol [+−]/), RHO_MAX = MAXD(/^ρ/);   // 49 · 7
   const seCall = s => /^Vol \+/.test(s.lab) ? `put ${fmt(XL.res.put, 0)} → ${fmt(PUT_UP, 0)}`
+    : /^Vol −/.test(s.lab) ? `put ${fmt(XL.res.put, 0)} → ${fmt(PUT_DN, 0)}`
     : /^ρ/.test(s.lab) ? `ρ ${s.lab.replace(/^ρ /, "").replace(/^([+−])/, "$1 ")}: ${sgn(Math.round(s.d), 0)}` : "";
   const isTerm = s => /^Kick-in/.test(s.lab);
   // under the chart: the two engine checks of sheet 11 (rows 10 and 11: put = bond − fair value) and the put's precision
@@ -1054,24 +1060,24 @@
   ];
 
   Deck.addSlide({
-    // part of the conclusion, not a step of the Excel (the group, 1 Nov 2026)
-    id: "xl-sens", section: "conclusion", steps: 1, secs: 15, liveSecs: 27,
-    title: "Checks & Sensitivities",
-    subtitle: `Sheet 11: does the engine pass its checks, and which input moves the put most? (same ${fmt(XL.paths, 0)} paths)`,
+    // a bonus after the four steps, in the Excel section but not a step: not on the plan slide (the group, 1 Nov 2026)
+    id: "xl-sens", section: "excel", steps: 1, secs: 15, liveSecs: 27,
+    title: "Sensitivity Analysis",
+    subtitle: `Volatility drives the price: ±5 points move the put by up to ${VOL_MAX} USD, correlation by only ${RHO_MAX}`,
     notes: "[Excel: sheet 11, the engine-check rows (scenarios 10 and 11); next to them, the average of sheet 9, column D (select D13:D2012 and read the average in the status bar)] "
       + "Can we trust the engine? We test two extreme cases. With the barrier at zero, it's never touched, so the put must be worth nothing. And it is. With the barrier at 100 percent, it's always touched, so we must get the plain worst-of put from column D of sheet nine: 227 dollars. Exactly what we get. "
       + "[Excel → web app] And which input matters most? "
-      + "[→] Volatility. Five points more, and the put rises from 173 to 219 dollars, so the product's value falls from 925 to 878. Correlation moves it by only about seven.",
+      + "[→] Volatility. Five points more, and the put rises from 173 to 219 dollars, so the product's value falls from 925 to 878. Five points less, and the put falls to 124. Correlation moves it by only about seven. So if there's one input to get right, it's volatility.",
     render(body) {
       const X = v => 50 + v / SE_MAX * 50;                  // % of the plot width
       let n = 0;                                            // running index: the bars grow one after another
       const rowHtml = s => {
         const k = n++, pos = s.d >= 0, w = Math.abs(s.d) / SE_MAX * 50, call = seCall(s);
-        const cls = /^Vol \+/.test(s.lab) ? "hi" : /^ρ/.test(s.lab) ? "rho" : /^(Historical vol|No dividends)$/.test(s.lab) ? "dim" : "";
+        const cls = /^Vol [+−]/.test(s.lab) ? "hi" : /^ρ/.test(s.lab) ? "rho" : /^(Historical vol|No dividends)$/.test(s.lab) ? "dim" : "";
         const note = /^Historical vol$/.test(s.lab) ? "<small>(implied → historical)</small>" : "";
         // the value sits at the outer end of the bar; the callout of the volatility bar on the other side of zero
         const val = `<span class="xl-se-val" style="--k:${k};${pos ? `left:calc(${X(s.d)}% + 14px)` : `right:calc(${100 - X(s.d)}% + 14px)`}">${sgn(Math.round(s.d), 0)}</span>`;
-        const callPos = cls === "hi" ? `right:calc(50% + 18px)` : pos ? `left:calc(${X(s.d)}% + 14px)` : `right:calc(${100 - X(s.d)}% + 14px)`;
+        const callPos = cls === "hi" ? (pos ? `right:calc(50% + 18px)` : `left:calc(50% + 18px)`) : pos ? `left:calc(${X(s.d)}% + 14px)` : `right:calc(${100 - X(s.d)}% + 14px)`;
         return `<div class="xl-se-row ${cls}"><span class="xl-se-lab">${seName(s.lab)}${note}</span>
           <div class="xl-se-plot"><span class="xl-se-bar ${pos ? "pos" : "neg"}" style="--k:${k};--w:${w.toFixed(2)}%"></span>${val}${call ? `<span class="xl-se-call" style="${callPos}">${call}</span>` : ""}</div></div>`;
       };
