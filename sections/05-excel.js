@@ -1,7 +1,8 @@
 /* Section "excel" (assignment part 2, script section 5): the Excel walkthrough. Owner: Excel team.
    Slides, in the order of the final video script (the group records live Excel between them, see each slide's notes
    and liveSecs):
-   - brc-steps     the plan: a recap of the theory (bond − put, the simulation in three moves), then (click) the seven steps,
+   - brc-steps     the plan: a recap of the theory (bond − put, the simulation in three moves), then (click) the four steps
+                   (1, 2a, 2b, 3, 4) and the live-Excel end (2,000 paths → fair value),
                    each with a small picture from our data (5.1); then live
                    Excel: the workbook's Read Me and sheet tabs with the colour legend (the template, assignment 2a)
    - xl-input      step 1, left on both step-1 slides: the missing inputs and how we solved them. Here: Black-Scholes is
@@ -92,7 +93,9 @@
     .xl-st-flow li+li::before{content:"";position:absolute;top:39px;left:calc(10px - 50%);width:calc(100% - 75px);height:2.5px;background:var(--green-mid)}
     .xl-st-flow li+li::after{content:"";position:absolute;top:31px;left:calc(50% - 65px);border:9px solid transparent;border-left:15px solid var(--green-mid);border-right:0}
     /* seven cards, the table of contents of the Excel part: number and sheets, title, one small picture from our data */
-    .xl-st-list{list-style:none;margin:0;padding:0;flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px}
+    .xl-st-list{list-style:none;margin:0;padding:0;flex:1;min-height:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+    .xl-st-end{background:var(--green-light)}
+    .xl-st-xl{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:4px;background:var(--green);color:#fff;font:700 15px/1 var(--f-body);letter-spacing:.06em}
     .xl-st-c{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0;background:var(--card);border-radius:10px;padding:12px}
     .xl-st-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
     .xl-st-top .num{width:36px;height:36px;font-size:20px}
@@ -106,22 +109,6 @@
     .xl-st-bars b{font:700 20px var(--f-body);margin-bottom:4px}
     .xl-st-bars i{display:block;width:44px;border-radius:2px 2px 0 0}
     .xl-st-tk{display:grid;grid-template-columns:repeat(3,1fr);margin:6px 2px 0;text-align:center;font:700 17px var(--f-mono)}
-    /* 6: bond − put = fair value, as a waterfall */
-    .xl-st-wf{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:26px 2px 0}
-    .xl-st-wf>div{position:relative;border-bottom:1.5px solid var(--rule);margin-bottom:26px}
-    .xl-st-wf .bar{position:absolute;left:5px;right:5px;border-radius:2px 2px 0 0}
-    .xl-st-wf .bar b{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:3px;font:700 18px var(--f-body);color:var(--ink);white-space:nowrap}
-    .xl-st-wf .lab{position:absolute;top:100%;left:-6px;right:-6px;margin-top:5px;text-align:center;font:16px var(--f-body);color:var(--muted);white-space:nowrap}
-    .xl-st-wf .bond .bar{background:var(--green-ink)}
-    .xl-st-wf .put .bar{background:var(--orange-light);border:1.5px dashed var(--rule);border-radius:2px}
-    .xl-st-wf .fv .bar{background:var(--green)}
-    /* 7: the eight sensitivities, largest first */
-    .xl-st-tor{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-around;margin:2px 0}
-    .xl-st-tor::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1.5px solid var(--rule)}
-    .xl-st-tor span{position:relative;height:16px}
-    .xl-st-tor i{position:absolute;top:0;bottom:0;border-radius:1px;background:var(--green-ink)}
-    .xl-st-tor i.p{left:50%} .xl-st-tor i.n{right:50%}
-    .xl-st-tor i.v{background:var(--green)}
 
     /* ---------- xl-input and xl-rho (step 1) ---------- */
     /* both slides: on the left the missing inputs and how we solved them, on the right what the slide is about. Every
@@ -393,31 +380,27 @@
     { t: "Repeat and average them all", k: `over <strong>${fmt(XL.paths, 0)} paths</strong>, the average discounted payoff is the <strong>price of the put</strong>`,
       ic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 5h9"/><text x="12" y="19.5" text-anchor="middle" style="font:italic 19px var(--f-math);fill:#fff;stroke:none">x</text></svg>' }
   ];
-  // the seven steps, the table of contents of the Excel part: only the title and one small picture made from our three
-  // stocks' data (the group, 1 Nov 2026). The step slides take their titles from here (steps 5 and 6 are live Excel)
+  // the four steps of the Excel part (step 2 in two slides, 2a and 2b), its table of contents: only the title and one
+  // small picture made from our data. The step slides take their titles from here. After step 4, live Excel runs the
+  // engine 2,000 times and gives the fair value (no slide of their own): the last card, without a number
   const STEPS = [
-    { t: "Step 1: Volatility &amp; Correlation", v: "inputs" },
-    { t: "Step 2: Random Numbers &amp; Correlated Shocks", v: "shocks" },
-    { t: "Step 3: One Simulated Year", v: "year" },
-    { t: "Step 4: Barrier &amp; Discounted Payoff", v: "barrier" },
-    { t: `Step 5: ${fmt(XL.paths, 0)} Paths`, v: "fan" },
-    { t: "Step 6: The Fair Value", v: "value" },
-    { t: "Step 7: Checks &amp; Sensitivities", v: "checks" }
+    { n: "1", t: "Step 1: Volatility &amp; Correlation", v: "inputs" },
+    { n: "2a", t: "Step 2a: GBM applied", v: "gbm" },
+    { n: "2b", t: "Step 2b: Correlating the Z with Cholesky", v: "shocks" },
+    { n: "3", t: "Step 3: One Simulated Year", v: "year" },
+    { n: "4", t: "Step 4: Barrier &amp; Discounted Payoff", v: "barrier" }
   ];
+  const STEP_END = { t: `Then in Excel: ${fmt(XL.paths, 0)} paths → fair value`, v: "fan" };
   const RES = XL.res;
   const VOL_PX = 165;                                        // bar height of a 50% volatility
-  const WF_TOP = 1150;                                       // top of the waterfall, USD
-  const wfBar = (cls, lo, hi, val, lab) => `<div class="${cls}"><span class="bar" style="bottom:${(lo / WF_TOP * 100).toFixed(1)}%;height:${((hi - lo) / WF_TOP * 100).toFixed(1)}%"><b>${val}</b></span><span class="lab">${lab}</span></div>`;
-  const TOR = SENS.slice().sort(bySize), TOR_MAX = Math.abs(TOR[0].d);
   const VIS = {
     inputs: `<div class="xl-st-bars">${XM.sigma.map((s, k) => `<div><b style="color:var(${LIGHT[k]})">${Math.round(s * 100)}%</b><i style="height:${(s / 0.5 * VOL_PX).toFixed(0)}px;background:var(${DARK[k]})"></i></div>`).join("")}</div>
       <div class="xl-st-tk">${TK.map((t, k) => `<span style="color:var(${LIGHT[k]})">${t}</span>`).join("")}</div>`,
+    gbm: `<div class="xl-st-cv"><canvas data-v="gbm"></canvas></div>`,
     shocks: `<div class="xl-st-cv"><canvas data-v="cloud"></canvas></div>`,
     year: `<div class="xl-st-cv"><canvas data-v="year"></canvas></div>`,
     barrier: `<div class="xl-st-cv"><canvas data-v="barrier"></canvas></div>`,
-    fan: `<div class="xl-st-cv"><canvas data-v="fan"></canvas></div>`,
-    value: `<div class="xl-st-wf">${wfBar("bond", 0, RES.bond, fmt(RES.bond, 0), "bond")}${wfBar("put", RES.fv, RES.bond, "−" + fmt(RES.put, 0), "put")}${wfBar("fv", 0, RES.fv, fmt(RES.fv, 0), "fair value")}</div>`,
-    checks: `<div class="xl-st-tor">${TOR.map(s => `<span><i class="${s.d >= 0 ? "p" : "n"}${/^Vol /.test(s.lab) ? " v" : ""}" style="width:${(Math.abs(s.d) / TOR_MAX * 48).toFixed(1)}%"></i></span>`).join("")}</div>`
+    fan: `<div class="xl-st-cv"><canvas data-v="fan"></canvas></div>`
   };
   // the level labels (100%, 65%) right of the small charts: the charts leave room for the widest one
   const LVL_FONT = "16px " + U.F.body;
@@ -474,7 +457,26 @@
     ctx.fillStyle = muted; ctx.fillText(pct(B.strike, 0), f.x + f.w + 8, Y(1));
     ctx.fillStyle = ink; ctx.fillText(KI_TXT, f.x + f.w + 8, Y(KI));
   }
-  // the cloud of step 2: Adobe's and Microsoft's correlated shocks on 1,000 days (the lower cloud of xl-corr)
+  // the bell curve of step 2a: Z ~ N(0,1), with the draw of path 1, day 1, Adobe (as on xl-gbm)
+  function miniBell(cv) {
+    const c = cv && U.canvas(cv); if (!c) return;
+    const { ctx, w, h } = c, f = { x: 6, y: 34, w: w - 12, h: h - 62 }, L = 3.4, Z1 = 0.3047;
+    const X = z => f.x + (z + L) / (2 * L) * f.w, pdf = z => Math.exp(-z * z / 2), Y = v => f.y + f.h - v * f.h;
+    const curve = () => { for (let k = 0; k <= 136; k++) { const z = -L + k * .05; k ? ctx.lineTo(X(z), Y(pdf(z))) : ctx.moveTo(X(z), Y(pdf(z))); } };
+    ctx.beginPath(); curve(); ctx.lineTo(X(L), Y(0)); ctx.lineTo(X(-L), Y(0)); ctx.closePath();
+    ctx.fillStyle = U.css("--green-light"); ctx.fill();
+    ctx.strokeStyle = U.css("--ink"); ctx.lineWidth = 2; ctx.beginPath(); curve(); ctx.stroke();
+    hline(ctx, f.x, f.x + f.w, Y(0), U.css("--rule"), 1.5);
+    const g = U.css("--green");
+    ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = g; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(X(Z1), Y(0)); ctx.lineTo(X(Z1), Y(pdf(Z1))); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(X(Z1), Y(pdf(Z1)), 6, 0, 7); ctx.fill();
+    ctx.font = "700 17px " + U.F.body; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    ctx.fillText("Z = " + fmt(Z1, 2), X(Z1) + 10, f.y - 8);
+    ctx.fillStyle = U.css("--muted"); ctx.font = "15px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
+    [-3, 0, 3].forEach(z => ctx.fillText(z < 0 ? "−" + -z : String(z), X(z), Y(0) + 6));
+  }
+  // the cloud of step 2b: Adobe's and Microsoft's correlated shocks on 1,000 days (the lower cloud of xl-corr)
   const Z_MSFT = mixY(2, 1);
   function miniCloud(cv) {
     const c = cv && U.canvas(cv); if (!c) return;
@@ -493,10 +495,10 @@
 
   Deck.addSlide({
     id: "brc-steps", section: "excel", steps: 1, secs: 44, liveSecs: 38,
-    title: "Pricing the Multi-BRC in seven steps",
+    title: "Pricing the Multi-BRC in four steps",
     subtitle: "Our plan for the Excel model, from the market data to the fair value",
     sources: "Arnold (2026), slide 15; own simulation",
-    // on entry only the box (bond − put, the simulation in three moves); one click brings in the seven steps. Then live
+    // on entry only the box (bond − put, the simulation in three moves); one click brings in the four steps and the live-Excel end. Then live
     // Excel: the workbook's Read Me and sheet tabs (the template, assignment 2a; until 27 Oct 2026 a slide of its own).
     // liveSecs = that narration (84 words) / 145 × 60 + 3 s for the Excel screen
     notes: "Before we open Excel, here is the plan. Our product is a bond minus a put. The bond is easy. The hard part is the put. To price it, we simulate the three stocks over the next year, day by day. On each path, we ask: did any stock touch its barrier? And if so, what does the put pay at the end? We do this two thousand times, take the average and discount it to today. "
@@ -516,14 +518,18 @@
             <ol class="xl-st-flow">${FLOW.map((f, i) => `<li class="xl-st-in" style="--k:${i + 1}"><span class="xl-st-ic">${f.ic}</span><b>${f.t}</b>${f.k ? `<span>${f.k}</span>` : ""}</li>`).join("")}</ol></div>
           <ol class="xl-st-list" data-step="1">${STEPS.map((s, i) => `
             <li class="xl-st-c xl-st-in" style="--k:${i}">
-              <div class="xl-st-top"><span class="num">${i + 1}</span></div>
+              <div class="xl-st-top"><span class="num">${s.n}</span></div>
               <p class="xl-st-t">${s.t}</p>
               <div class="xl-st-v">${VIS[s.v]}</div></li>`).join("")}
+            <li class="xl-st-c xl-st-end xl-st-in" style="--k:${STEPS.length}">
+              <div class="xl-st-top"><span class="xl-st-xl">LIVE IN EXCEL</span></div>
+              <p class="xl-st-t">${STEP_END.t}</p>
+              <div class="xl-st-v">${VIS[STEP_END.v]}</div></li>
           </ol>
         </div>`;
       const root = body.querySelector(".xl-st"), cv = {};
       body.querySelectorAll("canvas[data-v]").forEach(c => { cv[c.dataset.v] = c; });
-      const draw = () => { miniCloud(cv.cloud); miniYear(cv.year, false); miniYear(cv.barrier, true); miniFan(cv.fan); };
+      const draw = () => { miniBell(cv.gbm); miniCloud(cv.cloud); miniYear(cv.year, false); miniYear(cv.barrier, true); miniFan(cv.fan); };
       if (window.requestIdleCallback) window.requestIdleCallback(() => fanData()); else setTimeout(fanData, 600);
       // the box builds in on entry; the click only brings in the cards (data-step), so the box doesn't replay
       return { step(i, o) { if (!i || !root.classList.contains("on")) replay(root, "on", o); }, resize() { draw(); } };
@@ -717,7 +723,7 @@
 
   Deck.addSlide({
     id: "xl-gbm", section: "excel", steps: 3, secs: 28, liveSecs: 25,
-    title: "Step 2a: GBM applied",
+    title: STEPS[1].t,
     subtitle: "The lecture's geometric Brownian motion, one small time step at a time",
     sources: "Arnold (2026), slides 11 and 15; own illustration",
     // live Excel follows (sheet 7): liveSecs = its narration (54 words) / 145 × 60 + 3 s for the one Excel screen
@@ -781,7 +787,7 @@
 
   Deck.addSlide({
     id: "xl-corr", section: "excel", steps: 2, secs: 27, liveSecs: 8,
-    title: "Step 2b: Correlating the Z with Cholesky",
+    title: STEPS[2].t,
     subtitle: "The Z of the shock, one per stock: we mix them so our stocks move together",
     sources: "own simulation",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
@@ -896,7 +902,7 @@
 
   Deck.addSlide({
     id: "xl-year", section: "excel", steps: 3, secs: 35, liveSecs: 3,
-    title: STEPS[2].t,
+    title: STEPS[3].t,
     subtitle: `Sheet 8 copies the step down ${NDAY} trading days, for all three stocks`,
     lecture: "Lecture 4, slide 15",
     sources: "Arnold (2026), slide 15",
@@ -1023,7 +1029,7 @@
 
   Deck.addSlide({
     id: "xl-pay", section: "excel", after: "xl-year", steps: 2, secs: 56, liveSecs: 63,
-    title: STEPS[3].t,
+    title: STEPS[4].t,
     subtitle: "Did a stock touch its barrier, and what does the put pay in today's money?",
     sources: "own Excel model, sheet 8 (paths 1 and 2,000)",
     // live Excel follows: sheet 8 for paths 1 and 2,000 (two screens), then steps 5 and 6 (the data table of sheet 9,
