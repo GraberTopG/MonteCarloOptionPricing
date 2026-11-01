@@ -375,7 +375,7 @@
 
   // ================= 1) brc-steps: the plan =================
   // the box on top, a recap of the theory before Excel: bond − put, and the simulation in three moves (the narration's
-  // "to price it ..." condensed), named and drawn like the three moves of mc-sample and mc-paths
+  // "to price it ..." condensed), named and drawn like the three moves of mc-sample
   const FLOW = [
     { t: "Sample a random path", k: "we use <strong>GBM</strong> for the <strong>three stocks</strong> over the next year", ic: U.icon("dice") },
     { t: "Compute its discounted payoff", k: "did any stock touch its <strong>barrier</strong>? What does the <strong>put</strong> pay at the end?", ic: U.icon("check") },

@@ -7,7 +7,7 @@
      mc-grid    "Monte Carlo escapes the curse of dimensionality": a grid needs 10^756 points for our 756 random numbers,
                 random points do not care
      mc-pi      "How precise is Monte Carlo?": 5 darts, then 10,000, with a 95% interval
-     mc-paths   "Geometric Brownian motion: building one simulated year": one year of three stocks, then ten, then hundreds
+     (mc-paths, "Step 1 in detail: simulating paths with GBM", was removed on 1 Nov 2026: the group)
    All random numbers are seeded (Deck.util.rng), so every take shows the same picture. Classes keep the prefix .mc-. */
 (function () {
   const U = Deck.util, XL = U.XL, B = U.BRC;
@@ -30,7 +30,7 @@
     .mc-term .term-stats .k em{font-style:normal;color:var(--amber);opacity:.8}
     .mc-ul{font:700 24px var(--f-body);color:var(--green-ink)}
     .mc-ul2 mtd{padding:0}
-    .mc-o .chip,.mc-sa .chip,.mc-pi .chip,.mc-pa .chip{white-space:nowrap}
+    .mc-o .chip,.mc-sa .chip,.mc-pi .chip{white-space:nowrap}
     .mc-cap{font:24px/1.35 var(--f-body);color:var(--ink);margin:8px 0 0;text-align:center}
     .mc-cap math{font-size:26px}
     .mc-fn{font:18px/1.5 var(--f-body);color:var(--muted);white-space:nowrap}
@@ -171,29 +171,6 @@
     .mc-pi-ci math{font-size:30px}
     .mc-pi-ci .mc-cap{margin-top:12px}
     .mc-pi-ci .mc-cap math{font-size:24px}
-
-    /* ---------- 5) mc-paths ---------- */
-    .slide[data-id="mc-paths"] .s-title{font-size:50px;white-space:nowrap}
-    .slide[data-id="mc-paths"] .s-title{font-size:44px}
-    .mc-pa{display:grid;grid-template-rows:auto minmax(0,1fr);row-gap:32px;height:100%}
-    .mc-pa-t{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.35fr) 400px;column-gap:24px;min-height:0}
-    .mc-pa-g{display:flex;flex-direction:column;justify-content:center;padding:28px 18px 8px}
-    .mc-pa-g math{font-size:30px}
-    .mc-pa-g .mc-cap{margin-top:8px;font-size:19px;line-height:1.35;text-align:center}
-    .mc-pa-g .mc-cap math{font-size:21px}
-    .mc-pa-g .sep{margin:0 6px;color:var(--muted)}
-    .mc-pa-x{margin:10px 0 0;padding-top:8px;border-top:1px solid var(--green-soft);font:19px/1.4 var(--f-body);color:var(--ink);text-align:center}
-    .mc-pa-x math{font-size:27px}
-    .mc-pa .dr{color:var(--green-ink)}
-    .mc-pa .sh{color:var(--green)}
-    .mc-pa .mc-bl{font-family:var(--f-body);font-size:.62em;font-weight:700}
-    .mc-pa-w{padding:28px 20px 12px}
-    .mc-pa-w dl{display:grid;grid-template-columns:auto 1fr;column-gap:16px;row-gap:2px;margin:0;align-items:baseline}
-    .mc-pa-w dt{font-size:24px}
-    .mc-pa-w dd{margin:0;font:21px/1.3 var(--f-body);color:var(--ink)}
-    .mc-pa-chart{margin:0;min-height:0;display:flex;flex-direction:column}
-    .mc-pa-chart canvas{flex:1 1 0;height:0;min-height:0;width:100%;display:block}
-    .mc-pa-chart figcaption{margin-top:4px;font:21px var(--f-body);color:var(--muted)}
   `);
 
   // =====================================================================================================
@@ -696,130 +673,6 @@
         resize() { U.tightenRoots(body); draw(); },
         step,
         // cancelled darts end as the step's full board (also when the 10,000 had not started to fill in)
-        leave() { if (a) step(cur, { instant: true }); }
-      };
-    }
-  });
-
-  // =====================================================================================================
-  // 5) Geometric Brownian motion: building one simulated year
-  // =====================================================================================================
-  // one simulated year = the three stocks together (Deck.util.simBRC with our Excel's inputs: vols, dividends,
-  // correlations, r), as % of the starting level. Seed 73: path 1 stays between 75% and 125% for all three stocks.
-  const PA = { seed: 73, ten: 10, many: 500, dayMs: 2200, tenMs: 1400, manyMs: 2200 };
-  const STOCK_VARS = ["--c-adbe", "--c-aapl", "--c-msft"], STOCK_TEXT = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];
-  const CLOUD_A = [.07, .075, .13];   // the hundreds: Microsoft's light green needs a little more to show on white
-  // the lecture's GBM (Lecture 4, slide 15), in its notation r_f and δ: continuous, then in daily steps of Δt
-  const ST = `<msub><mi>S</mi><mi>t</mi></msub>`, RFD = `<mo stretchy="false">(</mo><msub><mi>r</mi><mi>f</mi></msub><mo>−</mo><mi>δ</mi><mo stretchy="false">)</mo>`, DT = `<mi>Δ</mi><mi>t</mi>`;
-  const BR = (inner, lab, cls) => `<munder><munder><mrow class="${cls}">${inner}</mrow><mo>⏟</mo></munder><mtext class="mc-bl ${cls}">${lab}</mtext></munder>`;
-  const GBM = `<math display="block"><mi>d</mi>${ST}<mo>=</mo>${BR(`${RFD}<mo>·</mo>${ST}<mi>d</mi><mi>t</mi>`, "drift", "dr")}<mo>+</mo>${BR(`<mi>σ</mi><mo>·</mo>${ST}<mi>d</mi><msub><mi>W</mi><mi>t</mi></msub>`, "shock", "sh")}</math>`;
-  const GBMD = `<math display="block"><msub><mi>S</mi><mrow><mi>t</mi><mo>+</mo>${DT}</mrow></msub><mo>=</mo>${ST}<mo>+</mo>${BR(`${RFD}<mo>·</mo>${ST}<mo>·</mo>${DT}`, "drift", "dr")}<mo>+</mo>${BR(`<mi>σ</mi><mo>·</mo>${ST}<mo>·</mo><msqrt>${DT}</msqrt><mo>·</mo><mi>Z</mi>`, "shock", "sh")}</math>`;
-  const DTN = `<math>${DT}<mo>=</mo><mfrac><mi>T</mi><mi>N</mi></mfrac><mo>=</mo><mfrac><mn>1</mn><mn>${NDAY}</mn></mfrac></math>`;
-  const ZN = `<math><mi>Z</mi><mo>∼</mo><mi mathvariant="script">N</mi><mo stretchy="false">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false">)</mo></math>`;
-  const EXACT = `<math><msub><mi>S</mi><mrow><mi>t</mi><mo>+</mo>${DT}</mrow></msub><mo>=</mo>${ST}<mo>·</mo><msup><mi>e</mi><mrow>${RFD.replace('<mo stretchy="false">)</mo>', '')}<mo>−</mo><msup><mi>σ</mi><mn>2</mn></msup><mo>/</mo><mn>2</mn><mo stretchy="false">)</mo>${DT}<mo>+</mo><mi>σ</mi><msqrt>${DT}</msqrt><mi>Z</mi></mrow></msup></math>`;
-  const WV = (sym, txt) => `<dt><math>${sym}</math></dt><dd>${txt}</dd>`;
-
-  Deck.addSlide({
-    id: "mc-paths", section: "mc", after: "mc-sample", steps: 3, secs: 45,
-    title: "Step 1 in detail: simulating paths with geometric Brownian motion",
-    subtitle: `One step per trading day: ${NDAY} steps make one simulated year of each stock`,
-    lecture: "Lecture 4, slide 15",
-    sources: "Boyle (1977); Arnold (2026), slide 15; own illustration",
-    notes: "Step one in detail: how do we simulate a path? Our lecture models a share price with geometric Brownian motion: a risk-neutral drift, the risk-free rate minus the dividend yield, plus a random shock that scales with the volatility. Phelim Boyle brought this to option pricing in 1977. [→] On a computer we take small steps: one trading day each. Tomorrow's price is today's price, plus the drift, plus a shock with a new random number Z from a standard normal distribution. The shock grows with the square root of delta t, because the variance grows linearly with time. Repeat this 252 times, and you have one simulated year, here for each of our three stocks. [→] Ten years. [→] And five hundred. In Excel, we simulate 2,000.",
-    render(body) {
-      body.innerHTML = `
-        <div class="mc-pa">
-          <div class="mc-pa-t">
-            <div class="fbox mc-pa-g"><span class="chip">CONTINUOUS TIME</span>${GBM}<p class="mc-cap">the lecture's model for a share price</p></div>
-            <div class="fbox mc-pa-g mc-pa-d" data-step="1"><span class="chip">IN DAILY STEPS</span>${GBMD}<p class="mc-cap">${DTN} <span class="sep">·</span> ${ZN}, a new random number every day<br><math><msqrt>${DT}</msqrt></math> because the variance grows linearly with time</p><p class="mc-pa-x">In Excel: the exact form, which keeps prices positive<br>${EXACT}</p></div>
-            <section class="panel mc-pa-w"><h3 class="panel-title">Where</h3><dl>
-              ${WV(ST, "share price on day t")}${WV(`<msub><mi>r</mi><mi>f</mi></msub>`, "risk-free rate")}${WV("<mi>δ</mi>", "dividend yield")}${WV("<mi>σ</mi>", "volatility")}${WV("<mi>T</mi><mo>,</mo><mi>N</mi>", "1 year, 252 steps")}${WV(`<mi>d</mi><msub><mi>W</mi><mi>t</mi></msub>`, "Wiener process increment")}${WV("<mi>Z</mi>", "standard normal draw")}
-            </dl></section>
-          </div>
-          <figure class="mc-pa-chart">
-            <canvas></canvas>
-            <figcaption>For the Multi-BRC we simulate all three stocks at once, with our Excel's inputs (volatilities, dividends, correlations, risk-free rate)</figcaption>
-          </figure>
-        </div>`;
-      const cv = body.querySelector("canvas");
-      const XP = Object.assign({}, B, XL.model);
-      let sims = null, gen = null;
-      function scen(k) {   // seeded scenarios, generated as far as needed (never at page load)
-        if (!gen) { gen = U.normal(U.rng(PA.seed)); sims = []; }
-        while (sims.length < k) sims.push(U.simBRC(gen, XP).paths);
-        return sims;
-      }
-      // st.day: how far path 1 is drawn; st.ten: how far paths 2–10 are drawn (days); st.n: paths in all (full ones)
-      let st = { day: 0, ten: 0, n: 1 }, a = null, cur = 0;
-      const layer = { cv: document.createElement("canvas"), key: "", n: PA.ten };   // the hundreds, drawn once into a layer
-      const top = { cv: document.createElement("canvas"), key: "" };   // the 100% lines, the ten and path 1: drawn again only when they change
-      function frames(w, h) { const cw = w / 3; return [0, 1, 2].map(k => ({ x: Math.round(k * cw + 86), y: 52, w: Math.round(cw - 112), h: h - 52 - 60 })); }
-      const yOpt = { yMin: 0, yMax: 250, yTicks: [0, 50, 100, 150, 200, 250], yFmt: v => v + "%" };
-      // off: shifts the vertices by a fraction of a day, so hundreds of paths do not line up in vertical stripes
-      function line(ctx, ax, p, upto, off) { const o = off || 0; ctx.beginPath(); ctx.moveTo(ax.X(0), ax.Y(p[0] * 100)); for (let d = 1; d <= upto; d++) ctx.lineTo(ax.X(d) + o, ax.Y(p[d] * 100)); ctx.stroke(); }
-      function draw() {
-        const paths = st.n > 1 ? st.n : st.ten ? PA.ten : 1;
-        const c = U.canvas(cv); if (!c) return;
-        const { ctx, w, h } = c, F = frames(w, h), cols = STOCK_VARS.map(v => css(v)), txt = STOCK_TEXT.map(v => css(v)), muted = css("--term-muted");
-        const S = scen(Math.max(st.n, st.ten ? PA.ten : 1));
-        const axs = F.map((f, k) => U.axes(ctx, f, Object.assign({}, yOpt, MONTHS, k === 1 ? { xLabel: "Month" } : {})));
-        // the hundreds: added to the layer as they come, then copied in one go
-        const key = cv.width + "x" + cv.height;
-        if (key !== layer.key || layer.n > st.n) { layer.cv.width = cv.width; layer.cv.height = cv.height; layer.key = key; layer.n = PA.ten; }
-        if (st.n > layer.n) {
-          const g = layer.cv.getContext("2d"), r = cv.width / w;
-          g.setTransform(r, 0, 0, r, 0, 0); g.lineJoin = "round"; g.lineWidth = 1;
-          F.forEach((f, k) => {
-            g.save(); g.beginPath(); g.rect(f.x, f.y, f.w, f.h); g.clip(); g.strokeStyle = cols[k]; g.globalAlpha = CLOUD_A[k];
-            const stepW = axs[k].X(1) - axs[k].X(0);
-            for (let j = layer.n; j < st.n; j++) line(g, axs[k], S[j][k], NDAY, ((j * 0.6180339) % 1) * stepW);
-            g.restore();
-          });
-          layer.n = st.n;
-        }
-        if (st.n > PA.ten) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(layer.cv, 0, 0); ctx.restore(); }
-        const tkey = key + "|" + st.day + "|" + st.ten;
-        if (tkey !== top.key) {   // while the hundreds come in (click 2) this part stays the same
-          top.cv.width = cv.width; top.cv.height = cv.height; top.key = tkey;
-          const g = top.cv.getContext("2d"), r = cv.width / w;
-          g.setTransform(r, 0, 0, r, 0, 0);
-          F.forEach((f, k) => {
-            const ax = axs[k];
-            g.save(); g.setLineDash([7, 7]); g.strokeStyle = muted; g.lineWidth = 1.4;
-            g.beginPath(); g.moveTo(f.x, ax.Y(100)); g.lineTo(f.x + f.w, ax.Y(100)); g.stroke(); g.restore();
-            g.save(); g.beginPath(); g.rect(f.x, f.y, f.w, f.h); g.clip(); g.lineJoin = "round"; g.strokeStyle = cols[k];
-            if (st.ten) { g.globalAlpha = .5; g.lineWidth = 1.4; for (let j = 1; j < PA.ten; j++) line(g, ax, S[j][k], st.ten); }
-            g.globalAlpha = 1; g.lineWidth = 2.8; g.strokeStyle = txt[k]; if (st.day) line(g, ax, S[0][k], st.day);
-            g.restore();
-          });
-        }
-        ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(top.cv, 0, 0); ctx.restore();
-        F.forEach((f, k) => {
-          const ax = axs[k];
-          ctx.fillStyle = css("--ink"); ctx.beginPath(); ctx.arc(ax.X(0), ax.Y(100), 4.5, 0, 7); ctx.fill();
-          ctx.font = "700 20px " + U.F.body; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillStyle = txt[k];
-          ctx.fillText(`${B.names[k]} ($${B.tickers[k]}) · σ ${fmt(XP.sigma[k] * 100, 0)}%`, f.x, 22);
-        });
-      }
-      function step(i, o) {
-        if (a) { a.cancel(); a = null; }
-        cur = i;
-        if (i === 0) { st = { day: 0, ten: 0, n: 1 }; draw(); return; }
-        if (i === 1) {
-          if (fwd(o)) { st = { day: 0, ten: 0, n: 1 }; a = U.anim(PA.dayMs, k => { st.day = Math.round(k * NDAY); draw(); }, { ease: U.ease.lin, done: () => { a = null; } }); return; }
-          st = { day: NDAY, ten: 0, n: 1 }; draw(); return;
-        }
-        if (i === 2) {
-          if (fwd(o)) { st = { day: NDAY, ten: 0, n: 1 }; a = U.anim(PA.tenMs, k => { st.ten = Math.round(k * NDAY); draw(); }, { ease: U.ease.inOut, done: () => { a = null; } }); return; }
-          st = { day: NDAY, ten: NDAY, n: 1 }; draw(); return;
-        }
-        if (fwd(o)) { st = { day: NDAY, ten: NDAY, n: PA.ten }; a = U.anim(PA.manyMs, k => { st.n = PA.ten + Math.round((PA.many - PA.ten) * k); draw(); }, { ease: U.ease.inOut, done: () => { a = null; } }); return; }
-        st = { day: NDAY, ten: NDAY, n: PA.many }; draw();
-      }
-      return {
-        resize() { U.tightenRoots(body); draw(); },
-        step,
-        // a cancelled run ends as the step's finished picture
         leave() { if (a) step(cur, { instant: true }); }
       };
     }
