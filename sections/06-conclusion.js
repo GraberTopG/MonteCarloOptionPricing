@@ -375,8 +375,8 @@
     .cc-bar{position:relative}
     .cc-bar .f{position:absolute;left:0;right:0;bottom:0;height:calc(var(--h) * 100%);border-radius:4px 4px 0 0;transform-origin:50% 100%;transform:scaleY(0);transition:transform .9s cubic-bezier(.2,.7,.2,1) calc(.2s + var(--k,0) * .25s)}
     .cc-bar .f.fair{background:var(--orange)} .cc-bar .f.real{background:var(--green-ink)}
-    .cc-bar .v{position:absolute;left:0;right:0;bottom:calc(var(--h) * 100% - 62px);text-align:center;font:800 44px/1 var(--f-head);font-variant-numeric:lining-nums;opacity:0;transition:opacity .4s ease calc(.9s + var(--k,0) * .25s)}
-    .cc-bar .v.fair{color:var(--ink)} .cc-bar .v.real{color:#fff}
+    .cc-bar .v{position:absolute;left:0;right:0;bottom:calc(var(--h) * 100% - 56px);text-align:center;font:800 38px/1 var(--f-head);font-variant-numeric:lining-nums;opacity:0;transition:opacity .4s ease calc(.9s + var(--k,0) * .25s)}
+    .cc-bar .v.fair,.cc-bar .v.real{color:#fff}   /* every number inside the top of its bar */
     .cc-ecol.on .cc-bar .f{transform:none}
     .cc-ecol.on .cc-bar .v{opacity:1}
     .cc-gap{position:absolute;left:-6px;right:-6px;bottom:calc(var(--b) * 100%);height:calc((var(--t) - var(--b)) * 100%);border:3px dashed var(--red-ink);border-radius:4px;background:var(--red-soft);display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -386,26 +386,28 @@
     .cc-gap small{font:22px/1.2 var(--f-body);color:var(--red-ink)}
     .cc-gap .above{position:absolute;left:0;right:0;bottom:calc(100% + 6px);text-align:center;font:800 40px/1 var(--f-head);color:var(--red-ink);font-variant-numeric:lining-nums}
     .cc-xl{display:grid;grid-template-columns:1fr 1fr;column-gap:46px;padding:8px 22px 0;text-align:center;font:700 24px var(--f-body);color:var(--ink)}
-    /* the value as a waterfall (the group, 1 Nov 2026): bond − put = fair value, against the 1,000 the investor pays; the
-       75 between them is what the bank keeps. The bars grow in turn, then the line and the gap appear */
-    .cc-wf{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);column-gap:24px;margin:54px 84px 0 106px;border-bottom:3px solid var(--ink)}
-    .cc-wf>div:not(.cc-wf-ip){position:relative}
+    /* the value as a waterfall (the group, 1 Nov 2026): bond − put = worth, next to what you pay; the 75 between worth and
+       what you pay (what the bank keeps) as a dashed box, as the gap in the coupon chart, and a dotted line at 1,000
+       across. The calculated parts (bond, put) soft, the two true numbers (worth, what you pay) strong; every number
+       inside its bar */
+    .cc-wf{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,1fr);column-gap:20px;padding:30px 16px 0;border-bottom:3px solid var(--ink)}
+    .cc-wf>div{position:relative}
     .cc-wf .bar{position:absolute;left:0;right:0;border-radius:4px 4px 0 0;transform-origin:50% 100%;transform:scaleY(0);transition:transform .9s cubic-bezier(.2,.7,.2,1) calc(.2s + var(--k,0) * .3s)}
-    .cc-wf .bar b{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:6px;font:800 34px/1 var(--f-head);font-variant-numeric:lining-nums;color:var(--ink);white-space:nowrap;opacity:0;transition:opacity .4s ease calc(.9s + var(--k,0) * .3s)}
-    .cc-wf .bond .bar{background:var(--green-ink)}
+    .cc-wf .bar b{position:absolute;left:0;right:0;top:14px;text-align:center;font:800 32px/1 var(--f-head);font-variant-numeric:lining-nums;color:#fff;white-space:nowrap;opacity:0;transition:opacity .4s ease calc(.9s + var(--k,0) * .3s)}
+    .cc-wf .bond .bar{background:var(--green-soft)}
+    .cc-wf .bond .bar b{color:var(--green-ink)}   /* placed just under the dotted 1,000 line (inline top) */
     .cc-wf .put .bar{background:var(--orange-light);border:2px dashed var(--rule);border-radius:4px;transform-origin:50% 0}
-    .cc-wf .put .bar b{bottom:auto;top:28%;transform:translate(-50%,-50%);margin:0}   /* above the 1,000 line */
-    .cc-wf .fv .bar{background:var(--orange)}
-    .cc-wf .fv .bar b{bottom:auto;top:12px;margin:0;color:#fff}   /* inside its bar: the 1,000 line runs just above it */
+    .cc-wf .put .bar b{top:24%;transform:translateY(-50%);color:var(--muted)}   /* above the 1,000 line */
+    .cc-wf .fv .bar{background:var(--green)}
+    .cc-wf .pay .bar{background:var(--ink)}
     .cc-ecol.on .cc-wf .bar{transform:none}
     .cc-ecol.on .cc-wf .bar b{opacity:1}
-    .cc-wf-ip{position:absolute;left:-106px;right:-84px;border-top:2.5px dashed var(--ink);opacity:0;transition:opacity .4s ease 1.3s}
-    .cc-wf-ip span{position:absolute;left:0;bottom:6px;width:96px;font:700 20px/1.2 var(--f-body);color:var(--ink)}
-    .cc-wf-gap{position:absolute;right:-24px;width:14px;border:3px solid var(--red-ink);border-left:0;opacity:0;transition:opacity .4s ease 1.4s}
-    .cc-wf-gap span{position:absolute;left:22px;top:50%;transform:translateY(-50%);font:800 34px/1 var(--f-head);font-variant-numeric:lining-nums;color:var(--red-ink)}
-    .cc-ecol.on .cc-wf-ip,.cc-ecol.on .cc-wf-gap{opacity:1}
-    .cc-wf-x{display:grid;grid-template-columns:repeat(3,1fr);column-gap:24px;margin:8px 84px 0 106px;text-align:center;font:700 24px var(--f-body);color:var(--ink)}
+    .cc-wf .cc-gap b{font:800 24px/1 var(--f-head);font-variant-numeric:lining-nums}
+    .cc-wf-ip{position:absolute;left:0;right:0;border-top:2.5px dotted var(--ink);pointer-events:none;opacity:0;transition:opacity .4s ease 1.3s}
+    .cc-ecol.on .cc-wf-ip{opacity:1}
+    .cc-wf-x{display:grid;grid-template-columns:repeat(4,1fr);column-gap:20px;padding:8px 16px 0;text-align:center;font:700 24px var(--f-body);color:var(--ink)}
     .cc-term{flex:1;min-height:0}
+    .cc-term .term-fn{display:none}   /* no MCSIM tag (the group, 1 Nov 2026) */
     .cc-term .term-body canvas{left:18px;top:16px;width:calc(100% - 36px);height:calc(100% - 32px)}
     .cc-term .term-stats{justify-content:space-between;gap:16px;padding:10px 20px}
     .cc-term .term-stats .v{font-size:30px}
@@ -420,7 +422,6 @@
     id: "conc-enough", section: "conclusion", steps: 3, secs: 44,
     title: `Is ${fmt(PAID, 0)}% enough?`,
     subtitle: "Who gets what: fair coupon vs. what you get",
-    lecture: "Lecture 4, slide 11",
     sources: "Arnold (2026), slide 11",
     notes: "So, is fifteen percent enough? A fair coupon would be about 23 percent. You get 15. [→] That gap is worth 75 dollars, which the bank keeps, we assume, for its hedging, risk and margin. You pay 1,000 for something worth about 925, [→] and in 45 percent of our simulated years, you end up below your thousand, coupons included. [→] One warning: these are risk-neutral numbers, where stocks grow only at the risk-free rate. That's right for pricing, but it's not a forecast: if stocks earn more, the real chance of a loss is lower. That's the point we promised to come back to.",
     render(body) {
@@ -442,13 +443,14 @@
             <div class="cc-ecol" data-step="1">
               <section class="panel"><h3 class="panel-title">The value</h3>
                 <div class="cc-wf">
-                  <div class="bond"><span class="bar" style="--k:0;bottom:0;height:${wfY(XL.res.bond)}"><b>${fmt(XL.res.bond, 0)}</b></span></div>
+                  <div class="bond"><span class="bar" style="--k:0;bottom:0;height:${wfY(XL.res.bond)}"><b style="top:calc(${((XL.res.bond - NOMINAL) / XL.res.bond * 100).toFixed(2)}% + 12px)">${fmt(XL.res.bond, 0)}</b></span></div>
                   <div class="put"><span class="bar" style="--k:1;bottom:${wfY(FV)};height:${wfY(XL.res.put)}"><b>−${fmt(XL.res.put, 0)}</b></span></div>
                   <div class="fv"><span class="bar" style="--k:2;bottom:0;height:${wfY(FV)}"><b>${fmt(FV, 0)}</b></span>
-                    <span class="cc-wf-gap" style="bottom:${wfY(FV)};height:${wfY(GAP)}"><span>${fmt(GAP, 0)}</span></span></div>
-                  <div class="cc-wf-ip" style="bottom:${wfY(NOMINAL)}"><span>you pay ${fmt(NOMINAL, 0)}</span></div>
+                    <div class="cc-gap late" style="--b:${(FV / WF_TOP).toFixed(4)};--t:${(NOMINAL / WF_TOP).toFixed(4)}"><b>${fmt(GAP, 0)}</b></div></div>
+                  <div class="pay"><span class="bar" style="--k:3;bottom:0;height:${wfY(NOMINAL)}"><b>${fmt(NOMINAL, 0)}</b></span></div>
+                  <span class="cc-wf-ip" style="bottom:calc((100% - 30px) * ${(NOMINAL / WF_TOP).toFixed(4)})"></span>
                 </div>
-                <div class="cc-wf-x"><span>bond</span><span>put</span><span>worth</span></div>
+                <div class="cc-wf-x"><span>bond</span><span>put</span><span>worth</span><span>you pay</span></div>
               </section>
               <p class="cc-cap">The bank keeps <b class="r">${fmt(GAP, 0)}</b> (we assume: hedging, risk, margin)</p>
             </div>
