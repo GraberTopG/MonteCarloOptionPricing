@@ -29,7 +29,8 @@
   // the formulas (the group, 1 Nov 2026): the product's terms grey-green, the three Bloomberg lookups one mid green, the
   // implied volatility HSG green, the correlation dark green
   const IC_TERM = "#7A8F81", IC_LOOKUP = "#4F9A6B";
-  const IC = { S0: IC_TERM, K: IC_TERM, T: IC_TERM, r: IC_LOOKUP, q: IC_LOOKUP, cds: IC_LOOKUP, sg: "#00802F", rho: "#0F5C33" };
+  // in the formulas r looks like the other known inputs (rf, the group, 1 Nov 2026); in the list it keeps the lookups' green
+  const IC = { S0: IC_TERM, K: IC_TERM, T: IC_TERM, rf: IC_TERM, r: IC_LOOKUP, q: IC_LOOKUP, cds: IC_LOOKUP, sg: "#00802F", rho: "#0F5C33" };
   const KI = B.kickIn, KI_TXT = pct(KI, 0);                                // 65%
   const MIO = XL.paths * XL.steps * 3 / 1e6;                              // 2,000 × 252 × 3 = 1.5 million random numbers
   const DT = `<mi mathvariant="normal">Δ</mi><mi>t</mi>`;
@@ -529,7 +530,7 @@
 
   // Black-Scholes as on Lecture 4, slide 7 (redrawn, the put only), each input in its colour
   const vS = vc("S0", `<msub><mi>S</mi><mn>0</mn></msub>`), vK = vc("K", "<mi>K</mi>"), vT = vc("T", "<mi>T</mi>");
-  const vr = vc("r", "<mi>r</mi>"), vs = vc("sg", "<mi>σ</mi>");
+  const vr = vc("rf", "<mi>r</mi>"), vs = vc("sg", "<mi>σ</mi>");
   const N_ = d => `<mi>N</mi><mo stretchy="false">(</mo><msub><mi>d</mi><mn>${d}</mn></msub><mo stretchy="false">)</mo>`;
   const DISC = `${vK}<msup><mi>e</mi><mrow><mo>−</mo>${vr}${vT}</mrow></msup>`;
   const BS_P = `<math display="block"><msub><mi>P</mi><mn>0</mn></msub><mo>=</mo>${DISC}<mrow><mo>(</mo><mn>1</mn><mo>−</mo>${N_(2)}<mo>)</mo></mrow><mo>−</mo>${vS}<mrow><mo>(</mo><mn>1</mn><mo>−</mo>${N_(1)}<mo>)</mo></mrow></math>`;
