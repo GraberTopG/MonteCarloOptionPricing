@@ -133,7 +133,7 @@
     slidesPdf() {
       const info = window.__CF_PDF__;
       if (info === null) return null;
-      if (info === undefined) return { href: "pdf/Monte-Carlo-Option-Pricing-slides.pdf", title: "The PDF in pdf/ (make it with: npm run pdf)", old: false };   // the readable local copy
+      if (info === undefined) return null;   // no slides PDF yet: it is made from the final web app before the hand-in
       const old = !info.current;
       return { href: info.href, old, title: `All ${info.pages} slide steps, made ${info.made}${old ? ". The slides have changed since: ask for a new PDF (npm run pdf)." : ""}` };
     },
