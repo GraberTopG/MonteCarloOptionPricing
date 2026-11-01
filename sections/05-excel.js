@@ -13,7 +13,8 @@
    - xl-year       step 3: the engine's formula and path 1 (5.4), with the K49 shot in live Excel
    - xl-pay        step 4: what sheet 8 checks on every path; path 1 (kick-in, 404) and path 2,000 (none, 0) (5.5),
                    then live Excel: steps 5 and 6 (sheets 9, 10 and 11; the waterfall of the fair value is on conc-enough)
-   - xl-sens       step 7: the engine checks, which input matters most, and what the bank keeps at other volatilities (5.8, sheet 11)
+   - xl-sens       part of the conclusion: the engine checks (live Excel first), then which input matters most (sheet 11),
+                   with the three checks in a row under the chart
    All numbers and formulas come from Deck.util.XL (sections/excel-data.js). Classes are prefixed .xl- */
 (function () {
   const U = Deck.util, B = U.BRC, XL = U.XL, XM = XL.model, P1 = XL.path1;
@@ -324,44 +325,33 @@
     .xl-py-pv b{font:700 40px/1 var(--f-body);color:var(--green-ink)}
 
     /* ---------- xl-sens ---------- */
-    .xl-se{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:28px;height:740px}
-    .xl-se .term{height:740px;min-width:0}
-    .xl-se-side{display:flex;flex-direction:column;gap:16px;min-height:0}
-    .xl-se-card{background:var(--card);border-radius:10px;padding:16px 22px 18px}
-    .xl-se-card h4{margin:0 0 10px;font:700 22px/1.2 var(--f-head);color:var(--ink);text-transform:uppercase;letter-spacing:.01em}
-    .xl-se-ck{display:grid;grid-template-columns:34px 1fr auto;column-gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--rule-light)}
-    .xl-se-ck:first-of-type{border-top:none;padding-top:2px}
-    .xl-se-ck .ok{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font:700 19px/1 var(--f-body)}
-    .xl-se-ck b{display:block;font:700 20px/1.2 var(--f-body);color:var(--ink)}
+    .xl-se{display:flex;flex-direction:column;gap:16px;height:740px}
+    .xl-se .term{flex:1;min-height:0;min-width:0}
+    /* the engine checks under the chart, side by side (the group, 1 Nov 2026) */
+    .xl-se-checks{flex:none;display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
+    .xl-se-checks h4{margin:0 8px 0 0;align-self:center;font:700 22px/1.2 var(--f-head);color:var(--ink);text-transform:uppercase;letter-spacing:.01em}
+    .xl-se-ck{display:grid;grid-template-columns:34px 1fr auto;column-gap:14px;align-items:center;background:var(--card);border-radius:10px;padding:12px 20px}
+    .xl-se-ck .ok{width:32px;height:32px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font:700 19px/1 var(--f-body)}
+    .xl-se-ck b{display:block;font:700 21px/1.2 var(--f-body);color:var(--ink)}
     .xl-se-ck small{display:block;margin-top:2px;font:17px/1.25 var(--f-body);color:var(--muted)}
-    .xl-se-ck .n{font:700 22px/1 var(--f-body);color:var(--green-ink);white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
-    .xl-se-card.bank{flex:1;display:flex;flex-direction:column;background:var(--green-light)}
-    .xl-se-bks{flex:1;display:flex;flex-direction:column;justify-content:space-evenly}
-    .xl-se-bk{display:grid;grid-template-columns:160px 1fr 80px;column-gap:12px;align-items:center;font:21px/1.2 var(--f-body);color:var(--ink)}
-    .xl-se-bk small{display:block;color:var(--muted);font-size:16px}
-    .xl-se-bk.now{font-weight:700}
-    .xl-se-bk .bb{height:30px;position:relative}
-    .xl-se-bk .bb i{position:absolute;left:0;top:0;bottom:0;width:calc(var(--w) * 100%);background:var(--red-ink);border-radius:0 3px 3px 0}
-    .xl-se-bk.hi .bb i{background:var(--amber)}
-    .xl-se-bk .pc{font:700 28px/1 var(--f-body);text-align:right;font-variant-numeric:tabular-nums}
-    .xl-se-take{margin:0;padding-top:12px;border-top:1px solid #B9D3C1;font:19px/1.35 var(--f-body);color:var(--ink)}
+    .xl-se-ck .n{font:700 26px/1 var(--f-body);color:var(--green-ink);white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
     .xl-se-row{grid-template-columns:270px 1fr !important}
     .xl-se-z0{left:270px !important}
     .xl-se-ax{grid-template-columns:270px 1fr !important}
     .xl-se-lab{font-size:22px !important}
     .xl-se-cap{font-size:16px !important}
-    .xl-se .term-body{padding:20px 44px 16px;display:flex;flex-direction:column}
+    .xl-se .term-body{padding:12px 44px 12px;display:flex;flex-direction:column}
     .xl-se-rows{flex:1;display:flex;flex-direction:column;position:relative;min-height:0}
     /* two groups: the market inputs, then the product's own terms (grey tint, below a thin divider) */
     .xl-se-grp{display:flex;flex-direction:column}
     .xl-se-grp.terms{margin:12px -20px 0;padding:2px 20px 4px;background:var(--tab);border-top:1.5px solid var(--rule);border-radius:0 0 4px 4px}
     .xl-se-gh{margin:0;height:34px;display:flex;align-items:center;font:700 20px var(--f-mono);color:var(--green-ink);letter-spacing:.02em}
-    .xl-se-row{height:62px;display:grid;grid-template-columns:330px 1fr;align-items:center;transition:opacity .45s ease}
+    .xl-se-row{height:46px;display:grid;grid-template-columns:330px 1fr;align-items:center;transition:opacity .45s ease}
     .xl-se-row.dim{opacity:.45}
     .xl-se-lab{font:500 25px/1.1 var(--f-mono);color:var(--term-text);white-space:nowrap}
     .xl-se-lab small{display:block;margin-top:3px;font:500 17px var(--f-mono);color:var(--term-muted)}
     .xl-se-plot{position:relative;height:100%}
-    .xl-se-bar{position:absolute;top:50%;height:38px;margin-top:-19px;width:0;background:var(--term-blue);opacity:.88;border-radius:2px;transition:width .9s cubic-bezier(.2,.8,.3,1),background-color .4s,opacity .4s;transition-delay:calc(.2s + var(--k) * 90ms),0s,0s}
+    .xl-se-bar{position:absolute;top:50%;height:30px;margin-top:-15px;width:0;background:var(--term-blue);opacity:.88;border-radius:2px;transition:width .9s cubic-bezier(.2,.8,.3,1),background-color .4s,opacity .4s;transition-delay:calc(.2s + var(--k) * 90ms),0s,0s}
     .xl-se-bar.pos{left:50%} .xl-se-bar.neg{right:50%}
     .xl-se.on .xl-se-bar{width:var(--w)}
     .xl-se-val{position:absolute;top:50%;transform:translateY(-50%);font:700 26px var(--f-mono);color:var(--term-text);white-space:nowrap;opacity:0;transition:opacity .4s ease;transition-delay:calc(.9s + var(--k) * 90ms)}
@@ -1088,27 +1078,23 @@
   const seCall = s => /^Vol \+/.test(s.lab) ? `put ${fmt(XL.res.put, 0)} → ${fmt(PUT_UP, 0)}`
     : /^ρ/.test(s.lab) ? `ρ ${s.lab.replace(/^ρ /, "").replace(/^([+−])/, "$1 ")}: ${sgn(Math.round(s.d), 0)}` : "";
   const isTerm = s => /^Kick-in/.test(s.lab);
-  // the side column: the two engine checks of sheet 11 (rows 10 and 11: put = bond − fair value) and the put's precision;
-  // then what the bank keeps (1,000 − fair value) with every volatility 5 points lower, today, 5 points higher
+  // under the chart: the two engine checks of sheet 11 (rows 10 and 11: put = bond − fair value) and the put's precision
   const CHK = l => XL.res.bond - XL.sens.find(x => x[0].startsWith(l))[1];
   const CK0 = CHK("Kick-in 0%"), CK100 = CHK("Kick-in 100%");
-  const BANK = [["Volatility −5 pp", "Vol −5 pp"], ["Today", "Base case"], ["Volatility +5 pp", "Vol +5 pp"]]
-    .map(([t, n]) => { const fv = XL.sens.find(x => x[0] === n)[1]; return { t, fv, keep: (1000 - fv) / 10 }; });
-  const BANK_MAX = Math.max(...BANK.map(b => b.keep));
   const SE_GROUPS = [
     { t: "Market inputs", rows: SENS.filter(s => !isTerm(s)).sort(bySize) },
     { t: "Product terms", rows: SENS.filter(isTerm).sort(bySize), cls: "terms" }
   ];
 
   Deck.addSlide({
-    id: "xl-sens", section: "excel", steps: 1, secs: 15, liveSecs: 28,
-    title: STEPS[6].t,
+    // part of the conclusion, not a step of the Excel (the group, 1 Nov 2026)
+    id: "xl-sens", section: "conclusion", steps: 1, secs: 15, liveSecs: 27,
+    title: "Checks & Sensitivities",
     subtitle: `Sheet 11: does the engine pass its checks, and which input moves the put most? (same ${fmt(XL.paths, 0)} paths)`,
     notes: "[Excel: sheet 11, the engine-check rows (scenarios 10 and 11); next to them, the average of sheet 9, column D (select D13:D2012 and read the average in the status bar)] "
-      + "Step seven: can we trust the engine? We test two extreme cases. With the barrier at zero, it's never touched, so the put must be worth nothing. And it is. With the barrier at 100 percent, it's always touched, so we must get the plain worst-of put from column D of sheet nine: 227 dollars. Exactly what we get. "
+      + "Can we trust the engine? We test two extreme cases. With the barrier at zero, it's never touched, so the put must be worth nothing. And it is. With the barrier at 100 percent, it's always touched, so we must get the plain worst-of put from column D of sheet nine: 227 dollars. Exactly what we get. "
       + "[Excel → web app] And which input matters most? "
-      + "[→] Volatility. Five points more, and the put rises from 173 to 219 dollars, so the product's value falls from 925 to 878. Correlation moves it by only about seven. "
-      + "And for the bank, volatility is everything: five points less and it keeps about 3 percent, five points more and it keeps 12.",
+      + "[→] Volatility. Five points more, and the put rises from 173 to 219 dollars, so the product's value falls from 925 to 878. Correlation moves it by only about seven.",
     render(body) {
       const X = v => 50 + v / SE_MAX * 50;                  // % of the plot width
       let n = 0;                                            // running index: the bars grow one after another
@@ -1130,16 +1116,10 @@
             body: `<div class="xl-se-rows">${groups}<div class="xl-se-z0"><span class="xl-se-zero" style="left:50%"></span></div></div>
               <div class="xl-se-ax"><span></span><div class="xl-se-ticks">${ticks}</div></div>
               <div class="xl-se-cap"><span>← PUT FALLS: WORTH MORE</span><span>LARGEST CHANGE FIRST</span><span>PUT RISES: WORTH LESS →</span></div>` })}
-          <div class="xl-se-side">
-            <div class="xl-se-card"><h4>Engine checks</h4>
-              <div class="xl-se-ck"><span class="ok">✓</span><span><b>Kick-in at 0%</b><small>never touched, so the put must be worth 0</small></span><span class="n">${fmt(Math.abs(CK0), 2)}</span></div>
-              <div class="xl-se-ck"><span class="ok">✓</span><span><b>Kick-in at 100%</b><small>always touched: the plain worst-of put (sheet 9, column D)</small></span><span class="n">${fmt(CK100, 2)}</span></div>
-              <div class="xl-se-ck"><span class="ok">✓</span><span><b>Precision</b><small>95% interval of the put over ${fmt(XL.paths, 0)} paths</small></span><span class="n">± ${fmt(1.96 * XL.res.putSE, 0)}</span></div>
-            </div>
-            <div class="xl-se-card bank" data-step="1"><h4>What the bank keeps</h4>
-              <div class="xl-se-bks">${BANK.map((b, k) => `<div class="xl-se-bk${k === 1 ? " now" : ""}${k === 2 ? " hi" : ""}"><span>${b.t}<small>value ${fmt(b.fv, 0)}</small></span><span class="bb"><i style="--w:${(b.keep / BANK_MAX).toFixed(4)}"></i></span><span class="pc">${fmt(b.keep, 1)}%</span></div>`).join("")}</div>
-              <p class="xl-se-take"><b>Volatility is the input to get right:</b> ±5 points moves the bank's cut from about ${fmt(BANK[0].keep, 0)}% to ${fmt(BANK[2].keep, 0)}% of the 1,000</p>
-            </div>
+          <div class="xl-se-checks"><h4>Engine<br>checks</h4>
+            <div class="xl-se-ck"><span class="ok">✓</span><span><b>Kick-in at 0%</b><small>never touched, so the put must be worth 0</small></span><span class="n">${fmt(Math.abs(CK0), 2)}</span></div>
+            <div class="xl-se-ck"><span class="ok">✓</span><span><b>Kick-in at 100%</b><small>always touched: the plain worst-of put (sheet 9, column D)</small></span><span class="n">${fmt(CK100, 2)}</span></div>
+            <div class="xl-se-ck"><span class="ok">✓</span><span><b>Precision</b><small>95% interval of the put over ${fmt(XL.paths, 0)} paths</small></span><span class="n">± ${fmt(1.96 * XL.res.putSE, 0)}</span></div>
           </div>
         </div>`;
       const root = body.querySelector(".xl-se");
