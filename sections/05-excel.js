@@ -10,8 +10,11 @@
                    HP), then live Excel: sheet 4
    - xl-gbm        step 2: the lecture's GBM in discrete time steps (5.3), then live Excel: sheet 7
    - xl-corr       step 2: correlated shocks with Cholesky (5.3), then live Excel: sheets 4 and 8
-   - xl-year       step 3: the engine's formula and path 1 (5.4), then live Excel 5.5–5.8 (payoff, data table, fair value, checks)
-   - xl-sens       which input matters most (5.8, sheet 11)
+   - xl-year       step 3: the engine's formula and path 1 (5.4), with the K49 shot in live Excel
+   - xl-pay        step 4: what sheet 8 checks on every path; path 1 (kick-in, 404) and path 2,000 (none, 0) (5.5)
+   - xl-table      step 5: one engine run 2,000 times by the data table of sheet 9 (5.6)
+   - xl-fair       step 6: bond − put = fair value against the issue price; the fair coupon (5.7)
+   - xl-sens       step 7: the engine checks in live Excel, then which input matters most (5.8, sheet 11)
    All numbers and formulas come from Deck.util.XL (sections/excel-data.js). Classes are prefixed .xl- */
 (function () {
   const U = Deck.util, B = U.BRC, XL = U.XL, XM = XL.model, P1 = XL.path1;
@@ -297,6 +300,75 @@
     .xl-yr-n b{white-space:nowrap}
     .xl-yr .term{min-height:0}
 
+    /* ---------- xl-pay, xl-table, xl-fair (steps 4 to 6) ---------- */
+    /* Excel function names as small tags in the workbook's green */
+    .xl-fn{display:inline-block;font:700 17px/1 var(--f-mono);letter-spacing:.03em;color:#fff;background:#1D6F42;border-radius:3px;padding:5px 8px;margin-right:12px;vertical-align:3px}
+    /* xl-pay: left, what sheet 8 checks on every path; right, path 1 (step 1) and path 2,000 (step 2) */
+    .xl-py{display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);gap:48px;height:100%}
+    .xl-py-l,.xl-py-r{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0}
+    .xl-py .label,.xl-dt .label,.xl-fv .label{margin:0}
+    .xl-py-row{flex:1;display:grid;grid-template-columns:40px 1fr;column-gap:16px;align-items:center;background:var(--card);border-radius:10px;padding:10px 18px}
+    .xl-py-row .num{width:40px;height:40px;font-size:21px}
+    .xl-py-row b{font:700 24px/1.2 var(--f-head);color:var(--ink)}
+    .xl-py-row p{margin:4px 0 0;font:20px/1.3 var(--f-body);color:#4E5552}
+    .xl-py-pay{flex:1.6;display:flex;flex-direction:column;justify-content:center;gap:8px;margin-top:14px;padding:26px 18px 50px}
+    .xl-py-pay math{font-size:29px}
+    .xl-py-pay p{margin:0;font:19px/1.3 var(--f-body);color:#4E5552;text-align:center}
+    .xl-py .xlref{font-size:18px;padding:6px 10px;bottom:12px;right:14px}   /* inside the box, readable on video */
+    .xl-py-path{flex:1;display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:center;background:#fff;border:2px solid var(--rule-light);border-radius:10px;padding:10px 22px;min-height:0}
+    .xl-py-path svg{width:100%;height:auto;display:block}
+    .xl-py-h{display:flex;align-items:center;gap:14px;margin:0 0 10px;font:700 28px/1.1 var(--f-head);color:var(--green-ink)}
+    .xl-py-facts{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:baseline;font:20px/1.3 var(--f-body)}
+    .xl-py-facts dt{color:var(--muted)}
+    .xl-py-facts dd{margin:0;color:var(--ink);font-weight:700}
+    .xl-py-facts dd small{font-size:18px;font-weight:400;color:var(--muted)}
+    .xl-py-pv{display:flex;align-items:baseline;gap:12px;margin-top:10px;padding-top:8px;border-top:1px solid var(--rule-light);font:20px/1.2 var(--f-body);color:var(--muted)}
+    .xl-py-pv b{font:700 40px/1 var(--f-body);color:var(--green-ink)}
+    /* xl-table: left, one engine run once per path (sheet 9's data table); right, the 2,000 simulated years */
+    .xl-dt{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;height:100%}
+    .xl-dt-l{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}
+    .xl-dt-box{display:grid;grid-template-columns:170px 1fr;align-items:center;column-gap:18px;background:var(--card);border-radius:10px;padding:12px 20px}
+    .xl-dt-box.eng{background:var(--green-light)}
+    .xl-dt-box .k{font:700 17px/1.25 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--green-ink)}
+    .xl-dt-box b{display:block;font:700 24px/1.2 var(--f-head);color:var(--ink)}
+    .xl-dt-box span{font:20px/1.3 var(--f-body);color:#4E5552}
+    .xl-dt-box span.xl-fn{font:700 17px/1 var(--f-mono);color:#fff}
+    .xl-dt-tab{width:100%;margin-top:14px;border-collapse:collapse;font:22px/1.2 var(--f-body);font-variant-numeric:tabular-nums}
+    .xl-dt-tab th{font:700 16px/1.2 var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 12px;border-bottom:1.5px solid var(--rule)}
+    .xl-dt-tab th:first-child,.xl-dt-tab td:first-child{text-align:left}
+    .xl-dt-tab td{text-align:right;padding:8px 12px;border-bottom:1px solid var(--rule-light);color:var(--ink)}
+    .xl-dt-tab tr.gap td{color:var(--muted);text-align:center;padding:0;font-size:24px;line-height:1.1}
+    .xl-dt-tab tfoot td{border:0;padding-top:12px;font-weight:700;color:var(--green-ink)}
+    .xl-dt .term{height:100%;min-width:0}
+    .xl-dt-cv{position:absolute;inset:18px 18px 14px 22px}
+    /* xl-fair: left, the waterfall bond − put = fair value against the issue price; right, the three numbers and the
+       fair coupon */
+    .xl-fv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;height:100%}
+    .xl-fv-l,.xl-fv-r{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0}
+    .xl-fv-wf{flex:1;position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin:40px 176px 50px 150px;border-bottom:2px solid var(--rule)}
+    .xl-fv-wf>div:not(.xl-fv-ip){position:relative}
+    .xl-fv-wf .bar{position:absolute;left:0;right:0;border-radius:3px 3px 0 0}
+    .xl-fv-wf .bar b{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:6px;font:700 32px var(--f-body);color:var(--ink);white-space:nowrap}
+    .xl-fv-wf .lab{position:absolute;top:100%;left:-12px;right:-12px;margin-top:10px;text-align:center;font:22px var(--f-body);color:var(--muted)}
+    .xl-fv-wf .bond .bar{background:var(--green-ink)}
+    .xl-fv-wf .put .bar{background:var(--orange-light);border:2px dashed var(--rule);border-radius:3px}
+    .xl-fv-wf .put .bar b{bottom:auto;top:28%;transform:translate(-50%,-50%);margin:0}   /* above the issue-price line */
+    .xl-fv-wf .fv .bar{background:var(--green)}
+    /* the issue price across the chart, and what the bank keeps: the gap between it and the fair value */
+    .xl-fv-ip{position:absolute;left:-150px;right:-24px;border-top:2.5px dashed var(--ink)}
+    .xl-fv-ip span{position:absolute;left:0;bottom:6px;width:136px;font:700 19px/1.2 var(--f-body);color:var(--ink)}
+    .xl-fv-gap{position:absolute;right:-20px;width:14px;border:2.5px solid var(--ink);border-left:0}
+    .xl-fv-gap span{position:absolute;left:24px;top:50%;transform:translateY(-50%);width:150px;font:700 19px/1.2 var(--f-body);color:var(--ink)}
+    .xl-fv-c{flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--card);border-radius:10px;padding:12px 22px;border-left:8px solid var(--rule-light)}
+    .xl-fv-c.bond{border-left-color:var(--green-ink)} .xl-fv-c.fv{border-left-color:var(--green)}
+    .xl-fv-c .t{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font:700 25px/1.2 var(--f-head);color:var(--ink)}
+    .xl-fv-c .t b{font:700 34px/1 var(--f-body);color:var(--green-ink);font-variant-numeric:tabular-nums}
+    .xl-fv-c math{font-size:26px}
+    .xl-fv-c p{margin:0;font:19px/1.3 var(--f-body);color:#4E5552}
+    .xl-fv-cp{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--green);color:#fff;border-radius:10px;padding:14px 22px;font:700 24px/1.2 var(--f-head)}
+    .xl-fv-cp b{font:700 38px/1 var(--f-body)}
+    .xl-fv-cp small{font:400 20px var(--f-body);opacity:.9}
+
     /* ---------- xl-sens ---------- */
     .xl-se .term{height:740px}
     .xl-se .term-body{padding:20px 44px 16px;display:flex;flex-direction:column}
@@ -353,7 +425,7 @@
       ic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 5h9"/><text x="12" y="19.5" text-anchor="middle" style="font:italic 19px var(--f-math);fill:#fff;stroke:none">x</text></svg>' }
   ];
   // the seven steps, the table of contents of the Excel part: only the title and one small picture made from our three
-  // stocks' data (the group, 1 Nov 2026). The step slides take their titles from here (steps 4 to 6 are live Excel)
+  // stocks' data (the group, 1 Nov 2026). The step slides take their titles from here
   const STEPS = [
     { t: "Step 1: Volatility &amp; Correlation", v: "inputs" },
     { t: "Step 2: Random Numbers &amp; Correlated Shocks", v: "shocks" },
@@ -854,30 +926,18 @@
   const GBM_XL = `<math display="block"><mi>S</mi><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mo>=</mo><mi>S</mi><mo stretchy="false">(</mo><mi>t</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mo>×</mo><mi mathvariant="normal" class="xl-yr-h e">EXP</mi><mrow><mo>(</mo><mrow><mo>(</mo><mi>r</mi><mo>−</mo><mi>q</mi><mrow class="xl-yr-h e"><mo form="infix">−</mo><msup><mi>σ</mi><mn>2</mn></msup><mo>/</mo><mn>2</mn></mrow><mo>)</mo></mrow><mo>·</mo>${DT}<mo>+</mo><mi>σ</mi><mo>·</mo><msqrt>${DT}</msqrt><mo>·</mo><mi class="xl-yr-h z">Z</mi><mo>)</mo></mrow></math>`;
 
   Deck.addSlide({
-    id: "xl-year", section: "excel", steps: 3, secs: 35, liveSecs: 153,
+    id: "xl-year", section: "excel", steps: 3, secs: 35, liveSecs: 3,
     title: STEPS[2].t,
     subtitle: `Sheet 8 copies the step down ${NDAY} trading days, for all three stocks`,
     lecture: "Lecture 4, slide 15",
     sources: "Arnold (2026), slide 15",
-    // live Excel: the K49 shot between clicks 2 and 3, and after this slide all of 5.5–5.8 up to the engine checks
-    // (sheets 8, 9, 10 and 11). liveSecs = that narration / 145 × 60 + 3 s per Excel screen (the owner's value, fix round 1)
+    // live Excel: the K49 shot between clicks 2 and 3 (3 s); steps 4 to 6 have slides of their own (1 Nov 2026), step 7's
+    // engine checks open xl-sens
     notes: "Step three: one simulated year. Sheet eight is the engine: each row is one trading day, and each cell uses this formula, "
       + "[→] with the correlated shock from step two. "
       + "[→] It uses an exponential instead of the lecture's simple plus, so a price can never become negative. And because we exponentiate, we subtract half the variance from the drift, so the average stock still grows at the risk-free rate minus the dividend yield. "
       + "[Excel: sheet 8, click K49 so the formula shows; keep row 5 off screen] "
-      + "[→] Copy it down 252 rows, and we have one possible year. "
-      + "[Excel: sheet 8, rows 306–325; highlight MIN, IF, MIN/MATCH, payoff and discount in turn] "
-      + "Step four: what does this year pay? MIN finds each stock's lowest price, and IF checks whether it touched the barrier. MIN and MATCH find the worst stock at the end. After a touch, if that stock ends below its start, the put pays what the investor loses: a thousand dollars minus the value of the shares, discounted to today. "
-      + "[Excel: path 1 (sheet 9, cell F6 = 1; sheet 8 updates at once, no F9 needed); sheet 8, rows 306–325] "
-      + "Here's path one. Adobe and Microsoft both touch their barriers, and Microsoft ends worst, down 42 percent. So the investor gets Microsoft shares worth 577 dollars, and the put pays the difference: 423 dollars, or 404 in today's money. "
-      + "[Excel: path 2,000 (sheet 9, cell F6 = 2000); sheet 8, rows 306–325, with the caption \"Adobe: kick-in 154.91 (C24) · lowest price 156.34 (C306)\"] "
-      + "Now path two thousand. Microsoft is down almost a third, but no barrier is touched. Adobe misses by less than two dollars! So the put pays nothing, and the investor gets the full thousand back. "
-      + "[Excel: sheet 9; Data → What-If Analysis → Data Table, column input cell F6. Recording note: data tables only recalculate with F9, and only in desktop Excel.] "
-      + "Step five: one path is one roll of the dice. To get two thousand, we use an Excel data table: one copy of the engine, with the path number as the input cell. Excel runs it once for every path. "
-      + "[Excel: sheet 10 from top to bottom: bond → put → fair value → fair coupon; then sheet 11, cell F26, the put's standard error of 4.58 dollars, with the caption \"95%: ± 1.96 × 4.58 ≈ ± 9\"] "
-      + "Step six: the price. The bond pays two coupons and the thousand. Discounted at the risk-free rate plus a spread for UBS's default risk, it's worth 1,097 dollars. The put is the average of the two thousand discounted payoffs: 173 dollars. Bond minus put: the product is worth about 925 dollars, give or take nine at ninety-five percent confidence. But the investor pays 1,000, so the bank keeps about seven and a half percent. A fair coupon would be almost 23 percent, not 15. "
-      + "[Excel: sheet 11, the engine-check rows (scenarios 10 and 11); next to them, the average of sheet 9, column D (select D13:D2012 and read the average in the status bar)] "
-      + "Step seven: can we trust the engine? We test two extreme cases. With the barrier at zero, it's never touched, so the put must be worth nothing. And it is. With the barrier at 100 percent, it's always touched, so we must get the plain worst-of put from column D of sheet nine: 227 dollars. Exactly what we get.",
+      + "[→] Copy it down 252 rows, and we have one possible year. ",
     render(body) {
       body.innerHTML = `
         <div class="xl-yr">
@@ -962,6 +1022,160 @@
     }
   });
 
+  // ================= 5b) xl-pay: step 4, barrier and discounted payoff =================
+  // sheet 8, rows 306–325: MIN (lowest price, C306), IF (kick-in, C308), MIN/MATCH (worst performer), the down-and-in put
+  // payoff (C321) and its discount. Path 1 from XL.path1, path 2,000 from XL.path2000 (both chosen in sheet 9, F6)
+  const DF = Math.exp(-XM.r * B.T);                           // e^(−rT) = 0.9566 (sheet 8)
+  const P1_ST = LV.map(l => l[NDAY]), P1_MIN = P1.min.map((m, k) => m / XL.S0[k]);
+  const P2 = XL.path2000, P2_ST = P2.ST.map((s, k) => s / XL.S0[k]), P2_MIN = P2.min.map((m, k) => m / XL.S0[k]);
+  const KI_USD = XL.S0.map(s => s * KI);                     // the kick-in levels: 154.91, 216.32, 347.35
+  const PUT1_T = 1000 * (1 - P1.worstPerf / 100);            // path 1 at expiry: 1,000 − Microsoft's shares worth 577 = 423
+  // each stock's lowest price as a bar down from its start, against the 65% kick-in line (a ring where it touches)
+  const PY_HI = 1.12, PY_LO = 0.45;
+  function lowChart(mins) {
+    const top = 14, bot = 196, Y = v => top + (PY_HI - v) / (PY_HI - PY_LO) * (bot - top), X = j => 112 + j * 80;
+    const line = (v, st, lab) => `<line x1="56" x2="292" y1="${Y(v)}" y2="${Y(v)}" style="${st}"/><text x="48" y="${Y(v) + 6}" text-anchor="end" style="font:18px Arial;fill:#6B716E">${lab}</text>`;
+    return `<svg viewBox="0 0 300 232" aria-hidden="true">
+      ${line(1, "stroke:#8E9592;stroke-width:1.5", pct(B.strike, 0))}
+      ${mins.map((m, j) => `<rect x="${X(j) - 19}" y="${Y(1)}" width="38" height="${(Y(m) - Y(1)).toFixed(1)}" rx="2" style="fill:var(${DARK[j]})"/>
+        ${m <= KI ? `<circle cx="${X(j)}" cy="${Y(m).toFixed(1)}" r="10" style="fill:none;stroke:#1A1D1B;stroke-width:3"/>` : ""}
+        <text x="${X(j)}" y="${(Y(m) + 30).toFixed(1)}" text-anchor="middle" style="font:700 18px Arial;fill:#1A1D1B">${pct(m, 1)}</text>
+        <text x="${X(j)}" y="226" text-anchor="middle" style="font:700 17px Arial;fill:var(${LIGHT[j]})">${TK[j]}</text>`).join("")}
+      ${line(KI, "stroke:#1A1D1B;stroke-width:2.5;stroke-dasharray:8 5", KI_TXT)}
+    </svg>`;
+  }
+  const PAY_F = `<math display="block"><mtext>Put</mtext><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup><mo>·</mo><msub><mn>1</mn><mtext>kick-in</mtext></msub><mo>·</mo><mn>1,000</mn><mo>·</mo><mi>max</mi><mrow><mo>(</mo><mn>1</mn><mo>−</mo><mfrac><msubsup><mi>S</mi><mi>T</mi><mtext>worst</mtext></msubsup><mi>K</mi></mfrac><mo>,</mo><mn>0</mn><mo>)</mo></mrow></math>`;
+
+  Deck.addSlide({
+    id: "xl-pay", section: "excel", after: "xl-year", steps: 2, secs: 56, liveSecs: 6,
+    title: STEPS[3].t,
+    subtitle: "Sheet 8, rows 306–325: did a stock touch its barrier, and what does the put pay in today's money?",
+    sources: "own Excel model, sheet 8 (paths 1 and 2,000)",
+    // live Excel follows: sheet 8, rows 306–325, for path 1 and path 2,000 (two screens, no narration of their own)
+    notes: "Step four: what does this year pay? MIN finds each stock's lowest price, and IF checks whether it touched the barrier. MIN and MATCH find the worst stock at the end. After a touch, if that stock ends below its start, the put pays what the investor loses: a thousand dollars minus the value of the shares, discounted to today. "
+      + "[→] Here's path one. Adobe and Microsoft both touch their barriers, and Microsoft ends worst, down 42 percent. So the investor gets Microsoft shares worth 577 dollars, and the put pays the difference: 423 dollars, or 404 in today's money. "
+      + "[→] Now path two thousand. Microsoft is down almost a third, but no barrier is touched. Adobe misses by less than two dollars! So the put pays nothing, and the investor gets the full thousand back. "
+      + "[Excel: sheet 8, rows 306–325; highlight MIN, IF, MIN/MATCH, payoff and discount in turn, for path 1 (sheet 9, cell F6 = 1), then path 2,000 (F6 = 2000; sheet 8 updates at once, no F9 needed)]",
+    render(body) {
+      const fact = (dt, dd) => `<dt>${dt}</dt><dd>${dd}</dd>`;
+      body.innerHTML = `
+        <div class="xl-py">
+          <div class="xl-py-l">
+            <p class="label">What sheet 8 checks on every path</p>
+            <div class="xl-py-row"><span class="num">1</span><div><b><span class="xl-fn">MIN</span>Lowest price</b><p>of each stock over the ${NDAY} days</p></div></div>
+            <div class="xl-py-row"><span class="num">2</span><div><b><span class="xl-fn">IF</span>Kick-in?</b><p>did the lowest price touch ${KI_TXT} of the start?</p></div></div>
+            <div class="xl-py-row"><span class="num">3</span><div><b><span class="xl-fn">MIN · MATCH</span>Worst stock</b><p>the lowest <math><msub><mi>S</mi><mi>T</mi></msub><mo>/</mo><mi>K</mi></math> at expiry</p></div></div>
+            <div class="fbox xl-py-pay"><span class="chip">THE PUT, IN TODAY'S MONEY</span>${PAY_F}
+              <p>after a kick-in, the investor's loss on the worst stock; <math><msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup></math> = ${fmt(DF, 4)}</p>
+              <span class="xlref">Excel · sheet 8, rows 306–325</span></div>
+          </div>
+          <div class="xl-py-r">
+            <div class="xl-py-path" data-step="1">${lowChart(P1_MIN)}
+              <div><p class="xl-py-h">Path 1 <span class="xl-tag mis">kick-in</span></p>
+                <dl class="xl-py-facts">${fact("Kick-in", `${TK[0]} <small>day ${P1.kiDay[0]}</small> · ${TK[2]} <small>day ${P1.kiDay[2]}</small>`)}
+                  ${fact("Worst", `${TK[P1.worst]} <small>ends at</small> ${pct(P1.worstPerf / 100, 1)}`)}
+                  ${fact("At expiry", `1,000 − ${fmt(1000 - PUT1_T, 0)} <small>(its shares)</small> = ${fmt(PUT1_T, 0)}`)}</dl>
+                <p class="xl-py-pv">today <b>${fmt(P1.payoff, 0)}</b> USD</p></div></div>
+            <div class="xl-py-path" data-step="2">${lowChart(P2_MIN)}
+              <div><p class="xl-py-h">Path ${fmt(XL.paths, 0)} <span class="xl-tag">no kick-in</span></p>
+                <dl class="xl-py-facts">${fact("Kick-in", `none <small>${TK[0]}'s low ${fmt(P2.min[0], 2)} vs ${fmt(KI_USD[0], 2)}</small>`)}
+                  ${fact("Worst", `${TK[P2.worst]} <small>ends at</small> ${pct(P2.worstPerf / 100, 1)}`)}
+                  ${fact("At expiry", `0 <small>(${fmt(P2.putNoBarrier, 0)} without the barrier)</small>`)}</dl>
+                <p class="xl-py-pv">today <b>0</b> USD · the investor gets 1,000 back</p></div></div>
+          </div>
+        </div>`;
+      return { resize() { U.tightenRoots(body); } };
+    }
+  });
+
+  // ================= 5c) xl-table: step 5, 2,000 paths with a data table =================
+  // sheet 9: one copy of the engine (sheet 8), the path number in F6, and Excel's data table {=TABLE(,F6)} runs it once
+  // per path. Kick-in and loss shares from sheet 10 (pKI, pLoss: the put pays exactly when the investor loses)
+  Deck.addSlide({
+    id: "xl-table", section: "excel", after: "xl-pay", steps: 2, secs: 18, liveSecs: 3,
+    title: STEPS[4].t,
+    subtitle: `One engine, run ${fmt(XL.paths, 0)} times by an Excel data table (sheet 9)`,
+    sources: `own Excel model, sheets 8–10; chart: own simulation with the Excel's inputs`,
+    // live Excel follows: sheet 9 and the Data Table dialog (one screen, no narration of its own)
+    notes: "Step five: one path is one roll of the dice. "
+      + "[→] To get two thousand, we use an Excel data table: one copy of the engine, with the path number as the input cell. "
+      + "[→] Excel runs it once for every path. "
+      + "[Excel: sheet 9; Data → What-If Analysis → Data Table, column input cell F6. Recording note: data tables only recalculate with F9, and only in desktop Excel.]",
+    render(body) {
+      body.innerHTML = `
+        <div class="xl-dt">
+          <div class="xl-dt-l">
+            <p class="label">One engine, run once per path</p>
+            <div class="xl-dt-box"><span class="k">Sheet 9 · F6</span><div><b>The path number</b><span>1, 2, 3, …, ${fmt(XL.paths, 0)}</span></div></div>
+            <span class="xl-in-arw">${ARROW}</span>
+            <div class="xl-dt-box eng"><span class="k">Sheet 8</span><div><b>The engine</b><span>steps 2 to 4: shocks, ${NDAY} days, kick-in, payoff</span></div></div>
+            <span class="xl-in-arw">${ARROW}</span>
+            <div class="xl-dt-box"><span class="k">Sheet 9</span><div><b><span class="xl-fn">{=TABLE(,F6)}</span>one row per path</b><span>Excel's data table, column input cell F6</span></div></div>
+            <table class="xl-dt-tab" data-step="1"><thead><tr><th>Path</th><th>Kick-in</th><th>Worst <math><msub><mi>S</mi><mi>T</mi></msub><mo>/</mo><mi>K</mi></math></th><th>Put today, USD</th></tr></thead>
+              <tbody><tr><td>1</td><td>yes</td><td>${pct(P1.worstPerf / 100, 1)}</td><td>${fmt(P1.payoff, 2)}</td></tr>
+                <tr class="gap"><td colspan="4">⋮</td></tr>
+                <tr><td>${fmt(XL.paths, 0)}</td><td>no</td><td>${pct(P2.worstPerf / 100, 1)}</td><td>${fmt(P2.payoff, 2)}</td></tr></tbody>
+              <tfoot><tr><td colspan="3">Average of the ${fmt(XL.paths, 0)}: the put (step 6)</td><td>${fmt(RES.put, 2)}</td></tr></tfoot></table>
+          </div>
+          <div data-step="2">${U.term({ fn: "PATHS", title: `${fmt(XL.paths, 0)} SIMULATED YEARS · THE WORST OF THE THREE`, meta: "OWN SIMULATION",
+            body: `<div class="xl-dt-cv"><canvas></canvas></div>`,
+            stats: `<div><div class="k">a stock touches ${KI_TXT}</div><div class="v">${fmt(RES.pKI, 1)}%</div></div><div><div class="k">the put pays</div><div class="v">${fmt(RES.pLoss, 1)}%</div></div><div><div class="k">of the ${fmt(XL.paths, 0)} paths</div><div class="v">&nbsp;</div></div>` })}</div>
+        </div>`;
+      const cv = body.querySelector("canvas");
+      return { resize() { U.tightenRoots(body); miniFan(cv); } };
+    }
+  });
+
+  // ================= 5d) xl-fair: step 6, the fair value =================
+  // sheet 10: the bond (two coupons and the 1,000, discounted at r + UBS's CDS), the put (the average discounted payoff,
+  // 10!C20), fair value = bond − put (10!C39), the 95% interval (± 1.96 × the put's standard error, sheet 11 F26), the
+  // issue premium and the fair coupon
+  const FV_TOP = 1150;                                        // top of the waterfall, USD
+  const fvY = v => (v / FV_TOP * 100).toFixed(2) + "%";
+  const RS = XM.r + XM.cds, CI = 1.96 * RES.putSE;
+  const BOND_F = `<math><mtext>Bond</mtext><mo>=</mo><munder><mo>∑</mo><mi>t</mi></munder><msub><mi>CF</mi><mi>t</mi></msub><mo>·</mo><msup><mi>e</mi><mrow><mo>−</mo><mo stretchy="false">(</mo><mi>r</mi><mo>+</mo><msub><mi>s</mi><mtext>UBS</mtext></msub><mo stretchy="false">)</mo><mi>t</mi></mrow></msup></math>`;
+  const PUT_F = `<math><mtext>Put</mtext><mo>=</mo><mfrac><mn>1</mn><mn>${fmt(XL.paths, 0)}</mn></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mn>${fmt(XL.paths, 0)}</mn></munderover><msup><mi>e</mi><mrow><mo>−</mo><mi>r</mi><mi>T</mi></mrow></msup><mo>·</mo><msub><mtext>payoff</mtext><mi>i</mi></msub></math>`;
+  const FV_F = `<math><mtext>Fair value</mtext><mo>=</mo><mtext>Bond</mtext><mo>−</mo><mtext>Put</mtext></math>`;
+  const CPN = 1000 * XL.coupon / B.couponsPerYear;           // 75 every six months
+
+  Deck.addSlide({
+    id: "xl-fair", section: "excel", after: "xl-table", steps: 3, secs: 36, liveSecs: 6,
+    title: STEPS[5].t,
+    subtitle: "Sheet 10: the bond minus the put, against the 1,000 the investor pays",
+    sources: "own Excel model, sheets 10 and 11",
+    // live Excel follows: sheet 10 top to bottom, then sheet 11, F26 (two screens, no narration of their own)
+    notes: "Step six: the price. The bond pays two coupons and the thousand. Discounted at the risk-free rate plus a spread for UBS's default risk, it's worth 1,097 dollars. "
+      + "[→] The put is the average of the two thousand discounted payoffs: 173 dollars. "
+      + "[→] Bond minus put: the product is worth about 925 dollars, give or take nine at ninety-five percent confidence. But the investor pays 1,000, so the bank keeps about seven and a half percent. "
+      + "[→] A fair coupon would be almost 23 percent, not 15. "
+      + "[Excel: sheet 10 from top to bottom: bond → put → fair value → fair coupon; then sheet 11, cell F26, the put's standard error of 4.58 dollars, with the caption \"95%: ± 1.96 × 4.58 ≈ ± 9\"]",
+    render(body) {
+      body.innerHTML = `
+        <div class="xl-fv">
+          <div class="xl-fv-l">
+            <p class="label">Per note of 1,000 USD</p>
+            <div class="xl-fv-wf">
+              <div class="bond"><span class="bar" style="bottom:0;height:${fvY(RES.bond)}"><b>${fmt(RES.bond, 0)}</b></span><span class="lab">bond</span></div>
+              <div class="put" data-step="1"><span class="bar" style="bottom:${fvY(RES.fv)};height:${fvY(RES.put)}"><b>−${fmt(RES.put, 0)}</b></span><span class="lab">put</span></div>
+              <div class="fv" data-step="2"><span class="bar" style="bottom:0;height:${fvY(RES.fv)}"><b>${fmt(RES.fv, 0)}</b></span><span class="lab">fair value</span>
+                <span class="xl-fv-gap" style="bottom:${fvY(RES.fv)};height:${fvY(1000 - RES.fv)}"><span>the bank keeps ≈ ${fmt(1000 - RES.fv, 0)} (${fmt(RES.premium, 1)}%)</span></span></div>
+              <div class="xl-fv-ip" data-step="2" style="bottom:${fvY(1000)}"><span>the investor pays 1,000</span></div>
+            </div>
+          </div>
+          <div class="xl-fv-r">
+            <div class="xl-fv-c bond"><div class="t">Bond<b>${fmt(RES.bond, 2)}</b></div>${BOND_F}
+              <p>${fmt(CPN, 0)} after six months, ${fmt(1000 + CPN, 0)} after a year · <math><mi>r</mi><mo>+</mo><msub><mi>s</mi><mtext>UBS</mtext></msub></math> = ${pct(RS, 2)}</p></div>
+            <div class="xl-fv-c put" data-step="1"><div class="t">Put<b>${fmt(RES.put, 2)}</b></div>${PUT_F}
+              <p>± ${fmt(CI, 0)} at 95% (1.96 × the standard error ${fmt(RES.putSE, 2)})</p></div>
+            <div class="xl-fv-c fv" data-step="2"><div class="t">Fair value<b>${fmt(RES.fv, 2)}</b></div>${FV_F}
+              <p>${fmt(RES.fvPct, 1)}% of the 1,000 the investor pays · 95% interval ${fmt(RES.ci[0], 0)}–${fmt(RES.ci[1], 0)}</p></div>
+            <div class="xl-fv-cp" data-step="3"><span>Fair coupon<br><small>the coupon that makes it worth 1,000</small></span><b>${fmt(RES.fairCoupon, 1)}%</b><span><small>instead of</small><br>${pct(XL.coupon, 0)} p.a.</span></div>
+          </div>
+        </div>`;
+      return { resize() { U.tightenRoots(body); } };
+    }
+  });
+
   // ================= 6) xl-sens: which input matters most =================
   // sheet 11 in two groups (the group's feedback, 27 Oct 2026): the market inputs, then the product's own terms (the
   // kick-in level); largest change first within each group. Historical volatility and no dividends are not narrated: dimmed.
@@ -978,10 +1192,12 @@
   ];
 
   Deck.addSlide({
-    id: "xl-sens", section: "excel", steps: 1, secs: 15,
+    id: "xl-sens", section: "excel", steps: 1, secs: 15, liveSecs: 28,
     title: STEPS[6].t,
     subtitle: `Sheet 11: how much the put changes when one input changes (same ${fmt(XL.paths, 0)} paths)`,
-    notes: "[Excel → web app] And which input matters most? "
+    notes: "[Excel: sheet 11, the engine-check rows (scenarios 10 and 11); next to them, the average of sheet 9, column D (select D13:D2012 and read the average in the status bar)] "
+      + "Step seven: can we trust the engine? We test two extreme cases. With the barrier at zero, it's never touched, so the put must be worth nothing. And it is. With the barrier at 100 percent, it's always touched, so we must get the plain worst-of put from column D of sheet nine: 227 dollars. Exactly what we get. "
+      + "[Excel → web app] And which input matters most? "
       + "[→] Volatility. Five points more, and the put rises from 173 to 219 dollars, so the product's value falls from 925 to 878. Correlation moves it by only about seven.",
     render(body) {
       const X = v => 50 + v / SE_MAX * 50;                  // % of the plot width
