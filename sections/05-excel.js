@@ -270,7 +270,7 @@
     .xl-co .term-body>div+div{border-top:1px solid var(--term-line)}
     /* Apple vs Microsoft, the pair without a cloud: one line under the two */
     .xl-co .term-stats{padding:11px 18px}
-    .xl-co-am{font:500 18px/1.2 var(--f-mono);color:var(--term-muted);letter-spacing:.02em;white-space:nowrap}
+    .xl-co-am{font:500 16px/1.2 var(--f-mono);color:var(--term-muted);letter-spacing:0;white-space:nowrap}
     .xl-co-am .pr{color:var(--term-text)}
     .xl-co-am .rv{font-size:22px;color:var(--amber)}
 
@@ -783,7 +783,7 @@
             </div>
           </div>
           ${U.term({ fn: "CORR", title: `OUR PATH 1 · ${NC} DAYS`, meta: "EXCEL · SHEET 8", body: "<div><canvas></canvas></div><div><canvas></canvas></div>",
-            stats: `<div class="xl-co-am" data-step="2"><b class="pr">${TK[1]} vs ${TK[2]}</b> · CORRELATION <b class="rv" data-am>${rhoTxt(RHO_AM)}</b> · TARGET ${f2(XM.rho[1][2])}</div>` })}
+            stats: `<div class="xl-co-am" data-step="2"><b class="pr">${TK[1]} vs ${TK[2]}</b> · CALCULATED CORRELATION <b class="rv" data-am>${rhoTxt(RHO_AM)}</b> · TARGET ${f2(XM.rho[1][2])}</div>` })}
         </div>`;
       const rows = [...body.querySelectorAll(".xl-co-row")], cvs = [...body.querySelectorAll("canvas")], am = body.querySelector("[data-am]");
       const st = [0, 0];                                       // mixing share of the Apple and the Microsoft cloud
@@ -816,7 +816,7 @@
         // the state under the pair label before and during the mix; no "MIXED" label after it (the group's feedback, 27 Oct 2026)
         ctx.font = "500 17px " + U.F.mono; ctx.fillStyle = U.css("--term-muted");
         if (m < 1) ctx.fillText(m > 0 ? "MIXING…" : "INDEPENDENT", rx, f.y + 58);
-        ctx.fillText("CORRELATION", rx, f.y + 118);
+        ctx.fillText("CALCULATED", rx, f.y + 96); ctx.fillText("CORRELATION", rx, f.y + 118);
         const r = m >= 1 ? RHO_MEAS[j] : corr(CE[0], y);
         ctx.font = "700 44px " + U.F.mono; ctx.fillStyle = U.css("--amber"); ctx.fillText(rhoTxt(r), rx, f.y + 166);
         ctx.font = "500 17px " + U.F.mono; ctx.fillStyle = U.css("--term-muted"); ctx.fillText(`TARGET ${f2(m > 0 ? XM.rho[0][k] : 0)}`, rx, f.y + 196);
