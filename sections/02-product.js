@@ -128,9 +128,9 @@
     .prd-tr.tree .prd-tb>div{flex:none}
     .prd-tr.tree .prd-tb .hd{display:flex;align-items:center;gap:18px;margin-bottom:6px}
     .prd-tr.tree .prd-tb .hd b{font:700 32px/1.1 var(--f-body)}
-    .prd-tr.tree .prd-tb.cash .eg.cash{font-size:24px;line-height:1.45;margin-top:auto;padding-top:10px;border-top:2px dashed #B9D3C1}
+    .prd-tr.tree .prd-tb.cash .eg.cash{font-size:24px;line-height:1.35;margin-top:auto;padding-top:10px;border-top:2px dashed #B9D3C1}
     .prd-tr.tree .prd-tb .sm{display:block;margin:0;font-size:22px;line-height:1.35;color:var(--ink)}
-    .prd-tr.tree .prd-tb.shr .exl{font-size:24px;line-height:1.4;margin-top:auto;padding-top:8px}
+    .prd-tr.tree .prd-tb.shr .exl{font-size:24px;line-height:1.35;margin-top:auto;padding-top:8px}   /* the same row height as the cash boxes, so the three totals line up at the bottom */
     .prd-tr.tree .prd-tb.shr .exl .eh{font-weight:700;margin:0 0 2px}
     .prd-tr.tree .prd-tb.shr .exl .eg>span:nth-child(-n+2){color:var(--muted)}
     .prd-when{position:absolute;left:1510px;top:0;width:244px;height:0}
