@@ -43,12 +43,19 @@
   const BASE = XL.sens[0][1];
   const SENS = XL.sens.slice(1, 9).map(([lab, fv]) => ({ lab, fv, d: BASE - fv }));
   const bySize = (p, q) => Math.abs(q.d) - Math.abs(p.d);
-  // the Cholesky clouds (xl-corr, and one of them on brc-steps): 2,000 seeded draws of independent numbers, mixed with the
-  // weights of sheet 4, step D (XL.mix); own simulation
+  // the Cholesky clouds (xl-corr, and one of them on brc-steps): our Excel's path 1, its 252 days. The engine (sheet 8,
+  // K49) is S(t) = S(t−1)·exp(drift + σ√Δt·Z), so each day's Z comes back exactly from the prices of XL.path1.daily
+  // (day 1: 0.3047 · 1.7533 · −2.4920, as in the Excel), and the independent ε of sheet 7 from Z with the weights of
+  // sheet 4, step D (XL.mix): ε1 = Z_ADBE, ε2 = (Z_AAPL − r12·ε1)/s12, ε3 = (Z_MSFT − r13·ε1 − r23s·ε2)/r33s
   const M = XL.mix, f2 = x => fmt(x, 2);
-  const NC = 2000, CO_SEED = 439;   // a seed whose 2,000 draws show the target correlations to two decimals
-  const CE = [0, 1, 2].map(() => new Float64Array(NC));
-  { const norm = U.normal(U.rng(CO_SEED)); for (let i = 0; i < NC; i++) for (let j = 0; j < 3; j++) CE[j][i] = norm(); }
+  const NC = NDAY;
+  const Z1 = [0, 1, 2].map(k => {
+    const dt = 1 / NDAY, drift = (XM.r - XM.q[k] - XM.sigma[k] ** 2 / 2) * dt, vs = XM.sigma[k] * Math.sqrt(dt), S = P1.daily[k];
+    return Float64Array.from({ length: NC }, (_, t) => (Math.log(S[t + 1] / S[t]) - drift) / vs);
+  });
+  const CE = [Z1[0], Z1[1].map((z, i) => (z - M.r12 * Z1[0][i]) / M.s12), null];
+  CE[2] = Z1[2].map((z, i) => (z - M.r13 * CE[0][i] - M.r23s * CE[1][i]) / M.r33s);
+  if (Math.abs(Z1[0][0] - P1.rows[0].z[0]) > 0.005 || Math.abs(Z1[2][0] - P1.rows[0].z[2]) > 0.005) console.error("xl-corr: path 1's Z do not match sheet 8");
   const corr = (x, y) => { let mx = 0, my = 0; for (let i = 0; i < NC; i++) { mx += x[i]; my += y[i]; } mx /= NC; my /= NC; let a = 0, b = 0, c = 0; for (let i = 0; i < NC; i++) { const p = x[i] - mx, q = y[i] - my; a += p * q; b += p * p; c += q * q; } return a / Math.sqrt(b * c); };
   // y of the cloud for mixing share m (0 = independent, 1 = our weights)
   const mixY = (k, m) => {
@@ -58,7 +65,7 @@
     return y;
   };
   const RHO_MEAS = [1, 2].map(k => corr(CE[0], mixY(k, 1)));
-  const RHO_AM = corr(mixY(1, 1), mixY(2, 1));                // Apple vs Microsoft on the same draws: 0.14 (target 0.14)
+  const RHO_AM = corr(mixY(1, 1), mixY(2, 1));                // Apple vs Microsoft on the same days of path 1
   const rhoTxt = r => Math.abs(r) < 0.005 ? "0.00" : f2(r).replace("-", "−");
 
   Deck.addStyle(`
@@ -448,7 +455,7 @@
     ctx.fillStyle = U.css("--muted"); ctx.font = "15px " + U.F.body; ctx.textAlign = "center"; ctx.textBaseline = "top";
     [-3, 0, 3].forEach(z => ctx.fillText(z < 0 ? "−" + -z : String(z), X(z), Y(0) + 6));
   }
-  // the cloud of step 2b: Adobe's and Microsoft's correlated shocks on 2,000 draws (the lower cloud of xl-corr)
+  // the cloud of step 2b: Adobe's and Microsoft's correlated shocks on the 252 days of path 1 (the lower cloud of xl-corr)
   const Z_MSFT = mixY(2, 1);
   function miniCloud(cv) {
     const c = cv && U.canvas(cv); if (!c) return;
@@ -754,7 +761,7 @@
     id: "xl-corr", section: "excel", steps: 2, secs: 27, liveSecs: 8,
     title: STEPS[2].t,
     subtitle: "The Z of the shock, one per stock: we mix them so our stocks move together",
-    sources: "own simulation",
+    sources: "own Excel model, sheets 4, 7 and 8 (path 1)",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
     notes: "Remember the Z in the shock: each stock needs its own. But our random numbers are independent, and our stocks are not. So we mix them, with the Cholesky method. Adobe keeps its own random number. "
       + "[→] Apple takes 0.22 of Adobe's, exactly their correlation, plus 0.98 of its own. "
@@ -775,7 +782,7 @@
               <span class="xlref">Excel · sheet 4, step D · sheet 8, H49</span>
             </div>
           </div>
-          ${U.term({ fn: "CORR", title: `${fmt(NC, 0)} SIMULATED PATHS`, meta: "OWN SIMULATION", body: "<div><canvas></canvas></div><div><canvas></canvas></div>",
+          ${U.term({ fn: "CORR", title: `OUR PATH 1 · ${NC} DAYS`, meta: "EXCEL · SHEET 8", body: "<div><canvas></canvas></div><div><canvas></canvas></div>",
             stats: `<div class="xl-co-am" data-step="2"><b class="pr">${TK[1]} vs ${TK[2]}</b> · CORRELATION <b class="rv" data-am>${rhoTxt(RHO_AM)}</b> · TARGET ${f2(XM.rho[1][2])}</div>` })}
         </div>`;
       const rows = [...body.querySelectorAll(".xl-co-row")], cvs = [...body.querySelectorAll("canvas")], am = body.querySelector("[data-am]");
@@ -791,7 +798,7 @@
         [-3, 0, 3].forEach(v => { const x = Math.round(ax.X(v)) + .5; ctx.beginPath(); ctx.moveTo(x, f.y); ctx.lineTo(x, f.y + f.h); ctx.stroke(); });
         ctx.beginPath(); ctx.rect(f.x, f.y, f.w, f.h); ctx.clip();
         ctx.fillStyle = U.css("--term-text"); ctx.globalAlpha = .55;
-        for (let i = 0; i < NC; i++) ctx.fillRect(ax.X(CE[0][i]) - 1.6, ax.Y(y[i]) - 1.6, 3.2, 3.2);
+        for (let i = 0; i < NC; i++) ctx.fillRect(ax.X(CE[0][i]) - 2.4, ax.Y(y[i]) - 2.4, 4.8, 4.8);   // 252 days: larger dots
         ctx.globalAlpha = 1;
         const rho = m * (k === 1 ? M.r12 : M.r13);             // the slope of y on ε1 = its correlation with Adobe
         ctx.setLineDash([10, 8]); ctx.strokeStyle = U.css("--amber"); ctx.lineWidth = 3;
