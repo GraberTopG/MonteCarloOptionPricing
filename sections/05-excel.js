@@ -315,7 +315,7 @@
       ic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 5h9"/><text x="12" y="19.5" text-anchor="middle" style="font:italic 19px var(--f-math);fill:#fff;stroke:none">x</text></svg>' }
   ];
   // the seven steps, the table of contents of the Excel part: only the title and one small picture made from our three
-  // stocks' data (the group, 1 Nov 2026; these titles are this slide's own, the step slides keep theirs for now)
+  // stocks' data (the group, 1 Nov 2026). The step slides take their titles from here (steps 4 to 6 are live Excel)
   const STEPS = [
     { t: "Step 1: Volatility &amp; Correlation", v: "inputs" },
     { t: "Step 2: Random Numbers &amp; Correlated Shocks", v: "shocks" },
@@ -478,7 +478,7 @@
 
   Deck.addSlide({
     id: "xl-input", section: "excel", steps: 2, secs: 13, liveSecs: 45,
-    title: "Step 1: the missing inputs",
+    title: STEPS[0].t,
     subtitle: "Black-Scholes needs five inputs, and we know four of them",
     lecture: "Lecture 4, slide 7",
     sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg",
@@ -573,7 +573,7 @@
 
   Deck.addSlide({
     id: "xl-gbm", section: "excel", steps: 3, secs: 28, liveSecs: 25,
-    title: "Step 2: How do we simulate a stock?",
+    title: STEPS[1].t,
     subtitle: "The lecture's geometric Brownian motion, one small time step at a time",
     lecture: "Lecture 4, slides 11 and 15",
     sources: "Arnold (2026), slides 11 and 15; own illustration",
@@ -638,7 +638,7 @@
 
   Deck.addSlide({
     id: "xl-corr", section: "excel", steps: 2, secs: 24, liveSecs: 8,
-    title: "Step 2: correlated shocks",
+    title: STEPS[1].t,
     subtitle: "Our stocks don’t move independently, so we mix the random numbers",
     sources: "own simulation",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
@@ -726,7 +726,7 @@
 
   Deck.addSlide({
     id: "xl-year", section: "excel", steps: 3, secs: 35, liveSecs: 153,
-    title: "Step 3: the engine, one simulated year.",
+    title: STEPS[2].t,
     subtitle: `Sheet 8 copies the step down ${NDAY} trading days, for all three stocks`,
     lecture: "Lecture 4, slide 15",
     sources: "Arnold (2026), slide 15",
@@ -850,7 +850,7 @@
 
   Deck.addSlide({
     id: "xl-sens", section: "excel", steps: 1, secs: 15,
-    title: "Which input matters most?",
+    title: STEPS[6].t,
     subtitle: `Sheet 11: how much the put changes when one input changes (same ${fmt(XL.paths, 0)} paths)`,
     notes: "[Excel → web app] And which input matters most? "
       + "[→] Volatility. Five points more, and the put rises from 173 to 219 dollars, so the product's value falls from 925 to 878. Correlation moves it by only about seven.",
