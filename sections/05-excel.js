@@ -4,7 +4,10 @@
    - brc-steps     the plan: a recap of the theory (bond − put, the simulation in three moves), then (click) the seven steps,
                    each with a small picture from our data (5.1); then live
                    Excel: the workbook's Read Me and sheet tabs with the colour legend (the template, assignment 2a)
-   - xl-input      step 1: Black-Scholes needs a volatility (5.2), then live Excel: sheets 5, 6 and 4
+   - xl-input      step 1, left on both step-1 slides: the missing inputs and how we solved them. Here: Black-Scholes is
+                   missing r, then σ; the implied volatility, the σ with the lowest RMSE (5.2), then live Excel: sheets 5, 6
+   - xl-rho        step 1: dividends and UBS's spread from Bloomberg; the correlation from two years of prices (Bloomberg
+                   HP), then live Excel: sheet 4
    - xl-gbm        step 2: the lecture's GBM in discrete time steps (5.3), then live Excel: sheet 7
    - xl-corr       step 2: correlated shocks with Cholesky (5.3), then live Excel: sheets 4 and 8
    - xl-year       step 3: the engine's formula and path 1 (5.4), then live Excel 5.5–5.8 (payoff, data table, fair value, checks)
@@ -17,6 +20,11 @@
   const TK = B.tickers;
   const LIGHT = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];   // stock colours for text
   const DARK = ["--c-adbe", "--c-aapl", "--c-msft"];                      // stock colours for lines and bars
+  // the step-1 slides (xl-input, xl-rho): the inputs in shades of green, the same in the list of missing inputs and in
+  // the formulas (the group, 1 Nov 2026): the product's terms grey-green, the three Bloomberg lookups one mid green, the
+  // implied volatility HSG green, the correlation dark green
+  const IC_TERM = "#7A8F81", IC_LOOKUP = "#4F9A6B";
+  const IC = { S0: IC_TERM, K: IC_TERM, T: IC_TERM, r: IC_LOOKUP, q: IC_LOOKUP, cds: IC_LOOKUP, sg: "#00802F", rho: "#0F5C33" };
   const KI = B.kickIn, KI_TXT = pct(KI, 0);                                // 65%
   const MIO = XL.paths * XL.steps * 3 / 1e6;                              // 2,000 × 252 × 3 = 1.5 million random numbers
   const DT = `<mi mathvariant="normal">Δ</mi><mi>t</mi>`;
@@ -112,48 +120,70 @@
     .xl-st-tor i.p{left:50%} .xl-st-tor i.n{right:50%}
     .xl-st-tor i.v{background:var(--green)}
 
-    /* ---------- xl-input ---------- */
-    .xl-in{display:grid;grid-template-columns:1fr 640px;gap:44px;height:100%}
-    .xl-in-l{display:flex;flex-direction:column;justify-content:space-between;padding:8px 0 0;min-width:0}
-    .xl-in-l .label{margin:0}
-    .xl-in-l .fbox{padding:24px 20px 14px}
-    .xl-in-l .fbox math{font-size:40px}
-    .xl-in-d{display:grid;grid-template-columns:1.25fr 1fr;gap:26px}
-    .xl-in-d .fbox{display:flex;align-items:center;justify-content:center;padding:14px 14px}
-    .xl-in-d .fbox math{font-size:37px}
-    /* the inputs light up: a background plus a spread shadow, so nothing moves; the missing σ in solid green */
-    .xl-in-v{border-radius:3px;transition:background-color .45s ease,box-shadow .45s ease,color .45s ease;transition-delay:calc(var(--k,0) * 420ms)}
-    .xl-in .k-S{--k:0} .xl-in .k-K{--k:1} .xl-in .k-T{--k:2} .xl-in .k-r{--k:3} .xl-in .k-s{--k:0}
-    .xl-in.s1 .xl-in-v:not(.k-s){background:#BFE0C9;box-shadow:0 0 0 4px #BFE0C9;color:#00692A}
-    .xl-in .xl-in-v.k-s{padding:0 4px}   /* room for its solid highlight in every state, so the superscript and the root stay clear */
-    .xl-in.s2 .xl-in-v.k-s{background:var(--green);box-shadow:0 -4px 0 var(--green),0 4px 0 var(--green);color:#fff}
-    .xl-in-p{display:flex;flex-direction:column;padding:48px 28px 18px}
-    .xl-in-row{flex:1;display:grid;grid-template-columns:78px 1fr auto;column-gap:16px;align-items:center;border-top:1px solid var(--rule-light);padding:6px 0}
-    .xl-in-row:first-of-type{border-top:0}
-    .xl-in-sym math{font-size:40px}
-    .xl-in-lab{font:24px/1.2 var(--f-body);color:var(--muted)}
-    .xl-in-val{font:700 28px/1.25 var(--f-body);color:var(--ink);font-variant-numeric:tabular-nums;margin-top:3px}
-    .xl-in-val small{font:400 22px var(--f-body);color:var(--muted)}
-    .xl-in-px{display:flex;gap:18px}
-    .xl-in-px span{display:flex;flex-direction:column;line-height:1.1}
-    .xl-in-px b{font:700 20px var(--f-body);letter-spacing:.04em}
-    .xl-in-val,.xl-in-row .xl-tag{opacity:0;transition:opacity .45s ease;transition-delay:calc(var(--k,0) * 420ms)}
-    .xl-in.s1 .xl-in-row:not(.k-s) .xl-in-val,.xl-in.s1 .xl-in-row:not(.k-s) .xl-tag,.xl-in.s2 .xl-in-row.k-s .xl-in-val,.xl-in.s2 .xl-in-row.k-s .xl-tag{opacity:1}
-    .xl-in-row.k-s .xl-in-val{color:var(--orange-ink);font-size:42px;line-height:1.05}
-    .xl-in-row.k-s .xl-in-val small{display:block;margin-top:2px;font-weight:400;color:var(--ink)}
-    .xl-in-row{transition:background-color .45s ease;transition-delay:calc(var(--k,0) * 420ms)}
-    .xl-in.s2 .xl-in-row.k-s{background:var(--orange-light);margin:0 -14px;padding:6px 14px;border-radius:8px}
-    /* step 2: the implied-volatility idea (option price → Black-Scholes backwards → σ) and the key line */
-    .xl-in-new{display:flex;flex-direction:column;gap:18px}
-    .xl-in-iv{display:flex;align-items:center;gap:24px}
-    .xl-in-flow{display:flex;align-items:center;gap:10px;flex:none}
-    .xl-in-nd{font:700 23px/1.1 var(--f-body);color:var(--ink);background:#fff;border:2px solid var(--rule-light);border-radius:8px;padding:11px 14px;white-space:nowrap}
-    .xl-in-nd.bs{background:var(--green-light);border-color:var(--green-light);color:var(--green-ink)}
-    .xl-in-nd.sg{width:56px;height:56px;padding:0;border-radius:50%;display:grid;place-items:center;background:var(--green);border-color:var(--green);color:#fff}
-    .xl-in-nd.sg math{font-size:34px}
-    .xl-in-ar{width:42px;height:20px;flex:none;fill:none;stroke:var(--green-ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-    .xl-in-cap{margin:0;font:21px/1.3 var(--f-body);color:var(--muted)}
-    .xl-in-key{margin:0;font:700 26px/1.25 var(--f-head);color:var(--green-ink);border-left:6px solid var(--green);padding:4px 0 4px 16px;font-variant-numeric:lining-nums}
+    /* ---------- xl-input and xl-rho (step 1) ---------- */
+    /* both slides: on the left the missing inputs and how we solved them, on the right what the slide is about. Every
+       input has its own colour (IC), the same in the list and in the formulas; a row lights up in its colour while the
+       slides talks about it, and its "how" and value show once it is solved */
+    ${Object.keys(IC).map(k => `.v-${k}{--ic:${IC[k]}}`).join(" ")}
+    .xl-vc{border-radius:3px;padding:0 3px;background:color-mix(in srgb,var(--ic) 17%,#fff);box-shadow:0 -3px 0 color-mix(in srgb,var(--ic) 17%,#fff),0 3px 0 color-mix(in srgb,var(--ic) 17%,#fff);color:var(--ic)}
+    .xl-in,.xl-rh{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:56px;height:100%}
+    .xl-in .label,.xl-rh .label{margin:0}
+    .xl-mi{display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0}
+    .xl-mi-row{flex:1;display:grid;grid-template-columns:76px minmax(0,1fr) auto;column-gap:16px;align-items:center;border-top:1px solid var(--rule-light);padding:6px 12px 6px 18px;border-radius:8px;transition:background-color .45s ease,box-shadow .45s ease,border-color .45s ease}
+    .xl-mi-row:nth-child(2),.xl-mi-row.hl,.xl-mi-row.hl+.xl-mi-row{border-top-color:transparent}
+    .xl-mi-row.hl{background:color-mix(in srgb,var(--ic) 8%,#fff);box-shadow:inset 6px 0 0 var(--ic)}
+    .xl-mi-sym math{font-size:36px}
+    .xl-mi-n{font:700 25px/1.2 var(--f-head);color:var(--ink)}
+    .xl-mi-h{font:20px/1.3 var(--f-body);color:var(--muted)}
+    .xl-mi-h b{color:var(--ink)}
+    .xl-mi-val{font:700 23px/1.25 var(--f-body);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+    .xl-mi-h,.xl-mi-val{opacity:0;transition:opacity .45s ease}
+    .xl-mi-row.hw .xl-mi-h,.xl-mi-row.sv .xl-mi-val{opacity:1}
+    /* one value per stock: three small columns, the ticker in the stock's colour above the value */
+    .xl-in-px{display:grid;grid-template-columns:repeat(3,82px)}
+    .xl-in-px span{display:flex;flex-direction:column;align-items:center;gap:2px;font:700 24px/1.1 var(--f-body);color:var(--ink)}
+    .xl-in-px span+span{border-left:1px solid var(--rule-light)}
+    .xl-in-px b{font:700 14px/1 var(--f-body);letter-spacing:.08em}
+    .xl-in-r,.xl-rh-r{display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0}
+    /* xl-input: the put formula, each input in its colour */
+    .xl-in-r .fbox{padding:26px 18px 14px}
+    .xl-in-r .fbox.orange{margin-top:12px}   /* room for its chip under the label */
+    .xl-in-r .fbox math{font-size:35px}
+    .xl-in-d{display:grid;grid-template-columns:1.25fr 1fr;gap:14px}
+    .xl-in-d .fbox{display:flex;align-items:center;justify-content:center;padding:12px}
+    .xl-in-d .fbox math{font-size:32px}
+    .xl-in-arw{display:grid;place-items:center;flex:none}
+    .xl-in-ar{width:42px;height:20px;transform:rotate(90deg);fill:none;stroke:var(--green-ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+    .xl-in-card{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0;background:#fff;border:2px solid var(--rule-light);border-radius:10px;padding:18px 22px}
+    .xl-in-card.out{flex:1;background:var(--green-light);border-color:var(--green-light)}
+    .xl-in-bb{align-self:flex-start;font:700 16px/1 var(--f-body);letter-spacing:.06em;color:#fff;background:var(--green-ink);padding:6px 10px}
+    .xl-in-card h4{margin:0;font:700 28px/1.2 var(--f-head);color:var(--green-ink)}
+    .xl-in-card h4 math{font-size:32px;margin-right:8px}
+    .xl-in-card p{margin:0;font:20px/1.3 var(--f-body);color:var(--muted)}
+    /* the implied volatility: three numbered keywords on a line, the RMSE, one tile per stock */
+    .xl-iv-steps{flex:none;position:relative;list-style:none;margin:6px 0 0;padding:0 0 3px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+    .xl-iv-steps::before{content:"";position:absolute;top:19px;left:16.67%;right:16.67%;height:2px;background:var(--green-mid)}
+    .xl-iv-steps li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center}
+    .xl-iv-steps .n{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--green-ink);color:#fff;font:700 21px/1 var(--f-body);margin-bottom:8px}
+    .xl-iv-steps li:last-child .n{background:var(--green)}
+    .xl-iv-steps b{font:700 24px/1.15 var(--f-head);color:var(--ink)}
+    .xl-iv-steps b math{font-size:26px}
+    .xl-iv-steps span:last-child{font:18px/1.25 var(--f-body);color:var(--muted)}
+    /* the RMSE, under step 2: a hairline with a notch that points up to it */
+    .xl-iv-f{flex:none;position:relative;display:flex;justify-content:center;align-items:center;margin-top:12px;padding:18px 0 6px;border-top:1.5px solid var(--green-mid)}
+    .xl-iv-f::before{content:"";position:absolute;top:-8.5px;left:50%;width:14px;height:14px;background:var(--green-light);border-left:1.5px solid var(--green-mid);border-top:1.5px solid var(--green-mid);transform:translateX(-50%) rotate(45deg)}
+    .xl-iv-f math{font-size:31px}
+    .xl-iv-res{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:auto}
+    .xl-iv-res span{display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:8px;padding:8px 0 6px;font:700 18px var(--f-mono)}
+    .xl-iv-res b{font:700 40px/1.1 var(--f-body)}
+    /* xl-rho: the price history (step 2), the matrix (step 3) */
+    .xl-rh-r .xl-in-card{flex:1}
+    .xl-rh-cv{position:relative;flex:1;min-height:0;margin:4px 0}
+    .xl-rh-cv canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+    .xl-rh-rho{border-collapse:separate;border-spacing:5px;margin:4px auto;font:700 26px var(--f-mono);font-variant-numeric:tabular-nums}
+    .xl-rh-rho th{font:700 19px var(--f-mono);padding:2px 8px}
+    .xl-rh-rho td{text-align:center;padding:10px 20px;border-radius:3px;color:var(--ink)}
+    .xl-rh-rho td.one{background:#fff;color:var(--muted)}
 
     /* ---------- xl-gbm ---------- */
     .xl-gb{display:grid;grid-template-rows:280px minmax(0,1fr) auto;gap:22px;height:100%}
@@ -451,71 +481,136 @@
     }
   });
 
-  // ================= 2) xl-input: step 1, the missing input =================
-  // Black-Scholes as on Lecture 4, slide 7 (redrawn); the inputs carry classes so they can light up
-  const vS = `<msub class="xl-in-v k-S"><mi>S</mi><mn>0</mn></msub>`, vK = `<mi class="xl-in-v k-K">K</mi>`;
-  const vT = `<mi class="xl-in-v k-T">T</mi>`, vr = `<mi class="xl-in-v k-r">r</mi>`, vs = `<mi class="xl-in-v k-s">σ</mi>`;
+  // ================= 2) xl-input: step 1, the volatility =================
+  // the missing inputs and how we solved them (the group's list, 1 Nov 2026), on the left of both step-1 slides, in the
+  // order the two slides solve them. Values from sheet 2 (dividend yields F10:F12, r and UBS's CDS spread C18:C19: the
+  // bond part is discounted at r + CDS) and sheets 4 and 6. Each slide says per row [step its "how" shows, step it is
+  // solved, steps it is highlighted]
+  const vc = (k, x) => `<mrow class="xl-vc v-${k}">${x}</mrow>`;   // an input in its colour
+  const perStock = (a, f) => `<span class="xl-in-px">${a.map((v, j) => `<span><b style="color:var(${LIGHT[j]})">${TK[j]}</b>${f(v)}</span>`).join("")}</span>`;
+  const MI_ROWS = [
+    { k: "r", sym: "<mi>r</mi>", n: "Risk-free rate", h: "<b>Bloomberg lookup</b>: USD, 1 year", val: pct(XM.r, 2) },
+    { k: "sg", sym: "<mi>σ</mi>", n: "Implied volatility", h: `<b>${fmt(XL.quotes / 3, 0)} option prices</b> per stock (Bloomberg OMON): different strikes, expiry near ours`,
+      val: perStock(XM.sigma, v => pct(v, 0)) },
+    { k: "q", sym: "<mi>δ</mi>", n: "Dividend yields", h: "<b>Bloomberg lookup</b>", val: perStock(XM.q, v => pct(v, 2)) },
+    { k: "cds", sym: "<msub><mi>s</mi><mtext>UBS</mtext></msub>", n: "Issuer spread (UBS)", h: "<b>Bloomberg lookup</b>: UBS's CDS, for the bond part", val: pct(XM.cds, 2) },
+    { k: "rho", sym: "<mi>ρ</mi>", n: "Correlation matrix", h: "<b>2 years of daily prices</b> (Bloomberg HP)", val: "→" }
+  ];
+  const miList = () => `<div class="xl-mi"><p class="label">Missing inputs and how we solved them</p>
+    ${MI_ROWS.map(r => `<div class="xl-mi-row v-${r.k}" data-k="${r.k}">
+      <span class="xl-mi-sym"><math>${vc(r.k, r.sym)}</math></span>
+      <div><div class="xl-mi-n">${r.n}</div><div class="xl-mi-h">${r.h}</div></div>
+      <div class="xl-mi-val">${r.val}</div></div>`).join("")}</div>`;
+  const miStep = (body, plan, i) => body.querySelectorAll(".xl-mi-row").forEach(el => {
+    const [how, sv, hl] = plan[el.dataset.k] || [Infinity, Infinity, []];
+    el.classList.toggle("hw", i >= how); el.classList.toggle("sv", i >= sv); el.classList.toggle("hl", hl.includes(i));
+  });
+
+  // Black-Scholes as on Lecture 4, slide 7 (redrawn, the put only), each input in its colour
+  const vS = vc("S0", `<msub><mi>S</mi><mn>0</mn></msub>`), vK = vc("K", "<mi>K</mi>"), vT = vc("T", "<mi>T</mi>");
+  const vr = vc("r", "<mi>r</mi>"), vs = vc("sg", "<mi>σ</mi>");
   const N_ = d => `<mi>N</mi><mo stretchy="false">(</mo><msub><mi>d</mi><mn>${d}</mn></msub><mo stretchy="false">)</mo>`;
   const DISC = `${vK}<msup><mi>e</mi><mrow><mo>−</mo>${vr}${vT}</mrow></msup>`;
-  const BS_C = `<math display="block"><msub><mi>C</mi><mn>0</mn></msub><mo>=</mo>${vS}${N_(1)}<mo>−</mo>${DISC}${N_(2)}</math>`;
   const BS_P = `<math display="block"><msub><mi>P</mi><mn>0</mn></msub><mo>=</mo>${DISC}<mrow><mo>(</mo><mn>1</mn><mo>−</mo>${N_(2)}<mo>)</mo></mrow><mo>−</mo>${vS}<mrow><mo>(</mo><mn>1</mn><mo>−</mo>${N_(1)}<mo>)</mo></mrow></math>`;
   const BS_D1 = `<math display="block"><msub><mi>d</mi><mn>1</mn></msub><mo>=</mo><mfrac><mrow><mi>ln</mi><mrow><mo>(</mo><mfrac>${vS}${vK}</mfrac><mo>)</mo></mrow><mo>+</mo><mrow><mo>(</mo>${vr}<mo>+</mo><mfrac><msup>${vs}<mn>2</mn></msup><mn>2</mn></mfrac><mo>)</mo></mrow>${vT}</mrow><mrow>${vs}<msqrt>${vT}</msqrt></mrow></mfrac></math>`;
   const BS_D2 = `<math display="block"><msub><mi>d</mi><mn>2</mn></msub><mo>=</mo><msub><mi>d</mi><mn>1</mn></msub><mo>−</mo>${vs}<msqrt>${vT}</msqrt></math>`;
-  // not in XL: the options' time to expiry τ, sheet 5 C13 = (C11 − PricingDate)/365 = (17 Sep 2027 − 6 Oct 2026)/365
-  // = 0.9479 years (C11 = the listed expiry closest to the redemption date, 6 Oct 2027)
-  const TAU = 346 / 365;
-  const IN_ROWS = [
-    { k: "S", sym: `<msub><mi>S</mi><mn>0</mn></msub>`, lab: "stock price today, USD",
-      val: `<span class="xl-in-px">${XL.S0.map((v, j) => `<span style="color:var(${LIGHT[j]})"><b>${TK[j]}</b>${fmt(v, 2)}</span>`).join("")}</span>` },
-    // sheet 6 fits σ to the quoted options of sheet 5, each with its own strike and the same time to expiry τ
-    { k: "K", sym: "<mi>K</mi>", lab: "strike", val: `each quoted option's strike <small>(sheet 5)</small>` },
-    { k: "T", sym: "<mi>T</mi>", lab: "maturity", val: `≈ ${fmt(TAU, 2)} years: <small>the listed expiry closest to redemption (sheet 5)</small>` },
-    // the workbook's own source for r (sheet 2, B18 and D18)
-    { k: "r", sym: "<mi>r</mi>", lab: "risk-free rate", val: `${pct(XM.r, 2)} <small>· USD 1-year risk-free rate (${XL.data})</small>` },
-    { k: "s", sym: "<mi>σ</mi>", lab: "volatility", val: `? <small>from option prices (sheets 5 and 6)</small>`, miss: true }
-  ];
   const ARROW = '<svg class="xl-in-ar" viewBox="0 0 42 20" aria-hidden="true"><path d="M2 10h36M30 3l8 7-8 7"/></svg>';
+  // the implied volatility (sheet 6): for each stock, the σ whose Black-Scholes prices of its 50 quoted options have the
+  // lowest root mean squared error (RMSE) against the market prices
+  const IV_RMSE = `<math display="block"><mtext>RMSE</mtext><mo stretchy="false">(</mo>${vs}<mo stretchy="false">)</mo><mo>=</mo><msqrt><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mo>(</mo><msubsup><mi>V</mi><mi>i</mi><mtext>BS</mtext></msubsup><mo stretchy="false">(</mo>${vs}<mo stretchy="false">)</mo><mo>−</mo><msubsup><mi>V</mi><mi>i</mi><mtext>market</mtext></msubsup><mo>)</mo></mrow><mn>2</mn></msup></msqrt></math>`;
+  const IV_STEPS = [[`Trial <math>${vs}</math>`, "Black-Scholes prices"], ["RMSE", "vs. market prices"], ["Lowest RMSE", `= implied <math>${vs}</math>`]];
+  // top to bottom: r solved at click 1, σ at click 2
+  const MI_VOL = { r: [1, 1, [1]], sg: [2, 2, [2]] };
 
   Deck.addSlide({
-    id: "xl-input", section: "excel", steps: 2, secs: 13, liveSecs: 45,
+    id: "xl-input", section: "excel", steps: 2, secs: 44, liveSecs: 30,
     title: STEPS[0].t,
-    subtitle: "Black-Scholes needs five inputs, and we know four of them",
+    subtitle: "The volatility is the one input Black-Scholes is missing: we imply it from option prices",
     lecture: "Lecture 4, slide 7",
-    sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg",
-    // live Excel follows (sheets 5, 6 and 4): liveSecs = its narration (94 words) / 145 × 60 + 3 s per Excel screen (two)
-    notes: "Step one: volatility. Remember the Black-Scholes formula. "
-      + "[→] We know almost every input: the stock price, the strike, the maturity and the interest rate. "
-      + "[→] Only the volatility is missing. "
+    sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg (OMON, market data)",
+    // live Excel follows (sheets 5 and 6): liveSecs = its narration (65 words) / 145 × 60 + 3 s for the Excel screen
+    notes: "Step one: volatility. Remember the Black-Scholes formula for a put. We know the stock price, the strike and the maturity from our product, but two inputs are missing: the interest rate and the volatility. "
+      + "[→] The risk-free rate we looked up on Bloomberg: 4.43 percent. "
+      + "[→] The volatility we imply from option prices. We downloaded fifty put and call prices per stock with the Bloomberg function OMON, with different strikes and an expiry very close to our product's. We price the fifty options with Black-Scholes for a trial volatility, compare with the market prices, and keep the volatility with the lowest root mean squared error. "
       + "[Excel: sheet 5 (option quotes), then the result table of sheet 6 with the three implied volatilities highlighted] "
-      + "So we turn the formula around. The market tells us the option prices, and we look for the volatility that fits them best: the implied volatility. Sheet six does this with fifty options per stock. So Black-Scholes can't price our product, but it still finds a missing piece: 45 percent for Adobe, 28 for Apple and 32 for Microsoft. Adobe moves the most, by far. "
+      + "So we turn the formula around. The market tells us the option prices, and we look for the volatility that fits them best: the implied volatility. Sheet six does this with fifty options per stock. So Black-Scholes can't price our product, but it still finds a missing piece: 45 percent for Adobe, 28 for Apple and 32 for Microsoft. Adobe moves the most, by far.",
+    render(body) {
+      body.innerHTML = `
+        <div class="xl-in">
+          ${miList()}
+          <div class="xl-in-r">
+            <p class="label">What we need to find out</p>
+            <div class="fbox orange"><span class="chip orange">PUT</span>${BS_P}</div>
+            <div class="xl-in-d"><div class="fbox gray">${BS_D1}</div><div class="fbox gray">${BS_D2}</div></div>
+            <p class="label" data-step="2">What we get</p>
+            <div class="xl-in-card out" data-step="2" style="--d:1"><h4><math>${vs}</math>Implied volatility</h4>
+              <ol class="xl-iv-steps">${IV_STEPS.map(([b, s], i) => `<li><span class="n">${i + 1}</span><b>${b}</b><span>${s}</span></li>`).join("")}</ol>
+              <div class="xl-iv-f">${IV_RMSE}</div>
+              <div class="xl-iv-res">${XM.sigma.map((s, k) => `<span style="color:var(${LIGHT[k]})">${TK[k]}<b>${pct(s, 0)}</b></span>`).join("")}</div></div>
+          </div>
+        </div>`;
+      return {
+        step(i) { miStep(body, MI_VOL, i); },
+        resize() { U.tightenRoots(body); }
+      };
+    }
+  });
+
+  // ================= 2b) xl-rho: step 1, the correlation and the other missing inputs =================
+  // r and σ come solved from xl-input; top to bottom: click 1 the two other lookups (δ and UBS's spread), clicks 2-3 the
+  // correlation
+  const MI_RHO = { r: [0, 0, []], sg: [0, 0, []], q: [1, 1, [1]], cds: [1, 1, [1]], rho: [2, 3, [2, 3]] };
+  // the HP card: the two years of daily closes (sheet 3), each stock from 100%; shaded, the last year, whose 252 daily
+  // returns give the correlation (sheet 4)
+  const H2 = XL.hist2, H2_N = H2.dates.length, H2_WIN = H2.dates.indexOf(XL.hist.dates[0]);
+  const H2_L = H2.px.map(p => p.map(v => v / p[0])), H2_LO = Math.min(...H2_L.flat()), H2_HI = Math.max(...H2_L.flat());
+  function hpChart(cv) {
+    const c = cv && U.canvas(cv); if (!c) return;
+    const { ctx, w, h } = c, X = i => i / (H2_N - 1) * w, Y = v => 4 + (h - 8) * (1 - (v - H2_LO) / (H2_HI - H2_LO));
+    ctx.fillStyle = U.css("--green-light"); ctx.fillRect(X(H2_WIN), 0, w - X(H2_WIN), h);
+    ctx.lineJoin = "round"; ctx.lineWidth = 2;
+    [1, 0, 2].forEach(k => {
+      ctx.strokeStyle = U.css(DARK[k]); ctx.beginPath();
+      H2_L[k].forEach((v, i) => i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)));
+      ctx.stroke();
+    });
+  }
+  const dmy = s => new Date(s + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  // the matrix in ρ's colour, darker = more correlated
+  const RHO_T = `<table class="xl-rh-rho"><tr><th></th>${TK.map((t, j) => `<th style="color:var(${LIGHT[j]})">${t}</th>`).join("")}</tr>
+    ${TK.map((t, i) => `<tr><th style="color:var(${LIGHT[i]})">${t}</th>${XM.rho[i].map((x, j) => i === j ? `<td class="one">${f2(x)}</td>` : `<td style="background:color-mix(in srgb,${IC.rho} ${Math.round(x * 70)}%,#fff)">${f2(x)}</td>`).join("")}</tr>`).join("")}</table>`;
+
+  Deck.addSlide({
+    id: "xl-rho", section: "excel", after: "xl-input", steps: 3, secs: 22, liveSecs: 15,
+    title: STEPS[0].t,
+    subtitle: "The correlation and the other missing inputs, and how we found each one",
+    sources: "Bloomberg (HP, market data)",
+    // live Excel follows (sheet 4): liveSecs = its narration (29 words) / 145 × 60 + 3 s for the Excel screen
+    notes: "To simulate our product we need a few more inputs than Black-Scholes. "
+      + "[→] The dividends and UBS's issuer spread we looked up on Bloomberg. "
+      + "[→] For the correlation, we downloaded two years of daily prices with the Bloomberg function HP. "
+      + "[→] From the last year of daily returns we build the correlation matrix. "
       + "[Excel: sheet 4, correlation matrix] "
       + "For the correlation of our three stocks, there's no market price, so sheet four measures it from one year of daily returns. Adobe and Microsoft move together the most.",
     render(body) {
       body.innerHTML = `
-        <div class="xl-in">
-          <div class="xl-in-l">
-            <p class="label">Black-Scholes(-Merton) formula for European options</p>
-            <div class="fbox"><span class="chip">CALL</span>${BS_C}</div>
-            <div class="fbox orange"><span class="chip orange">PUT</span>${BS_P}</div>
-            <div class="xl-in-d"><div class="fbox gray">${BS_D1}</div><div class="fbox gray">${BS_D2}</div></div>
-            <div class="xl-in-new">
-              <div class="xl-in-iv" data-step="2"><div class="xl-in-flow"><span class="xl-in-nd">option price</span>${ARROW}<span class="xl-in-nd bs">Black-Scholes backwards</span>${ARROW}<span class="xl-in-nd sg"><math><mi>σ</mi></math></span></div>
-                <p class="xl-in-cap">implied volatility · ${fmt(XL.quotes / 3, 0)} options per stock (sheet 6)</p></div>
-              <p class="xl-in-key" data-step="2" style="--d:3">Black-Scholes can’t price our product, but it finds the missing piece.</p>
-            </div>
+        <div class="xl-rh">
+          ${miList()}
+          <div class="xl-rh-r">
+            <p class="label" data-step="2">The correlation</p>
+            <div class="xl-in-card" data-step="2" style="--d:1"><span class="xl-in-bb">BLOOMBERG HP</span>
+              <h4>Two years of daily prices</h4><p>${dmy(H2.dates[0])} – ${dmy(H2.dates[H2_N - 1])}</p>
+              <div class="xl-rh-cv"><canvas></canvas></div>
+              <p>shaded: the last ${fmt(XL.steps, 0)} daily returns, used for <math>${vc("rho", "<mi>ρ</mi>")}</math> (sheet 4)</p></div>
+            <span class="xl-in-arw" data-step="3">${ARROW}</span>
+            <div class="xl-in-card out" data-step="3" style="--d:1"><h4><math>${vc("rho", "<mi>ρ</mi>")}</math>Correlation matrix</h4>
+              ${RHO_T}<p>Adobe and Microsoft move together the most</p></div>
           </div>
-          <section class="panel xl-in-p">
-            <h3 class="panel-title">The five inputs</h3>
-            ${IN_ROWS.map(r => `<div class="xl-in-row k-${r.k}">
-              <span class="xl-in-sym"><math>${r.sym}</math></span>
-              <div><div class="xl-in-lab">${r.lab}</div><div class="xl-in-val">${r.val}</div></div>
-              <span class="xl-tag${r.miss ? " mis" : ""}">${r.miss ? "missing" : "known"}</span></div>`).join("")}
-          </section>
         </div>`;
-      const root = body.querySelector(".xl-in");
+      const cv = body.querySelector("canvas");
       return {
-        step(i) { root.classList.toggle("s1", i >= 1); root.classList.toggle("s2", i >= 2); },
-        resize() { U.tightenRoots(body); }
+        step(i) { miStep(body, MI_RHO, i); },
+        resize() { hpChart(cv); }
       };
     }
   });
