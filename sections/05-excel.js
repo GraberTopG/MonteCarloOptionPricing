@@ -43,7 +43,7 @@
   const BASE = XL.sens[0][1];
   const SENS = XL.sens.slice(1, 9).map(([lab, fv]) => ({ lab, fv, d: BASE - fv }));
   const bySize = (p, q) => Math.abs(q.d) - Math.abs(p.d);
-  // the Cholesky clouds (xl-corr, and one of them on brc-steps): our Excel's path 1, its 252 days. The engine (sheet 8,
+  // the Cholesky cloud of the plan slide (brc-steps, step 2b): our Excel's path 1, its 252 days. The engine (sheet 8,
   // K49) is S(t) = S(t−1)·exp(drift + σ√Δt·Z), so each day's Z comes back exactly from the prices of XL.path1.daily
   // (day 1: 0.3047 · 1.7533 · −2.4920, as in the Excel), and the independent ε of sheet 7 from Z with the weights of
   // sheet 4, step D (XL.mix): ε1 = Z_ADBE, ε2 = (Z_AAPL − r12·ε1)/s12, ε3 = (Z_MSFT − r13·ε1 − r23s·ε2)/r33s
@@ -56,7 +56,6 @@
   const CE = [Z1[0], Z1[1].map((z, i) => (z - M.r12 * Z1[0][i]) / M.s12), null];
   CE[2] = Z1[2].map((z, i) => (z - M.r13 * CE[0][i] - M.r23s * CE[1][i]) / M.r33s);
   if (Math.abs(Z1[0][0] - P1.rows[0].z[0]) > 0.005 || Math.abs(Z1[2][0] - P1.rows[0].z[2]) > 0.005) console.error("xl-corr: path 1's Z do not match sheet 8");
-  const corr = (x, y) => { let mx = 0, my = 0; for (let i = 0; i < NC; i++) { mx += x[i]; my += y[i]; } mx /= NC; my /= NC; let a = 0, b = 0, c = 0; for (let i = 0; i < NC; i++) { const p = x[i] - mx, q = y[i] - my; a += p * q; b += p * p; c += q * q; } return a / Math.sqrt(b * c); };
   // y of the cloud for mixing share m (0 = independent, 1 = our weights)
   const mixY = (k, m) => {
     const w = k === 1 ? [M.r12, M.s12, 0] : [M.r13, M.r23s, M.r33s], own = k === 1 ? 1 : 2;
@@ -64,9 +63,6 @@
     const y = new Float64Array(NC); for (let i = 0; i < NC; i++) y[i] = c[0] * CE[0][i] + c[1] * CE[1][i] + c[2] * CE[2][i];
     return y;
   };
-  const RHO_MEAS = [1, 2].map(k => corr(CE[0], mixY(k, 1)));
-  const RHO_AM = corr(mixY(1, 1), mixY(2, 1));                // Apple vs Microsoft on the same days of path 1
-  const rhoTxt = r => Math.abs(r) < 0.005 ? "0.00" : f2(r).replace("-", "−");
 
   Deck.addStyle(`
     /* sheet tabs in the workbook's own colours */
@@ -230,13 +226,13 @@
     .xl-gb-strip code{font:500 20px var(--f-mono);color:var(--green-ink);font-variant-ligatures:none}
 
     /* ---------- xl-corr ---------- */
-    .xl-co{display:grid;grid-template-columns:1fr 600px;gap:40px;height:100%}
+    .xl-co{display:grid;grid-template-columns:minmax(0,1fr);height:100%}
     .xl-co-l{display:flex;flex-direction:column;gap:22px;min-width:0}
     .xl-co-intro{font-size:26px;line-height:1.35;padding:16px 24px}
     .xl-co-intro math{font-size:29px}
     .xl-co-box{flex:1;padding:40px 26px 72px;display:flex;flex-direction:column;justify-content:space-around;gap:12px}
     .xl-co-box .chip{white-space:nowrap}
-    .xl-co-row{text-align:left;border-radius:10px;padding:12px 20px 12px 14px;border-left:8px solid transparent;transition:opacity .45s ease,background-color .35s,border-color .35s}
+    .xl-co-row{width:100%;max-width:1180px;margin:0 auto;text-align:left;border-radius:10px;padding:12px 20px 12px 14px;border-left:8px solid transparent;transition:opacity .45s ease,background-color .35s,border-color .35s}
     .xl-co-row.ghost{opacity:.35}
     .xl-co-row.cur{background:#fff}
     .xl-co-eq{display:grid;grid-template-columns:196px 58px 1fr;align-items:baseline;font-family:var(--f-math)}
@@ -264,15 +260,6 @@
     .xl-co .xlref,.xl-yr .xlref{font-size:18px;padding:6px 10px}
     .xl-co .xlref{bottom:14px;right:16px}
     .xl-yr .xlref{bottom:12px;right:14px}
-    .xl-co .term{height:100%;min-width:0}
-    .xl-co .term-body{display:grid;grid-template-rows:1fr 1fr}
-    .xl-co .term-body>div{position:relative;min-height:0}
-    .xl-co .term-body>div+div{border-top:1px solid var(--term-line)}
-    /* Apple vs Microsoft, the pair without a cloud: one line under the two */
-    .xl-co .term-stats{padding:11px 18px}
-    .xl-co-am{font:500 18px/1.2 var(--f-mono);color:var(--term-muted);letter-spacing:.02em;white-space:nowrap}
-    .xl-co-am .pr{color:var(--term-text)}
-    .xl-co-am .rv{font-size:22px;color:var(--amber)}
 
     /* ---------- xl-year ---------- */
     .xl-yr{display:grid;grid-template-rows:212px 1fr;gap:24px;height:100%}
@@ -761,7 +748,7 @@
     id: "xl-corr", section: "excel", steps: 2, secs: 27, liveSecs: 8,
     title: STEPS[2].t,
     subtitle: "The Z of the shock, one per stock: we mix them so our stocks move together",
-    sources: "own Excel model, sheets 4, 7 and 8 (path 1)",
+    sources: "own Excel model, sheet 4",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
     notes: "Remember the Z in the shock: each stock needs its own. But our random numbers are independent, and our stocks are not. So we mix them, with the Cholesky method. Adobe keeps its own random number. "
       + "[→] Apple takes 0.22 of Adobe's, exactly their correlation, plus 0.98 of its own. "
@@ -782,48 +769,8 @@
               <span class="xlref">Excel · sheet 4, step D · sheet 8, H49</span>
             </div>
           </div>
-          ${U.term({ fn: "CORR", title: `OUR PATH 1 · ${NC} DAYS`, meta: "EXCEL · SHEET 8", body: "<div><canvas></canvas></div><div><canvas></canvas></div>",
-            stats: `<div class="xl-co-am" data-step="2"><b class="pr">${TK[1]} vs ${TK[2]}</b> · CORRELATION <b class="rv" data-am>${rhoTxt(RHO_AM)}</b> · TARGET ${f2(XM.rho[1][2])}</div>` })}
         </div>`;
-      const rows = [...body.querySelectorAll(".xl-co-row")], cvs = [...body.querySelectorAll("canvas")], am = body.querySelector("[data-am]");
-      const st = [0, 0];                                       // mixing share of the Apple and the Microsoft cloud
-      let a = null, target = [0, 0];
-      function plot(j) {
-        const c = U.canvas(cvs[j]); if (!c) return;
-        const { ctx, w, h } = c, k = j + 1, m = st[j], y = mixY(k, m), LIM = 3.6;
-        const size = Math.min(h - 84, w - 250), f = { x: 96, y: 22, w: size, h: size };
-        const ax = U.axes(ctx, f, { xMin: -LIM, xMax: LIM, yMin: -LIM, yMax: LIM, yTicks: [-3, 0, 3], xTicks: [-3, 0, 3], yFmt: v => v < 0 ? "−" + -v : String(v), xFmt: v => v < 0 ? "−" + -v : String(v) });
-        ctx.save();
-        ctx.strokeStyle = U.css("--term-line"); ctx.lineWidth = 1;
-        [-3, 0, 3].forEach(v => { const x = Math.round(ax.X(v)) + .5; ctx.beginPath(); ctx.moveTo(x, f.y); ctx.lineTo(x, f.y + f.h); ctx.stroke(); });
-        ctx.beginPath(); ctx.rect(f.x, f.y, f.w, f.h); ctx.clip();
-        ctx.fillStyle = U.css("--term-text"); ctx.globalAlpha = .55;
-        for (let i = 0; i < NC; i++) ctx.fillRect(ax.X(CE[0][i]) - 2.4, ax.Y(y[i]) - 2.4, 4.8, 4.8);   // 252 days: larger dots
-        ctx.globalAlpha = 1;
-        const rho = m * (k === 1 ? M.r12 : M.r13);             // the slope of y on ε1 = its correlation with Adobe
-        ctx.setLineDash([10, 8]); ctx.strokeStyle = U.css("--amber"); ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(ax.X(-LIM), ax.Y(-LIM * rho)); ctx.lineTo(ax.X(LIM), ax.Y(LIM * rho)); ctx.stroke();
-        ctx.restore();
-        // axis titles in the stock colours
-        ctx.font = "700 17px " + U.F.mono; ctx.textAlign = "center"; ctx.textBaseline = "top";
-        ctx.fillStyle = U.css(LIGHT[0]); ctx.fillText("Z ADBE", f.x + f.w / 2, f.y + f.h + 34);
-        ctx.save(); ctx.translate(f.x - 62, f.y + f.h / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "middle";
-        ctx.fillStyle = U.css(LIGHT[k]); ctx.fillText((m > 0 ? "Z " : "ε ") + TK[k], 0, 0); ctx.restore();
-        // the read-out on the right (the pair, its correlation and the target)
-        const rx = f.x + f.w + 34;
-        ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
-        ctx.font = "700 20px " + U.F.mono; ctx.fillStyle = U.css(LIGHT[k]); ctx.fillText(`ADBE vs ${TK[k]}`, rx, f.y + 30);
-        // the state under the pair label before and during the mix; no "MIXED" label after it (the group's feedback, 27 Oct 2026)
-        ctx.font = "500 17px " + U.F.mono; ctx.fillStyle = U.css("--term-muted");
-        if (m < 1) ctx.fillText(m > 0 ? "MIXING…" : "INDEPENDENT", rx, f.y + 58);
-        ctx.fillText("CORRELATION", rx, f.y + 118);
-        const r = m >= 1 ? RHO_MEAS[j] : corr(CE[0], y);
-        ctx.font = "700 44px " + U.F.mono; ctx.fillStyle = U.css("--amber"); ctx.fillText(rhoTxt(r), rx, f.y + 166);
-        ctx.font = "500 17px " + U.F.mono; ctx.fillStyle = U.css("--term-muted"); ctx.fillText(`TARGET ${f2(m > 0 ? XM.rho[0][k] : 0)}`, rx, f.y + 196);
-      }
-      // Apple vs Microsoft from the same draws (shown from step 2, when Microsoft is mixed)
-      const pair = () => { am.textContent = rhoTxt(st[0] >= 1 && st[1] >= 1 ? RHO_AM : corr(mixY(1, st[0]), mixY(2, st[1]))); };
-      const draw = () => { plot(0); plot(1); pair(); };
+      const rows = [...body.querySelectorAll(".xl-co-row")];
       // coming forward from xl-gbm: its Z flies up into the shock on top, then splits into the three Z of the rows
       const stage = document.getElementById("stage"), zDst = [...body.querySelectorAll(".xl-co-z")];
       let flying = [], wait = 0;
@@ -843,7 +790,6 @@
       }
       return {
         step(i, o) {
-          if (a) { a.cancel(); a = null; }
           land();
           const prev = body.closest(".slide").previousElementSibling, src = prev && prev.dataset.id === "xl-gbm" && prev.querySelector(".xl-gb-z");
           if (i === 0 && o.dir === 1 && !o.instant && src && !document.body.classList.contains("scroll-mode")) {
@@ -852,17 +798,9 @@
             wait = setTimeout(() => zDst.slice(1).forEach((z, k) => fly(zDst[0], z, k * 160)), 760);   // once the first Z has landed
           }
           rows.forEach((r, k) => { r.classList.toggle("ghost", k > i); r.classList.toggle("cur", k === i); r.classList.toggle("done", k < i); });
-          target = [i >= 1 ? 1 : 0, i >= 2 ? 1 : 0];
-          const j = i - 1;
-          if (!o.instant && j >= 0 && st[j] < 1 && target[j] === 1) {
-            a = U.anim(1600, e => { st[0] = j === 0 ? e : target[0]; st[1] = j === 1 ? e : target[1]; draw(); }, { ease: U.ease.inOut });
-            return;
-          }
-          st[0] = target[0]; st[1] = target[1]; draw();
         },
-        resize() { U.tightenRoots(body); draw(); },
-        // leaving in the middle of a mix (scroll mode, fast clicking) ends it, so a return shows the step's end state
-        leave() { land(); if (a) { a.cancel(); a = null; st[0] = target[0]; st[1] = target[1]; draw(); } }
+        resize() { U.tightenRoots(body); },
+        leave() { land(); }
       };
     }
   });
