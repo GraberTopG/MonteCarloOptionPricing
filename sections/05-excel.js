@@ -268,11 +268,17 @@
     .xl-co .term-body{display:grid;grid-template-rows:1fr 1fr}
     .xl-co .term-body>div{position:relative;min-height:0}
     .xl-co .term-body>div+div{border-top:1px solid var(--term-line)}
-    /* Apple vs Microsoft, the pair without a cloud: one line under the two */
-    .xl-co .term-stats{padding:11px 18px}
-    .xl-co-am{font:500 16px/1.2 var(--f-mono);color:var(--term-muted);letter-spacing:0;white-space:nowrap}
-    .xl-co-am .pr{color:var(--term-text)}
-    .xl-co-am .rv{font-size:22px;color:var(--amber)}
+    /* under the two clouds: the three pairs' correlations, a check and not an input: the target (sheet 4), this path
+       (252 draws) and all 2,000 paths (504,000), the last one emphasised (the group, 2 Nov 2026) */
+    .xl-co .term-stats{display:block;padding:10px 16px 12px}
+    .xl-co-tab{width:100%;border-collapse:collapse;font:500 16px/1.2 var(--f-mono);color:var(--term-text);font-variant-numeric:tabular-nums}
+    .xl-co-tab th{font:700 13px/1.2 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--term-muted);text-align:right;padding:2px 8px 6px;border-bottom:1px solid var(--term-line);vertical-align:bottom}
+    .xl-co-tab th small{display:block;font-weight:500}
+    .xl-co-tab th:first-child,.xl-co-tab td:first-child{text-align:left}
+    .xl-co-tab td{text-align:right;padding:5px 8px}
+    .xl-co-tab .all{background:var(--green-light);color:var(--green-ink);font-weight:700}
+    .xl-co-tab td.all{font-size:18px}
+    .xl-co-cap{margin:8px 0 0;font:15px/1.35 var(--f-body);color:var(--term-muted)}
 
     /* ---------- xl-year ---------- */
     .xl-yr{display:grid;grid-template-rows:212px 1fr;gap:24px;height:100%}
@@ -465,8 +471,8 @@
     ctx.strokeRect(f.x + .5, f.y + .5, f.w - 1, f.h - 1);
     ctx.beginPath(); ctx.moveTo(X(0), f.y); ctx.lineTo(X(0), f.y + f.h); ctx.moveTo(f.x, Y(0)); ctx.lineTo(f.x + f.w, Y(0)); ctx.stroke();
     ctx.save(); ctx.beginPath(); ctx.rect(f.x, f.y, f.w, f.h); ctx.clip();
-    ctx.fillStyle = U.css("--term-text"); ctx.globalAlpha = .45;
-    for (let i = 0; i < NC; i++) ctx.fillRect(X(CE[0][i]) - 1.1, Y(Z_MSFT[i]) - 1.1, 2.2, 2.2);
+    ctx.fillStyle = U.css("--term-text"); ctx.globalAlpha = .6;
+    for (let i = 0; i < NC; i++) ctx.fillRect(X(CE[0][i]) - 1.8, Y(Z_MSFT[i]) - 1.8, 3.6, 3.6);   // 252 days of path 1: larger dots
     ctx.globalAlpha = 1; ctx.setLineDash([6, 4]); ctx.strokeStyle = U.css("--green"); ctx.lineWidth = 2.2;
     ctx.beginPath(); ctx.moveTo(X(-LIM), Y(-LIM * M.r13)); ctx.lineTo(X(LIM), Y(LIM * M.r13)); ctx.stroke();
     ctx.restore();
@@ -757,6 +763,14 @@
       note: `mixes all three: correlation <b>${f2(XM.rho[0][2])}</b> with Adobe, <b>${f2(XM.rho[1][2])}</b> with Apple` }
   ];
 
+  // the check under the clouds: per pair the target (sheet 4), this path (path 1, 252 draws) and all 2,000 paths (504,000
+  // draws, XL.rhoAll); one path scatters around the target, all paths land on it (1/√n, as the darts on mc-pi)
+  const CO_PAIRS = [[`${TK[0]} vs ${TK[1]}`, XM.rho[0][1], RHO_MEAS[0], XL.rhoAll[0]], [`${TK[0]} vs ${TK[2]}`, XM.rho[0][2], RHO_MEAS[1], XL.rhoAll[1]],
+    [`${TK[1]} vs ${TK[2]}`, XM.rho[1][2], RHO_AM, XL.rhoAll[2]]];
+  const CO_TAB = `<table class="xl-co-tab" data-step="2"><thead><tr><th>Pair</th><th>Target</th><th>This path<small>${fmt(NC, 0)}</small></th><th class="all">All ${fmt(XL.paths, 0)} paths<small>${fmt(XL.paths * NC, 0)}</small></th></tr></thead>
+    <tbody>${CO_PAIRS.map(([p, t, one, all]) => `<tr><td>${p}</td><td>${fmt(t, 4)}</td><td>${rhoTxt(one)}</td><td class="all">${fmt(all, 4)}</td></tr>`).join("")}</tbody></table>
+    <p class="xl-co-cap" data-step="2">One path is only ${fmt(NC, 0)} draws, so it scatters around the target. Across all ${fmt(XL.paths, 0)} paths the mixing lands on it, the same 1/√n law as the darts on the π slide.</p>`;
+
   Deck.addSlide({
     id: "xl-corr", section: "excel", steps: 2, secs: 27, liveSecs: 8,
     title: STEPS[2].t,
@@ -783,9 +797,9 @@
             </div>
           </div>
           ${U.term({ fn: "CORR", title: `OUR PATH 1 · ${NC} DAYS`, meta: "EXCEL · SHEET 8", body: "<div><canvas></canvas></div><div><canvas></canvas></div>",
-            stats: `<div class="xl-co-am" data-step="2"><b class="pr">${TK[1]} vs ${TK[2]}</b> · CALCULATED CORRELATION <b class="rv" data-am>${rhoTxt(RHO_AM)}</b> · TARGET ${f2(XM.rho[1][2])}</div>` })}
+            stats: CO_TAB })}
         </div>`;
-      const rows = [...body.querySelectorAll(".xl-co-row")], cvs = [...body.querySelectorAll("canvas")], am = body.querySelector("[data-am]");
+      const rows = [...body.querySelectorAll(".xl-co-row")], cvs = [...body.querySelectorAll("canvas")];
       const st = [0, 0];                                       // mixing share of the Apple and the Microsoft cloud
       let a = null, target = [0, 0];
       function plot(j) {
@@ -816,14 +830,12 @@
         // the state under the pair label before and during the mix; no "MIXED" label after it (the group's feedback, 27 Oct 2026)
         ctx.font = "500 17px " + U.F.mono; ctx.fillStyle = U.css("--term-muted");
         if (m < 1) ctx.fillText(m > 0 ? "MIXING…" : "INDEPENDENT", rx, f.y + 58);
-        ctx.fillText("CALCULATED", rx, f.y + 96); ctx.fillText("CORRELATION", rx, f.y + 118);
+        ctx.fillText("MEASURED IN", rx, f.y + 96); ctx.fillText("THE SAMPLE", rx, f.y + 118);   // a check, not an input
         const r = m >= 1 ? RHO_MEAS[j] : corr(CE[0], y);
         ctx.font = "700 44px " + U.F.mono; ctx.fillStyle = U.css("--amber"); ctx.fillText(rhoTxt(r), rx, f.y + 166);
         ctx.font = "500 17px " + U.F.mono; ctx.fillStyle = U.css("--term-muted"); ctx.fillText(`TARGET ${f2(m > 0 ? XM.rho[0][k] : 0)}`, rx, f.y + 196);
       }
-      // Apple vs Microsoft from the same draws (shown from step 2, when Microsoft is mixed)
-      const pair = () => { am.textContent = rhoTxt(st[0] >= 1 && st[1] >= 1 ? RHO_AM : corr(mixY(1, st[0]), mixY(2, st[1]))); };
-      const draw = () => { plot(0); plot(1); pair(); };
+      const draw = () => { plot(0); plot(1); };
       // coming forward from xl-gbm: its Z flies up into the shock on top, then splits into the three Z of the rows
       const stage = document.getElementById("stage"), zDst = [...body.querySelectorAll(".xl-co-z")];
       let flying = [], wait = 0;

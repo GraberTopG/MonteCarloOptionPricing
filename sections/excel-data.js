@@ -24,6 +24,9 @@
     histVol: [0.4084, 0.2473, 0.3243],
     // epsilon-mixing (= Cholesky) coefficients, sheet 4 Step D (C37:C42), used on sheet 8 C35:C42
     mix: { r12: 0.2210, r13: 0.4116, r23: 0.1365, s12: 0.9753, r23s: 0.0467, r33s: 0.9102 },
+    // check of the mixing: the sample correlations of the correlated shocks Z over all 2,000 paths × 252 days (504,000
+    // per stock), ADBE–AAPL, ADBE–MSFT, AAPL–MSFT (the group's figures from the workbook, 2 Nov 2026)
+    rhoAll: [0.2203, 0.4096, 0.1359],
     // results per note of 1,000 USD (sheet 10) and in % of nominal
     res: {
       put: 172.59, putSE: 4.58, bond: 1097.13, fv: 924.54, fvPct: 92.45, ciPct: 0.90,
