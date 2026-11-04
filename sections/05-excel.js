@@ -238,6 +238,9 @@
     .xl-co-intro math{font-size:29px}
     .xl-co-box{flex:1;padding:40px 26px 72px;display:flex;flex-direction:column;justify-content:space-around;gap:12px}
     .xl-co-box .chip{white-space:nowrap}
+    .xl-co-p2{opacity:0;transition:opacity .5s ease}
+    .xl-co-p2.on{opacity:1}
+    .slide.instant .xl-co-p2{transition:none}
     .xl-co-row{text-align:left;border-radius:10px;padding:12px 20px 12px 14px;border-left:8px solid transparent;transition:opacity .45s ease,background-color .35s,border-color .35s}
     .xl-co-row.ghost{opacity:.35}
     .xl-co-row.cur{background:#fff}
@@ -799,10 +802,10 @@
               <span class="xlref">Excel · sheet 4, step D · sheet 8, H49</span>
             </div>
           </div>
-          ${U.term({ fn: "CORR", title: `OUR PATH 1 · ${NC} DAYS`, meta: "EXCEL · SHEET 8", body: "<div><canvas></canvas></div><div><canvas></canvas></div>",
+          ${U.term({ fn: "CORR", title: `OUR PATH 1 · ${NC} DAYS`, meta: "EXCEL · SHEET 8", body: "<div><canvas></canvas></div><div class=\"xl-co-p2\"><canvas></canvas></div>",
             stats: CO_TAB })}
         </div>`;
-      const rows = [...body.querySelectorAll(".xl-co-row")], cvs = [...body.querySelectorAll("canvas")];
+      const rows = [...body.querySelectorAll(".xl-co-row")], cvs = [...body.querySelectorAll("canvas")], P2 = body.querySelector(".xl-co-p2");
       const st = [0, 0];                                       // mixing share of the Apple and the Microsoft cloud
       let a = null, target = [0, 0];
       function plot(j) {
@@ -868,6 +871,9 @@
           }
           rows.forEach((r, k) => { r.classList.toggle("ghost", k > i); r.classList.toggle("cur", k === i); r.classList.toggle("done", k < i); });
           target = [i >= 1 ? 1 : 0, i >= 2 ? 1 : 0];
+          // Microsoft's panel only once its Z is mixed: it appears with its correlation, no "independent" stage before
+          P2.classList.toggle("on", i >= 2);
+          if (i >= 2) st[1] = 1;
           const j = i - 1;
           if (!o.instant && j >= 0 && st[j] < 1 && target[j] === 1) {
             a = U.anim(1600, e => { st[0] = j === 0 ? e : target[0]; st[1] = j === 1 ? e : target[1]; draw(); }, { ease: U.ease.inOut });
