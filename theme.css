@@ -124,10 +124,7 @@ math{font-family:var(--f-math)}
 
 /* ---------- presenter HUD (hidden in record mode) ---------- */
 #hud{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#e8ece9;font:13px/1.4 var(--f-mono);padding:6px 14px;border-radius:20px;z-index:10;user-select:none;white-space:nowrap}
-#notes{position:fixed;left:0;right:0;bottom:0;max-height:36vh;overflow:auto;background:#0f1312;color:#e6ebe8;font:18px/1.55 var(--f-body);padding:14px 24px 46px;z-index:9;border-top:3px solid var(--green)}
-#notes .meta{font:12px var(--f-mono);color:#9fb0a8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
-body.rec #hud,body.rec #notes{display:none!important}
-#hud{transition:opacity .4s}
+body.rec #hud,body.rec #hud{transition:opacity .4s}
 body.idle #hud{opacity:0}
 body.static .slide,body.static .slide *{transition:none!important;animation:none!important}
 body.rec{cursor:none}

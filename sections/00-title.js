@@ -366,7 +366,7 @@
   // ================= title =================
   Deck.addSlide({
     id: "title", layout: "title", section: "", steps: 0, secs: 7,
-    notes: "(No narration: let the paths draw, about six seconds, then click.)",
+    notes: "",
     render(root) {
       root.innerHTML = `
         <div class="tt-top">
@@ -407,12 +407,12 @@
     }
   });
   const consPath = (s, j) => CPATH[s][j];
-  const NOTES_PX = "Hi everyone. It's October 2026, and you have a thousand dollars to invest for one year. Here are the last two years: Adobe now trades at 238 dollars, Apple at 333 and Microsoft at 534. You expect a quiet year: 86 percent of analysts rate our three stocks HOLD. So what happens next? [→] Looking ahead to October 2027, the consensus sees them moving sideways or slightly down.";
+  const NOTES_PX = "";
   Deck.addSlide({
     id: "hook-prices", section: "hook", steps: 1, secs: secsFor(NOTES_PX, 1),
     title: "Assumption: USD 1,000 to invest and sideways to slightly down year expected",
     sources: "Bloomberg (price history); analyst rating and 12M target prices: own illustration, for illustrative purposes only",
-    notes: NOTES_PX,
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="hk-px">
@@ -559,13 +559,13 @@
     { art: ART.bond, cap: "Value of USD 1,000 over one year", t: "Government bond?", why: `Safe, but only ≈ ${R_YEAR}% a year` },
     { art: ART.call, cap: "Payoff at expiry", t: "Call option?", why: "You are not expecting an increase in the share price" }
   ];
-  const NOTES_CH = "So how would you invest? [→] Shares? You take the full downside. [→] [→] A government bond? Safe, but only about four and a half percent. [→] [→] A call option? You pay for a big jump you don't expect. [→] [→] So is there a better product for a sideways to slightly down market?";
+  const NOTES_CH = "";
   Deck.addSlide({
     id: "hook-choices", section: "hook", steps: 7, secs: secsFor(NOTES_CH, 7),
     title: "Which financial instrument lets us express the market view best?",
     subtitle: `Three ways to invest USD ${NOM} for a sideways to slightly down year`,
     sources: "Bloomberg",
-    notes: NOTES_CH,
+    notes: "",
     render(body) {
       // the X ends above the bottom label band of the drawings (y 196 of 240)
       // when each card is crossed out (s after its click), at 145 words a minute: after "…the full downside" (2.5 s),
@@ -591,14 +591,14 @@
   });
 
   // ================= hook 3: the product =================
-  const NOTES_PR = "But banks sell a product for exactly this view: a worst-of multi barrier reverse convertible, or Multi-BRC. It belongs to the yield-enhancement family: you give up upside for a high, fixed coupon. In Swiss terms, it's category 1230, a barrier reverse convertible, and one of the bestsellers in Switzerland. [→] Here are its features. You get a fifteen percent coupon whatever happens, but never more. As long as no stock touches 65 percent of its starting price, you get your thousand back. If one does, you may get shares instead. [→] Fifteen percent: more than three times the risk-free rate. [→] But is it enough for the risk you take? Let's take a closer look at the product.";
+  const NOTES_PR = "";
   const QUESTION = "But is it fair for the risk you take on?";
   Deck.addSlide({
     id: "hook-product", section: "product", steps: 3, secs: secsFor(NOTES_PR, 3),
     title: "Banks' solution: A Multi‑BRC on $ADBE, $AAPL, $MSFT",   // non-breaking hyphen: "Multi-BRC" stays on one line
     subtitle: "A bestseller among Swiss structured products: extra yield in sideways to slightly down markets",
     sources: "Bloomberg; Swiss Structured Products Association (2026); Allet (2025)",
-    notes: NOTES_PR,
+    notes: "",
     render(body) {
       // click 1: the 15% grows and holds for about a second, then the risk-free rate (after 0.99 s) and "> 3×" (1.26 s) fade in
       const tile = (k, v, s, ring) => `<div class="card hk-t"><span class="k">${k}</span><span class="v">${v}</span><span class="s">${s}</span>${ring ? `<span class="hk-ring" data-step="3" style="--d:${ring}"></span>` : ""}</div>`;
@@ -698,7 +698,7 @@
   `);
   Deck.addSlide({
     id: "end", layout: "title", section: "", after: "conc-enough", steps: 0, secs: 8,
-    notes: "Thank you for watching. And next time you see a fifteen percent coupon, ask yourself what it really costs you.",
+    notes: "",
     render(root) {
       const R = XL.res, CP = XL.coupon * B.nominal;   // both coupons, USD per 1,000
       root.innerHTML = `

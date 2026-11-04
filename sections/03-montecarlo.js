@@ -201,7 +201,7 @@
     title: "Monte Carlo: averaging random draws to estimate E(X)",
     subtitle: "Roll a die 1,000 times: by the law of large numbers, the average converges to the expected value",
     sources: "Eckhardt (1987); Metropolis (1987); own simulation",
-    notes: "In 1946, Stanislaw Ulam was recovering from an illness and playing solitaire. Instead of calculating his chances, he asked: why not play a hundred games and count the wins? His colleague Nicholas Metropolis named it after the casino: Ulam had an uncle who just had to go to Monte Carlo. Here's the idea with a die. What's the average roll? Instead of calculating it, let's roll. [→] A thousand rolls: at first the average jumps around, then it settles at about 3.5. [→] Now the calculation: one to six, each with probability one sixth, gives exactly 3.5. The simulation got it right. That's the law of large numbers, and that's Monte Carlo: when we can't calculate an expected value, we estimate it by averaging random draws. For our Multi-BRC there's no closed-form solution, so that's exactly what we'll do.",
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="mc-o">
@@ -311,7 +311,7 @@
     subtitle: "Instead of rolling a die, we simulate a whole year of share prices, 2,000 times",
     lecture: "Lecture 4, slides 11 and 15",
     sources: "Arnold (2026), slides 11 and 15; own illustration; Bloomberg (Apple's implied volatility, USD 1-year rate)",
-    notes: "How do we apply this to an option? In three steps. [→] Step one: sample a random path, a whole year of daily share prices. We do that 2,000 times. [→] Step two: for each path, compute the payoff and discount it at the risk-free rate. One path, one number. [→] Step three: average them all. By the law of large numbers, this average converges to the discounted expected payoff in a risk-neutral world, which is exactly how our lecture prices an option.",
+    notes: "",
     render(body) {
       const box = (k, icon, txt) => `<div class="box" data-step="${k}"><span class="n">${k}</span><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;
       body.innerHTML = `
@@ -482,7 +482,7 @@
     title: "Monte Carlo escapes the curse of dimensionality",
     subtitle: "A grid grows exponentially with every dimension; the number of random points doesn’t",
     sources: "own illustration",
-    notes: "Why not just try every combination, like a grid? A year of our three stocks takes 756 random numbers, so 756 dimensions. [→] Ten values for each would already need ten to the power of 756 points. That's the same curse of dimensionality that made the binomial tree too big. [→] Monte Carlo doesn't have this problem: a hundred random points stay a hundred points in any dimension, and the error shrinks at the same speed however many dimensions there are. More on that on the next slide.",
+    notes: "",
     render(body) {
       body.closest(".slide").classList.add("mc-tw");
       const cell = (dim, n, d) => `<div class="mc-gc" style="--d:${d}"><p class="mc-gh">${dim} dimension${dim > 1 ? "s" : ""}</p>${gridSVG(dim)}<div class="mc-gn"><b>${fmt(n, 0)}</b><span>points</span></div></div>`;
@@ -586,7 +586,7 @@
     title: "Monte Carlo's precision: the error shrinks with 1/√n",
     subtitle: "Estimating π with random darts: four times the darts halve the error",
     sources: "own simulation",
-    notes: "How precise is Monte Carlo? Take a case where we know the answer: pi. A circle of radius one inside a square of side two covers pi over four of its area. So throw random darts: four times the share inside estimates pi. [→] Five darts, three inside: 2.4, far off. [→] Ten thousand darts: 3.15, with a ninety-five percent confidence interval from 3.12 to 3.18. [→] The error falls with one over the square root of n: a hundred times the darts make it ten times smaller, and halving it takes four times the darts. The same holds for our Multi-BRC: with 2,000 paths, the fair value comes with an interval of about plus or minus nine dollars.",
+    notes: "",
     render(body) {
       const row = n => `<tr><td>${fmt(n, 0)} darts</td><td>± ${fmt(HW(n), HW(n) < .01 ? 3 : 2)}</td></tr>`;
       body.innerHTML = `

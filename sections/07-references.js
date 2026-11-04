@@ -62,7 +62,7 @@
     steps: 0, secs: 0,   // not in the video (it ends on the end card): the source list for the slides PDF
     title: "References",
     sources: "APA 7th edition · links checked 4 November 2026",
-    notes: "(Not recorded: the video ends on the end card. This slide is the source list of the slides PDF we hand in: 15 sources.)",
+    notes: "",
     render(body) {
       const pdf = Deck.util.slidesPdf();
       body.innerHTML = `

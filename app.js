@@ -393,15 +393,12 @@
     window.scrollTo({ top: t.offsetTop, behavior: util.reduced ? "auto" : "smooth" });
   }
 
-  // ---------- presenter HUD + notes ----------
-  function mmss(s) { return Math.floor(s / 60) + ":" + String(Math.round(s % 60)).padStart(2, "0"); }
+  // ---------- presenter HUD ----------
   function hud() {
     const sl = slides[cur];
     if (!sl) return;
-    const total = slides.reduce((t, s) => t + (s.secs || 0) + (s.liveSecs || 0), 0), live = slides.reduce((t, s) => t + (s.liveSecs || 0), 0);
     const nav = scrollMode ? "scroll to move" : "← → or scroll";
-    $("#hud").textContent = `${util.reduced && !document.body.classList.contains("static") ? "⚠ Reduce motion is on in the system settings, so there are no animations here (record mode R plays them anyway) · " : ""}${cur + 1}/${slides.length} · step ${step}/${sl.steps} · ${nav} · H show clickable · N notes · R record mode · F full screen · planned ${mmss(total)}${live ? " incl. " + mmss(live) + " live Excel" : ""}`;
-    $("#notes").innerHTML = `<div class="meta">Speaker note (draft) · slide ${cur + 1}${sl.secs ? " · about " + mmss(sl.secs) : ""}${sl.liveSecs ? " · then about " + mmss(sl.liveSecs) + " live in Excel" : ""}</div>${sl.notes || "<i>No note yet.</i>"}`;
+    $("#hud").textContent = `${util.reduced && !document.body.classList.contains("static") ? "⚠ Reduce motion is on in the system settings, so there are no animations here (record mode R plays them anyway) · " : ""}${cur + 1}/${slides.length} · step ${step}/${sl.steps} · ${nav} · H show clickable · R record mode · F full screen`;
   }
 
   // ---------- input ----------
@@ -409,7 +406,6 @@
   function onKey(e) {
     if (typing(e.target)) return;
     const k = e.key;
-    if (k === "n" || k === "N") { $("#notes").hidden = !$("#notes").hidden; return; }
     if (k === "h" || k === "H" || k === "?") { document.body.classList.toggle("show-ui"); return; }
     if (k === "r" || k === "R") {
       const rec = document.body.classList.toggle("rec");
@@ -427,7 +423,7 @@
   let wheelAcc = 0, wheelLock = 0, wheelLast = 0, wheelHold = false;
   function onWheel(e) {
     if (scrollMode) return;
-    if (e.target.closest && e.target.closest("[data-wheel], #notes")) return;   // the notes panel scrolls itself
+    if (e.target.closest && e.target.closest("[data-wheel]")) return;
     e.preventDefault();
     const now = Date.now(), gap = now - wheelLast;
     wheelLast = now;
@@ -522,7 +518,7 @@
     reloading = true;
     updatePill("New version · updating…");
     try {
-      sessionStorage.setItem(RESTORE, JSON.stringify({ y: window.scrollY, notes: !$("#notes").hidden, ui: document.body.classList.contains("show-ui") }));
+      sessionStorage.setItem(RESTORE, JSON.stringify({ y: window.scrollY, ui: document.body.classList.contains("show-ui") }));
       sessionStorage.setItem(RESTORE + "-v", updateReady);
     } catch (e) {}
     setTimeout(() => location.reload(), 1200);
@@ -531,7 +527,6 @@
     let saved = null;
     try { saved = JSON.parse(sessionStorage.getItem(RESTORE) || "null"); sessionStorage.removeItem(RESTORE); } catch (e) {}
     if (saved) {
-      if (saved.notes) $("#notes").hidden = false;
       if (saved.ui) document.body.classList.add("show-ui");
     }
     return saved;

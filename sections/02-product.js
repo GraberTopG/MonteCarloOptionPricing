@@ -240,7 +240,7 @@
     title: "The Payoff Chart of the Multi-BRC",
     subtitle: "Built in three steps: reverse convertible, barrier, worst-of principle",
     sources: "Own illustration, inspired by Vontobel Markets (2023), Zoller (2026); option view: Allet (2025); barrier touch: Swiss Structured Products Association (2026)",
-    notes: `Now let's put all scenarios into one picture: a payoff diagram, the way the lecture draws options. Let's build it in three steps. [→] Step one: a reverse convertible on one stock. The catch: if the stock ends below its starting price, you're paid back in shares, not cash. In option terms, you own a bond and have sold a put; the part of the coupon above normal interest is what the bank pays you for it. Including the coupons, you only lose money if the stock ends below 85 percent. [→] Step two: the barrier. Now the put only kicks in if the stock touches 65 percent of its starting price. It becomes a down-and-in put. If the stock never gets there, you get your thousand back. The barrier gives you a 35 percent safety buffer. [→] Step three: three stocks, and the worst-of principle. One touch by any of them is enough, and you get shares of the worst one. In our example, Adobe breaks through the barrier and then recovers to minus 20 percent: you get Adobe shares worth 800 dollars, plus the coupons. And it doesn't have to be the stock that touched: any touch counts, the worst one is paid out. So three stocks don't make it safer. They give you three chances to hit a barrier.`,
+    notes: "",
     render(body) {
       const card = (k, h, p) => `<div class="prd-po-c" data-step="${k}"><span class="num">${k}</span><div><h4>${h}</h4><p>${p}</p></div></div>`;
       body.innerHTML = `
@@ -440,7 +440,7 @@
     title: "Payoff scenarios per USD 1,000 invested",   // outcomes 1, 2a, 2b as on the payoff slide
     subtitle: "You always get the coupons, then either your USD 1,000 back or shares of the worst stock",
     sources: "Own illustration",
-    notes: `So what happens to your thousand dollars at maturity? You always get both coupons, ${CPN} dollars. [→] At the end, your thousand comes back in cash if no stock touched its barrier. [→] If one did, that's called the kick-in. Then the final prices decide. If every stock ends at or above its starting price, you still get cash. [→] If even one ends below, you get shares of the worst stock, with fractions paid in cash. Say Adobe is the worst and ends ${f0((1 - EX_WORST) * 100)} percent down. The conversion ratio gives you 4.1959 shares: four Adobe shares are delivered, the rest is paid in cash. Together they're worth ${f0(EX_SHARES)} dollars, plus the coupons, ${f0(EX_SHARES + CPN)}.`,
+    notes: "",
     render(body) {
       // a tree from top to bottom (the body is 1744 × 740): question 1, then question 2 over its two answers; the three
       // outcomes side by side; under them one layer for the coupons, paid in all three
@@ -500,13 +500,13 @@
 
   // ================= brc-paths: the title slide's simulated years again, the three scenarios one per click =================
   // (the same seed as the title slide, so the same three years; drawn after the payoff chart)
-  const NOTES_PA = "Remember the picture from the start? Here are its three highlighted years, each one simulated path of the worst of our three stocks. [→] In this year, no stock ever touches 65 percent. Scenario one: you get your thousand back, plus the coupons. [→] In this one, a stock touches the barrier, that's a kick-in, but it recovers and ends above its starting price. Scenario 2a: again your thousand plus the coupons. [→] And here, after the kick-in, the worst stock ends below its starting price. Scenario 2b: you get shares of the worst stock, plus the coupons.";
+  const NOTES_PA = "";
   Deck.addSlide({
     id: "brc-paths", section: "product", steps: 3, secs: 40,
     title: "The three scenarios simulated",
     subtitle: "Three simulated paths of the worst underlying, one per scenario",
     sources: "Own illustration",
-    notes: NOTES_PA,
+    notes: "",
     render(body) {
       // the chart over the top of the body, the three outcome cards in a row under it (each appears when its year has ended)
       body.innerHTML = `<div class="pa-chart"></div><div class="pa-cards"></div>`;
@@ -543,7 +543,7 @@
     title: "Advantages and risks of the Multi-BRC",
     subtitle: "A high, fixed coupon in exchange for capped upside and downside risk",
     sources: "Allet (2025)",
-    notes: `[→] It suits stocks that go sideways or fall a little. [→] The risks: after a kick-in you lose like a shareholder, your gain is capped at ${f0(XL.coupon * 100)} percent, you get no dividends, and if UBS goes bankrupt, your money is at risk.`,
+    notes: "",
     render(body) {
       // one item: the term in bold, the line under it; the advantages build in at step 1, the risks at step 2
       const item = (ic, h, p, d, st) => `<li class="icard"${d ? ` data-step="${st || 2}" style="--d:${d}"` : ""}><span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[ic]}</svg></span><div><h4>${h}</h4><p>${p}</p></div></li>`;
@@ -583,7 +583,7 @@
     title: "The Multi-BRC is a bond minus a put",
     subtitle: "You lend UBS USD 1,000 and sell a down-and-in put on the worst of three: the put finances the high coupon",
     sources: "Arnold (2026), slide 14; Wallmeier & Diethelm (2009)",
-    notes: `To price it, we split it in two: [→] a UBS bond that pays the coupons and the thousand, [→] minus the put you sold. [→] The bond is easy: just discount it. The put is the hard part, so that is what we value with Monte Carlo.`,
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="prd-dec">

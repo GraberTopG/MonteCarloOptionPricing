@@ -75,7 +75,7 @@ The list of sources and references is on the last slide and in `sections/07-refe
 
 ## Editing the slides
 
-Every push to `main` updates the online presentation automatically (about a minute later). Each section of the video has its own file; every slide in it is one `Deck.addSlide({ … })` block, where `title`, `subtitle`, `sources` and `notes` (the narration) are plain text.
+Every push to `main` updates the online presentation automatically (about a minute later). Each section of the video has its own file; every slide in it is one `Deck.addSlide({ … })` block, where `title`, `subtitle` and `sources` are plain text.
 
 | File | Slides |
 |---|---|
@@ -104,4 +104,4 @@ python3 -m http.server 8000
 
 or as online: `pip install streamlit` and `streamlit run streamlit_app.py`.
 
-**Controls:** ← / → or scroll to move through the slides · `N` speaker notes · `F` full screen · `H` show clickable elements
+**Controls:** ← / → or scroll to move through the slides · `F` full screen · `H` show clickable elements

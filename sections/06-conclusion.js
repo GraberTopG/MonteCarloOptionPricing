@@ -105,7 +105,7 @@
     title: "Summary of the video",
     subtitle: "The whole video in four lines",
     sources: "Arnold (2026), slides 7, 10 and 15",
-    notes: "So, to sum up. Our product is a bond minus a put on the worst of three stocks. [→] Black-Scholes can't price it and a binomial tree is far too big. [→] Monte Carlo can: it prices an option by simulating many futures and averaging the discounted payoffs. [→] And in Excel, the recipe is simple: inputs, random shocks, paths, payoff, average.",
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="cc-sum">
@@ -320,7 +320,7 @@
     title: "Limits and next steps",
     subtitle: "Four limits of our model, and what fixes each one.",
     sources: "Broadie et al. (1997); own illustration",
-    notes: "Our model has limits. We check the barrier once a day, not continuously; a barrier correction fixes most of that. [→] We use one flat volatility per stock and ignore the smile, where every strike has its own volatility. Stochastic volatility is the next step. [→] And our correlation comes from past data, so we stress-test it. [→] Finally, 925 is an estimate from two thousand paths: give or take nine dollars at ninety-five percent. Four times the paths would halve that.",
+    notes: "",
     render(body) {
       const card = (c, cls, i, d) => `<div class="cc-lcard ${cls}" data-step="${i}" style="--d:${d}"><div><h3>${c.h}</h3><p>${c.p}</p></div><div>${c.fig}</div></div>`;
       const row = (r, badge, i, d) => `
@@ -423,7 +423,7 @@
     title: `Is ${fmt(PAID, 0)}% enough?`,
     subtitle: "Who gets what: fair coupon vs. what you get",
     sources: "Arnold (2026), slide 11",
-    notes: "So, is fifteen percent enough? A fair coupon would be about 23 percent. You get 15. [→] That gap is worth 75 dollars, which the bank keeps, we assume, for its hedging, risk and margin. You pay 1,000 for something worth about 925, [→] and in 45 percent of our simulated years, you end up below your thousand, coupons included. [→] One warning: these are risk-neutral numbers, where stocks grow only at the risk-free rate. That's right for pricing, but it's not a forecast: if stocks earn more, the real chance of a loss is lower. That's the point we promised to come back to.",
+    notes: "",
     render(body) {
       const bar = (h, cls, label, k, extra) => `<div class="cc-bar" style="--h:${h.toFixed(4)};--k:${k}"><i class="f ${cls}"></i><span class="v ${cls}">${label}</span>${extra || ""}</div>`;
       body.innerHTML = `

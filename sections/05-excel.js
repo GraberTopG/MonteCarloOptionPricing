@@ -488,14 +488,7 @@
     // on entry only the box (bond − put, the simulation in three moves); one click brings in the four steps. Then live
     // Excel: the workbook's Read Me and sheet tabs (the template, assignment 2a; until 27 Oct 2026 a slide of its own).
     // liveSecs = that narration (84 words) / 145 × 60 + 3 s for the Excel screen
-    notes: "Before we open Excel, here is the plan. Our product is a bond minus a put. The bond is easy. The hard part is the put. To price it, we simulate the three stocks over the next year, day by day. On each path, we ask: did any stock touch its barrier? And if so, what does the put pay at the end? We do this two thousand times, take the average and discount it to today. "
-      + "[→] For the simulation we need two inputs: how much each stock moves, its volatility, and how the stocks move together, their correlation. At the end, we check our results. "
-      + "[Excel: the workbook: the Read Me, then the sheet tabs block by block, with the colour legend (yellow inputs, grey random numbers, white calculated)] "
-      + "Our template has twelve sheets: a Read Me, then five blocks. "
-      + "Sheets one and two hold the product terms and the Bloomberg market data of the sixth of October. "
-      + "Sheets three to six turn price history and option quotes into volatilities and correlations. "
-      + "Sheet seven holds the fixed random numbers, eight and nine are the engine, ten and eleven the results. "
-      + "Yellow cells are inputs, grey cells the random numbers, white cells are calculated. Change a yellow cell, press F9, and the price updates.",
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="xl-st">
@@ -566,12 +559,7 @@
     lecture: "Lecture 4, slide 7",
     sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg (GC, OMON, DVD, CDSW, HP)",
     // live Excel follows (sheets 5 and 6): liveSecs = its narration (65 words) / 145 × 60 + 3 s for the Excel screen
-    notes: "Step one: the missing inputs. We know the stock prices, the strike and the maturity from our product, but two inputs are missing: the risk-free rate and the volatility. "
-      + "[→] The risk-free rate comes from Bloomberg's yield curves, function GC: 4.43 percent. "
-      + "[→] The volatility is harder. Remember the Black-Scholes formula for a put: it needs the volatility, but we can't look it up anywhere. "
-      + "[→] So we imply it from option prices. We downloaded fifty put and call prices per stock with the Bloomberg function OMON, with different strikes and an expiry very close to our product's. We price the fifty options with Black-Scholes for a trial volatility, compare with the market prices, and keep the volatility with the lowest root mean squared error. "
-      + "[Excel: sheet 5 (option quotes), then the result table of sheet 6 with the three implied volatilities highlighted] "
-      + "So we turn the formula around. The market tells us the option prices, and we look for the volatility that fits them best: the implied volatility. Sheet six does this with fifty options per stock. So Black-Scholes can't price our product, but it still finds a missing piece: 45 percent for Adobe, 28 for Apple and 32 for Microsoft. Adobe moves the most, by far.",
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="xl-in">
@@ -623,12 +611,7 @@
     subtitle: "The correlation and the other missing inputs, and how we found each one",
     sources: "Bloomberg (GC, OMON, DVD, CDSW, HP)",
     // live Excel follows (sheet 4): liveSecs = its narration (29 words) / 145 × 60 + 3 s for the Excel screen
-    notes: "To simulate our product we need a few more inputs than Black-Scholes. "
-      + "[→] The dividend yields come from the Bloomberg function DVD, and UBS's issuer spread from its credit default swap, function CDSW. "
-      + "[→] For the correlation, we used one year of daily prices, downloaded with the Bloomberg function HP. "
-      + "[→] From these daily returns we build the correlation matrix. "
-      + "[Excel: sheet 4, correlation matrix] "
-      + "For the correlation of our three stocks, there's no market price, so sheet four measures it from one year of daily returns. Adobe and Microsoft move together the most.",
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="xl-rh">
@@ -708,12 +691,7 @@
     subtitle: "The lecture's geometric Brownian motion, one small time step at a time",
     sources: "Arnold (2026), slides 11 and 15; own illustration",
     // live Excel follows (sheet 7): liveSecs = its narration (54 words) / 145 × 60 + 3 s for the one Excel screen
-    notes: "Step two: how do we simulate a stock? With the lecture's geometric Brownian motion: tomorrow's price is today's price, plus a drift, plus a random shock. "
-      + "[→] The drift is the risk-free rate minus the dividend yield; that's risk-neutral valuation, so we never need the stocks' expected returns. "
-      + "[→] The shock depends on the volatility "
-      + "[→] and on Z, a random number from a bell curve. "
-      + "[Excel: sheet 7, the grey cells; keep the pointer off cell B4 until its note is corrected] "
-      + "We need one bell-curve number for every stock, every day and every path: about one and a half million. We generated them once, in Python, and pasted them in as fixed values. In Excel, you'd use NORM.S.INV of RAND, then Paste Special, Values. Why fixed? So the price doesn't change every time Excel recalculates.",
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="xl-gb">
@@ -780,10 +758,7 @@
     subtitle: "The Z of the shock, one per stock: we mix them so our stocks move together",
     sources: "own Excel model, sheets 4, 7 and 8 (path 1); Cholesky method: Glasserman (2003), ch. 2",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
-    notes: "Remember the Z in the shock: each stock needs its own. But our random numbers are independent, and our stocks are not. So we mix them, with the Cholesky method. Adobe keeps its own random number. "
-      + "[→] Apple takes 0.22 of Adobe's, exactly their correlation, plus 0.98 of its own. "
-      + "[→] Microsoft mixes all three. Now our simulated stocks move together just like the real ones. "
-      + "[Excel: the same numbers in sheet 4, step D (cells C37 and C40), and in sheet 8, cells E35 and C40, which the formula in cell H49 uses]",
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="xl-co">
@@ -897,11 +872,7 @@
     sources: "Arnold (2026), slide 15; exponential step: Glasserman (2003), ch. 3",
     // live Excel: the K49 shot between clicks 2 and 3 (3 s); steps 4 to 6 have slides of their own (1 Nov 2026), step 7's
     // engine checks open xl-sens
-    notes: "Step three: one simulated year. Sheet eight is the engine: each row is one trading day, and each cell uses this formula, "
-      + "[→] with the correlated shock from step two. "
-      + "[→] It uses an exponential instead of the lecture's simple plus, so a price can never become negative. And because we exponentiate, we subtract half the variance from the drift, so the average stock still grows at the risk-free rate minus the dividend yield. "
-      + "[Excel: sheet 8, click K49 so the formula shows; keep row 5 off screen] "
-      + "[→] Copy it down 252 rows, and we have one possible year. ",
+    notes: "",
     render(body) {
       body.innerHTML = `
         <div class="xl-yr">
@@ -1031,14 +1002,7 @@
     sources: "own Excel model, sheet 8 (example 1: path 1, example 2: path 2,000)",
     // live Excel follows: sheet 8 for paths 1 and 2,000 (two screens), then steps 5 and 6 (the data table of sheet 9,
     // sheets 10 and 11). liveSecs = their narration / 145 × 60 + 3 s per Excel screen (four)
-    notes: "Step four: what does this year pay? MIN finds each stock's lowest price, and IF checks whether it touched the barrier. MIN and MATCH find the worst stock at the end. After a touch, if that stock ends below its start, the put pays what the investor loses: a thousand dollars minus the value of the shares, discounted to today. "
-      + "[→] Here's our first example. Adobe and Microsoft both touch their barriers, and Microsoft ends worst, down 42 percent. So the investor gets Microsoft shares worth 577 dollars, and the put pays the difference: 423 dollars, or 404 in today's money. "
-      + "[→] Now a second example. Microsoft is down almost a third, but no barrier is touched. Adobe misses by less than two dollars! So the put pays nothing, and the investor gets the full thousand back. "
-      + "[Excel: sheet 8, rows 306–325; highlight MIN, IF, MIN/MATCH, payoff and discount in turn, for example 1 (sheet 9, cell F6 = 1), then example 2 (F6 = 2000; sheet 8 updates at once, no F9 needed)] "
-      + "[Excel: sheet 9; Data → What-If Analysis → Data Table, column input cell F6. Recording note: data tables only recalculate with F9, and only in desktop Excel.] "
-      + "Step five: one path is one roll of the dice. To get two thousand, we use an Excel data table: one copy of the engine, with the path number as the input cell. Excel runs it once for every path. "
-      + "[Excel: sheet 10 from top to bottom: bond → put → fair value → fair coupon; then sheet 11, cell F26, the put's standard error of 4.58 dollars, with the caption \"95%: ± 1.96 × 4.58 ≈ ± 9\"] "
-      + "Step six: the price. The bond pays two coupons and the thousand. Discounted at the risk-free rate plus a spread for UBS's default risk, it's worth 1,097 dollars. The put is the average of the two thousand discounted payoffs: 173 dollars. Bond minus put: the product is worth about 925 dollars, give or take nine at ninety-five percent confidence. But the investor pays 1,000, so the bank keeps about seven and a half percent. A fair coupon would be almost 23 percent, not 15.",
+    notes: "",
     render(body) {
       const fact = (dt, dd) => `<dt>${dt}</dt><dd>${dd}</dd>`;
       body.innerHTML = `
@@ -1098,10 +1062,7 @@
     id: "xl-sens", section: "excel", steps: 1, secs: 15, liveSecs: 27,
     title: "Bonus step: sensitivity analysis",
     subtitle: `Volatility drives the price: ±5 points move the put by up to ${VOL_MAX} USD, correlation by only ${RHO_MAX}`,
-    notes: "[Excel: sheet 11, the engine-check rows (scenarios 10 and 11); next to them, the average of sheet 9, column D (select D13:D2012 and read the average in the status bar)] "
-      + "Can we trust the engine? We test two extreme cases. With the barrier at zero, it's never touched, so the put must be worth nothing. And it is. With the barrier at 100 percent, it's always touched, so we must get the plain worst-of put from column D of sheet nine: 227 dollars. Exactly what we get. "
-      + "[Excel → web app] And which input matters most? "
-      + "[→] Volatility. Five points more, and the put rises from 173 to 219 dollars, so the product's value falls from 925 to 878. Five points less, and the put falls to 124. Correlation moves it by only about seven. So if there's one input to get right, it's volatility.",
+    notes: "",
     render(body) {
       const X = v => 50 + v / SE_MAX * 50;                  // % of the plot width
       let n = 0;                                            // running index: the bars grow one after another
