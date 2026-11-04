@@ -651,7 +651,7 @@
 
   // ================= 3) xl-gbm: step 2, simulating a stock =================
   // the lecture's model (Lecture 4, slide 15): S(t+Δt) = S(t) + Drift + Shock, written with r and q as in our Excel
-  // (the lecture writes δ for the dividend yield: a footnote on the drift card; r as in the lecture, never r_f)
+  // (the lecture writes r_f and δ, on slides 11 and 15, which this slide cites; the slide itself writes r: a footnote on the drift card)
   const S_t = sub("S", "<mi>t</mi>");
   const GBM_TOP = `<math display="block">${sub("S", `<mrow><mi>t</mi><mo>+</mo>${DT}</mrow>`)}<mo>=</mo>${S_t}<mo>+</mo><mtext class="xl-gb-w dr">Drift</mtext><mo>+</mo><mtext class="xl-gb-w sh">Shock</mtext></math>`;
   const GBM_DR = `<math><mo stretchy="false">(</mo><mi>r</mi><mo>−</mo><mi>q</mi><mo stretchy="false">)</mo><mo>·</mo>${S_t}<mo>·</mo>${DT}</math>`;
@@ -722,7 +722,7 @@
           <div class="xl-gb-cards">
             <div class="xl-gb-c dr"><p class="xl-gb-h"><span class="num">1</span>Drift (risk-neutral)</p>
               <div class="xl-gb-b"><div class="xl-gb-f">${GBM_DR}</div>
-                <p class="xl-gb-fn">lecture: <math><mi>r</mi></math> and <math><mi>δ</mi></math></p>
+                <p class="xl-gb-fn">lecture: <math>${sub("r", "<mi>f</mi>")}</math> and <math><mi>δ</mi></math></p>
                 <p>risk-free rate minus dividend yield: <b style="white-space:nowrap">risk-neutral</b>, no expected returns needed</p>
                 <p class="m">our Excel: <math><mi>r</mi></math> = ${pct(XM.r, 2)},<br><math><mi>q</mi></math> = ${Q_TXT}</p></div></div>
             <div class="xl-gb-c sh"><p class="xl-gb-h"><span class="num">2</span>Random shock</p>
