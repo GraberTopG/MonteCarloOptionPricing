@@ -43,6 +43,7 @@
 
   Deck.addStyle(`
     .rf-box{background:var(--green-light);border-radius:10px;padding:20px 32px 16px;display:flex;flex-direction:column}
+    .slide[data-id="references"] .s-body{top:170px}   /* no subtitle: the list starts under the title rule */
     .rf-list{columns:2;column-gap:44px;margin:0;padding:0;list-style:none;font:17px/1.26 var(--f-body);color:var(--ink)}
     .rf-list a{overflow-wrap:anywhere}
     .rf-list a.ext::after{content:"\\00a0\\2197"}
@@ -60,7 +61,6 @@
     id: "references", section: "references",   // no tab highlighted: not part of the conclusion
     steps: 0, secs: 0,   // not in the video (it ends on the end card): the source list for the slides PDF
     title: "References",
-    subtitle: "Sources used in the video, the web app and the Excel model",
     sources: "APA 7th edition · links checked 4 November 2026",
     notes: "(Not recorded: the video ends on the end card. This slide is the source list of the slides PDF we hand in: 15 sources.)",
     render(body) {
@@ -69,7 +69,6 @@
         ${pdf ? `<a class="ui-btn rf-pdf${pdf.old ? " old" : ""}" href="${pdf.href}" download="Monte-Carlo-Option-Pricing-slides.pdf" title="${pdf.title}"><span class="ic">↓</span>Download presentation as PDF${pdf.old ? " (older version)" : ""}</a>` : ""}
         <div class="rf-box">
           <ul class="rf-list">${REFS.map(r => `<li>${r.replace(/>(https?:\/\/[^<]+)<\/a>/g, (m, u) => ">" + u.replace(/\//g, "/<wbr>") + "</a>")}</li>`).join("")}</ul>
-          <p class="rf-style"><b>Where we use them:</b> Lecture 4 (Arnold, 2026), slides 7 (Black-Scholes), 9–10 (binomial tree), 11–13 (risk-neutral valuation), 14 (replication) and 15 (Monte Carlo and geometric Brownian motion). Cox, Ross and Rubinstein (1979): the binomial tree and the meaning of N(d₂). Glasserman (2003), chapters 2–3: correlated random numbers (Cholesky) and the exponential simulation step. Swiss Structured Products Association (2026): category 1230, barrier reverse convertible. Parts of the Monte Carlo section are adapted from The Synthetic Mind (2026), whose visual style also inspired the web app; all drawings and animations are our own. Vontobel Markets (2023) and Zoller (2026) inspired our payoff diagram of the Multi-BRC; Allet (2025) underlies the advantages and risks. Wallmeier and Diethelm (2009): the multi-BRC as a bond minus a down-and-in put.</p>
         </div>`;
       return {};
     }
