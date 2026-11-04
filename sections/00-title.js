@@ -732,7 +732,7 @@
       let fan = null;
       const fanYears = () => fan || (fan = (() => { const g = U.normal(U.rng(END.seed)); return Array.from({ length: END.fan }, () => worstOf(U.simBRC(g).paths)); })());
       let gen = U.normal(U.rng(END.runSeed));
-      let runs = [], cur = null, day = 0, a = null, timer = 0, auto = 0, fanK = 1, fa = null;
+      let runs = [], cur = null, last = null, day = 0, a = null, timer = 0, auto = 0, fanK = 1, fa = null;
       const payout = sc => (sc.ki && sc.worst < B.strike ? B.nominal * sc.worst / B.strike : B.nominal) + CP;
       function drawFan() {
         const c = U.canvas(fanCv); if (!c) return;
@@ -760,7 +760,14 @@
         ctx.save(); ctx.beginPath(); ctx.rect(f.x, 0, f.w + 2, h); ctx.clip();
         // earlier years: faint, green if they paid in full, white if they ended below 1,000
         ctx.lineWidth = 1.2; ctx.lineJoin = "round";
-        runs.forEach(r => { ctx.strokeStyle = r.below ? "rgba(26,29,27,.2)" : "rgba(0,128,47,.25)"; ctx.beginPath(); ctx.moveTo(X(0), Y(1)); for (let t = 1; t <= n; t++) ctx.lineTo(X(t), Y(r.p[t])); ctx.stroke(); });
+        runs.forEach(r => { if (r === last) return; ctx.strokeStyle = r.below ? "rgba(26,29,27,.2)" : "rgba(0,128,47,.25)"; ctx.beginPath(); ctx.moveTo(X(0), Y(1)); for (let t = 1; t <= n; t++) ctx.lineTo(X(t), Y(r.p[t])); ctx.stroke(); });
+        if (last && !cur) {   // the last simulated year stays highlighted until the next click
+          const col = last.ki ? U.css("--ink") : U.css("--green");
+          ctx.strokeStyle = col; ctx.lineWidth = 3.2; ctx.shadowColor = col; ctx.shadowBlur = 6;
+          ctx.beginPath(); ctx.moveTo(X(0), Y(1)); for (let t = 1; t <= n; t++) ctx.lineTo(X(t), Y(last.p[t])); ctx.stroke(); ctx.shadowBlur = 0;
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(n), Y(last.p[n]), 6, 0, 7); ctx.fill();
+          if (last.ki) { ctx.strokeStyle = U.css("--ink"); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(X(last.kiDay), Y(B.kickIn), 11, 0, 7); ctx.stroke(); }
+        }
         if (cur) {   // the year being drawn
           const col = cur.sc.ki ? U.css("--ink") : U.css("--green");
           ctx.strokeStyle = col; ctx.lineWidth = 3.2; ctx.shadowColor = col; ctx.shadowBlur = 6;
@@ -781,7 +788,8 @@
       function finish() {
         if (!cur) return;
         const pay = cur.pay, below = pay < B.nominal;
-        runs.push({ p: cur.p, pay, below }); if (runs.length > 120) runs.shift();
+        last = { p: cur.p, pay, below, ki: cur.sc.ki, kiDay: cur.sc.kiDay };
+        runs.push(last); if (runs.length > 120) runs.shift();
         out.className = "en-out " + (below ? "loss" : "win");
         outT.textContent = cur.sc.ki
           ? (cur.sc.worst < B.strike ? `Kick-in on day ${cur.sc.kiDay}: shares of the worst stock, plus coupons` : `Kick-in on day ${cur.sc.kiDay}, but the worst stock recovered: USD ${NOM}, plus coupons`)
@@ -802,7 +810,7 @@
         if (auto >= END.auto) return;
         auto++; simulate(false); timer = setTimeout(autoRun, END.dayMs + END.autoGap);
       }
-      function reset() { clearTimeout(timer); if (a) { a.cancel(); a = null; } if (fa) { fa.cancel(); fa = null; } runs = []; cur = null; day = 0; auto = 0; gen = U.normal(U.rng(END.runSeed)); out.className = "en-out"; outT.textContent = "Press the button to simulate one possible year"; outV.textContent = ""; tally(); }
+      function reset() { clearTimeout(timer); if (a) { a.cancel(); a = null; } if (fa) { fa.cancel(); fa = null; } runs = []; cur = null; last = null; day = 0; auto = 0; gen = U.normal(U.rng(END.runSeed)); out.className = "en-out"; outT.textContent = "Press the button to simulate one possible year"; outV.textContent = ""; tally(); }
       return {
         resize() { drawFan(); drawRun(); },
         step(i, o) {
