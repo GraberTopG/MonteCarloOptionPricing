@@ -650,18 +650,81 @@
   });
 
   // ================= end card (placed after the conclusion's "Is 15% enough?") =================
+  // thank-you line, the three numbers to remember, and a quiet band of simulated worst-of years along the bottom
+  // (the same model as the title slide); the group and the web app's link at the foot
+  const END = { seed: 11, n: 160, ms: 2600 };
+  Deck.addStyle(`
+    .en{position:absolute;inset:0;background:#fff}
+    .en canvas{position:absolute;left:0;right:0;top:640px;height:330px;width:100%;display:block}
+    .en-top{position:absolute;left:120px;right:120px;top:84px}
+    .en-top .tt-uni{margin:0 0 34px}
+    .en-top .tt-rule{margin:0 0 22px}
+    .en-top .tt-title{font-size:100px;line-height:1}
+    .en-top .tt-sub{margin:22px 0 0;max-width:none;font-size:36px;color:var(--ink);font-weight:400}
+    .en-top .tt-sub .hl{color:var(--green);font-weight:700}
+    .en-k{position:absolute;left:120px;right:120px;top:410px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+    .en-c{position:relative;background:rgba(255,255,255,.94);border:2px solid var(--green-soft);border-top:7px solid var(--green);border-radius:10px;padding:20px 26px 22px;box-shadow:0 6px 22px rgba(26,29,27,.08)}
+    .en-c b{display:block;font:800 58px/1 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums}
+    .en-c b span{font-size:30px;font-weight:700;color:var(--muted);margin-left:10px}
+    .en-c p{margin:10px 0 0;font:24px/1.3 var(--f-body);color:var(--ink)}
+    .en-foot{position:absolute;left:120px;right:120px;bottom:44px;margin:0;display:flex;justify-content:space-between;align-items:baseline;gap:30px;font:18px/1.4 var(--f-head);color:var(--ink);white-space:nowrap}
+    .en-foot b{color:var(--green-ink)}
+    .en-foot .lk{color:var(--green);font-weight:700;white-space:nowrap}
+  `);
   Deck.addSlide({
     id: "end", layout: "title", section: "", after: "conc-enough", steps: 0, secs: 8,
     notes: "Thank you for watching. And next time you see a fifteen percent coupon, ask yourself what it really costs you.",
     render(root) {
+      const R = XL.res;
       root.innerHTML = `
-        <div class="tt-left tt-end">
-          <p class="tt-uni">Corporate Finance (7,107)<br>University of St.Gallen · Fall Term 2026</p>
-          <div class="tt-rule"></div>
-          <h1 class="tt-title">Thank you<br>for watching</h1>
-          <p class="tt-sub">Next time you see a <span class="hl">${CPN}% coupon</span>, ask yourself what it really costs you.</p>
+        <div class="en">
+          <canvas></canvas>
+          <div class="en-top">
+            <p class="tt-uni">Corporate Finance (7,107) · University of St.Gallen · Fall Term 2026</p>
+            <div class="tt-rule"></div>
+            <h1 class="tt-title">Thank you for watching</h1>
+            <p class="tt-sub">Next time you see a <span class="hl">${CPN}% coupon</span>, ask yourself what it really costs you.</p>
+          </div>
+          <div class="en-k">
+            <div class="en-c"><b>USD ${U.fmt(R.fv, 0)}</b><p>fair value of a note you pay USD ${NOM} for</p></div>
+            <div class="en-c"><b>≈ ${U.fmt(R.fairCoupon, 0)}%<span>vs. ${CPN}%</span></b><p>fair coupon for this risk, against the coupon you get</p></div>
+            <div class="en-c"><b>${U.fmt(XL.below.pct, 0)}%</b><p>of our simulated years end below USD ${NOM}, coupons included</p></div>
+          </div>
+          <p class="en-foot"><span><b>Group III</b> · Ali Bozan Can, Benjamin Marco Bolliger, Cédric Anwar El Soda, Ivan Kissinger, Joaquim Graber, Leandro Broccucci, Mirko Cirantineo</span><span class="lk">montecarlooptionpricing.streamlit.app</span></p>
         </div>`;
-      return pathsArt(root, 9, { LY: 950 });
+      const cv = root.querySelector("canvas");
+      let worst = null, k = 1, a = null;
+      function years() {   // the worst of the three stocks, day by day, for each simulated year (made when first needed)
+        if (!worst) {
+          const g = U.normal(U.rng(END.seed));
+          worst = Array.from({ length: END.n }, () => { const P = U.simBRC(g).paths; return P[0].map((_, t) => Math.min(P[0][t], P[1][t], P[2][t])); });
+        }
+        return worst;
+      }
+      function draw() {
+        const c = U.canvas(cv); if (!c) return;
+        const { ctx, w, h } = c, W = years(), n = W[0].length - 1;
+        const X = t => 120 + t / n * (w - 240), Y = v => 26 + (1.22 - v) / (1.22 - .42) * (h - 40);
+        const upto = Math.round(n * k);
+        ctx.lineJoin = "round"; ctx.lineWidth = 1.2; ctx.strokeStyle = U.css("--green"); ctx.globalAlpha = .08;
+        W.forEach(p => { ctx.beginPath(); ctx.moveTo(X(0), Y(1)); for (let t = 1; t <= upto; t++) ctx.lineTo(X(t), Y(p[t])); ctx.stroke(); });
+        ctx.globalAlpha = 1; ctx.setLineDash([8, 7]); ctx.lineWidth = 1.6;
+        [[B.strike, "Strike 100%", U.css("--muted")], [B.kickIn, `Kick-in ${KI}%`, U.css("--ink")]].forEach(([v, lab, col]) => {
+          ctx.strokeStyle = col; ctx.globalAlpha = .55; ctx.beginPath(); ctx.moveTo(X(0), Y(v)); ctx.lineTo(X(n), Y(v)); ctx.stroke();
+          ctx.globalAlpha = .8; ctx.fillStyle = col; ctx.font = "700 17px " + U.F.body; ctx.textAlign = "right"; ctx.textBaseline = "bottom";
+          ctx.fillText(lab, X(n), Y(v) - 6);
+        });
+        ctx.setLineDash([]); ctx.globalAlpha = 1;
+      }
+      return {
+        resize: draw,
+        step(i, o) {
+          if (a) { a.cancel(); a = null; }
+          if (o && o.dir === 1 && !o.instant) { k = 0; a = U.anim(END.ms, e => { k = e; draw(); }, { ease: U.ease.inOut, done: () => { a = null; } }); return; }
+          k = 1; draw();
+        },
+        leave() { if (a) { a.cancel(); a = null; } k = 1; }
+      };
     }
   });
 })();
