@@ -106,7 +106,7 @@
     .xl-st-c{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0;background:var(--card);border-radius:10px;padding:12px}
     .xl-st-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
     .xl-st-top .num{width:36px;height:36px;font-size:20px}
-    .xl-st-t{margin:0;font:700 22px/1.15 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums;min-height:3.45em}   /* three lines: "Step 2: …" is the longest, the pictures line up */
+    .xl-st-t{margin:0;font:700 22px/1.15 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums;min-height:2.3em}   /* three lines: "Step 2: …" is the longest, the pictures line up */
     .xl-st-v{flex:1;min-height:0;display:flex;flex-direction:column;background:#fff;border-radius:8px;padding:12px 10px}
     .xl-st-cv{position:relative;flex:1;min-height:0}
     .xl-st-cv canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -506,7 +506,7 @@
           <ol class="xl-st-list" data-step="1">${STEPS.map((s, i) => `
             <li class="xl-st-c xl-st-in" style="--k:${i}">
               <div class="xl-st-top"><span class="num">${s.n}</span></div>
-              <p class="xl-st-t">${s.t}</p>
+              <p class="xl-st-t">${s.t.replace(/^Step [^:]*:\s*/, "")}</p>
               <div class="xl-st-v">${VIS[s.v]}</div></li>`).join("")}
           </ol>
         </div>`;
