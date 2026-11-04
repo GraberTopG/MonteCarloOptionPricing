@@ -239,7 +239,7 @@
     id: "brc-payoff", section: "product", after: "brc-paths", steps: 3, secs: 60,   // after the tree and the simulated years: concrete first, then the option view
     title: "The Payoff Chart of the Multi-BRC",
     subtitle: "Built in three steps: reverse convertible, barrier, worst-of principle",
-    sources: "Own illustration, inspired by Vontobel (2026), Swissquote (2026)",
+    sources: "Own illustration, inspired by Vontobel Markets (2023), Zoller (2026)",
     notes: `Now let's put all scenarios into one picture: a payoff diagram, the way the lecture draws options. Let's build it in three steps. [→] Step one: a reverse convertible on one stock. The catch: if the stock ends below its starting price, you're paid back in shares, not cash. In option terms, you own a bond and have sold a put; the part of the coupon above normal interest is what the bank pays you for it. Including the coupons, you only lose money if the stock ends below 85 percent. [→] Step two: the barrier. Now the put only kicks in if the stock touches 65 percent of its starting price. It becomes a down-and-in put. If the stock never gets there, you get your thousand back. The barrier gives you a 35 percent safety buffer. [→] Step three: three stocks, and the worst-of principle. One touch by any of them is enough, and you get shares of the worst one. In our example, Adobe breaks through the barrier and then recovers to minus 20 percent: you get Adobe shares worth 800 dollars, plus the coupons. And it doesn't have to be the stock that touched: any touch counts, the worst one is paid out. So three stocks don't make it safer. They give you three chances to hit a barrier.`,
     render(body) {
       const card = (k, h, p) => `<div class="prd-po-c" data-step="${k}"><span class="num">${k}</span><div><h4>${h}</h4><p>${p}</p></div></div>`;
@@ -542,7 +542,7 @@
     id: "brc-suits", section: "product", steps: 2, secs: 17,
     title: "Advantages and risks of the Multi-BRC",
     subtitle: "A high, fixed coupon in exchange for capped upside and downside risk",
-    sources: "UBS (2026)",
+    sources: "Allet (2025)",
     notes: `[→] It suits stocks that go sideways or fall a little. [→] The risks: after a kick-in you lose like a shareholder, your gain is capped at ${f0(XL.coupon * 100)} percent, you get no dividends, and if UBS goes bankrupt, your money is at risk.`,
     render(body) {
       // one item: the term in bold, the line under it; the advantages build in at step 1, the risks at step 2
