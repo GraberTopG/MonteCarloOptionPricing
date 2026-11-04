@@ -7,7 +7,7 @@
    The end card (sections/00-title.js) follows with after: "conc-enough". Excel numbers: Deck.util.XL (sections/excel-data.js). */
 (function () {
   const U = Deck.util, B = U.BRC, XL = U.XL, XM = XL.model, fmt = U.fmt;
-  const TK = B.tickers, LIGHT = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];   // stock colours on white
+  const TK = B.tickers, LIGHT = ["--ink", "--ink", "--ink"];   // the tickers in text: always black (the group, 4 Nov 2026)
   const NOMINAL = B.nominal * B.issuePrice;                 // 1,000: what the investor pays
   const KI = Math.round(B.kickIn * 100);                     // 65 (%)
   const ARROW = `<svg viewBox="0 0 44 24" aria-hidden="true"><path d="M3 12h34M28 4l9 8-9 8"/></svg>`;

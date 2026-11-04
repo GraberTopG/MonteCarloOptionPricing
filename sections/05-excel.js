@@ -23,7 +23,7 @@
   const fmt = U.fmt, pct = (x, d) => fmt(x * 100, d) + "%";
   const sgn = (x, d) => (x >= 0 ? "+" : "−") + fmt(Math.abs(x), d);
   const TK = B.tickers;
-  const LIGHT = ["--c-adbe-light", "--c-aapl-light", "--c-msft-light"];   // stock colours for text
+  const LIGHT = ["--ink", "--ink", "--ink"];   // the tickers in text: always black (the group, 4 Nov 2026); lines and bars keep their colours
   const DARK = ["--c-adbe", "--c-aapl", "--c-msft"];                      // stock colours for lines and bars
   // the step-1 slides (xl-input, xl-rho): the inputs in shades of green, the same in the list of missing inputs and in
   // the formulas (the group, 1 Nov 2026): the product's terms grey-green, the three Bloomberg lookups one mid green, the
@@ -793,7 +793,7 @@
               <p>one <b>Z</b> per stock, and they must move together</p></div>
             <div class="card xl-co-intro"><math>${eps(1)}<mo>,</mo>${eps(2)}<mo>,</mo>${eps(3)}</math>: three <b>independent</b> random numbers a day, from sheet 7</div>
             <div class="fbox xl-co-box"><span class="chip">CHOLESKY: MIX THE RANDOM NUMBERS</span>
-              ${CO_ROWS.map((r, k) => `<div class="xl-co-row" style="border-left-color:var(${LIGHT[k]})">
+              ${CO_ROWS.map((r, k) => `<div class="xl-co-row" style="border-left-color:var(${DARK[k]})">
                 <div class="xl-co-eq"><math>${zL(k)}</math><math><mo>=</mo></math><math>${r.rhs}</math></div>
                 <p class="xl-co-n">${r.note}</p></div>`).join("")}
               <span class="xlref">Excel · sheet 4, step D · sheet 8, H49</span>
