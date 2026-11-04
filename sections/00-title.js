@@ -650,80 +650,168 @@
   });
 
   // ================= end card (placed after the conclusion's "Is 15% enough?") =================
-  // thank-you line, the three numbers to remember, and a quiet band of simulated worst-of years along the bottom
-  // (the same model as the title slide); the group and the web app's link at the foot
-  const END = { seed: 11, n: 160, ms: 2600 };
+  // A dark closing card: on the left the thank-you and the question to take away; on the right "Run your own year", an
+  // interactive Monte Carlo of our product (each click simulates one more year of the worst stock with our Excel's inputs,
+  // shows what that year pays per USD 1,000 and keeps the tally); behind everything, the simulated years as a soft fan.
+  // On entering, it runs a few years by itself, so the video shows it working.
+  const END = { seed: 11, runSeed: 1017, fan: 220, auto: 6, autoGap: 650, dayMs: 900 };   // runSeed (searched offline): the first 6 years pay 1,150 / 779 / 684 / 1,150 / 1,150 / 985, half below 1,000, close to our 45%
   Deck.addStyle(`
-    .en{position:absolute;inset:0;background:#fff}
-    .en canvas{position:absolute;left:0;right:0;top:640px;height:330px;width:100%;display:block}
-    .en-top{position:absolute;left:120px;right:120px;top:84px}
-    .en-top .tt-uni{margin:0 0 34px}
-    .en-top .tt-rule{margin:0 0 22px}
-    .en-top .tt-title{font-size:100px;line-height:1}
-    .en-top .tt-sub{margin:22px 0 0;max-width:none;font-size:36px;color:var(--ink);font-weight:400}
-    .en-top .tt-sub .hl{color:var(--green);font-weight:700}
-    .en-k{position:absolute;left:120px;right:120px;top:410px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
-    .en-c{position:relative;background:rgba(255,255,255,.94);border:2px solid var(--green-soft);border-top:7px solid var(--green);border-radius:10px;padding:20px 26px 22px;box-shadow:0 6px 22px rgba(26,29,27,.08)}
-    .en-c b{display:block;font:800 58px/1 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums}
-    .en-c b span{font-size:30px;font-weight:700;color:var(--muted);margin-left:10px}
-    .en-c p{margin:10px 0 0;font:24px/1.3 var(--f-body);color:var(--ink)}
-    .en-foot{position:absolute;left:120px;right:120px;bottom:44px;margin:0;display:flex;justify-content:space-between;align-items:baseline;gap:30px;font:18px/1.4 var(--f-head);color:var(--ink);white-space:nowrap}
-    .en-foot b{color:var(--green-ink)}
-    .en-foot .lk{color:var(--green);font-weight:700;white-space:nowrap}
+    .en{position:absolute;inset:0;overflow:hidden;color:#fff;
+      background:radial-gradient(1200px 800px at 78% 30%,#24563a 0%,rgba(36,86,58,0) 60%),linear-gradient(135deg,#132a1e 0%,#1F3B2D 55%,#16301f 100%)}
+    .en>canvas.fan{position:absolute;inset:0;width:100%;height:100%}
+    .en-l{position:absolute;left:120px;top:110px;width:860px}
+    .en-uni{font:700 20px var(--f-head);letter-spacing:.14em;text-transform:uppercase;color:#8CCAA1;margin:0}
+    .en-rule{width:96px;height:6px;background:#3FBF6B;margin:30px 0 30px;border-radius:3px}
+    .en-t{font:800 118px/.98 var(--f-head);letter-spacing:-.02em;margin:0;color:#fff}
+    .en-t em{font-style:normal;color:#8CCAA1}
+    .en-q{font:400 36px/1.3 var(--f-head);color:rgba(255,255,255,.86);margin:36px 0 0;max-width:780px}
+    .en-q b{color:#fff;font-weight:700;background:linear-gradient(transparent 62%,rgba(63,191,107,.55) 62%)}
+    .en-k{position:absolute;left:120px;top:676px;width:860px;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+    .en-k div{padding:0 26px;border-left:1px solid rgba(255,255,255,.18)}
+    .en-k div:first-child{padding-left:0;border-left:0}
+    .en-k b{display:block;font:800 52px/1 var(--f-head);color:#fff;font-variant-numeric:lining-nums}
+    .en-k b small{font-size:24px;font-weight:700;color:#8CCAA1;margin-left:8px}
+    .en-k p{margin:10px 0 0;font:20px/1.3 var(--f-body);color:rgba(255,255,255,.72)}
+    .en-p{position:absolute;right:120px;top:110px;width:680px;height:740px;border-radius:18px;padding:30px 32px 26px;
+      background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 80px rgba(0,0,0,.35);backdrop-filter:blur(6px);display:flex;flex-direction:column}
+    .en-ph{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .en-ph h3{margin:0;font:800 30px var(--f-head);color:#fff}
+    .en-ph p{margin:4px 0 0;font:19px var(--f-body);color:rgba(255,255,255,.66)}
+    .en-btn{flex:none;font:700 20px var(--f-head);color:#0f2418;background:#3FBF6B;border:0;border-radius:999px;padding:14px 24px;cursor:pointer;
+      box-shadow:0 0 0 0 rgba(63,191,107,.6);animation:enPulse 2.4s ease-out infinite;transition:transform .15s,background .2s}
+    .en-btn:hover{background:#5fd486;transform:translateY(-1px)}
+    .en-btn:active{transform:translateY(1px)}
+    @keyframes enPulse{0%{box-shadow:0 0 0 0 rgba(63,191,107,.55)}70%{box-shadow:0 0 0 18px rgba(63,191,107,0)}100%{box-shadow:0 0 0 0 rgba(63,191,107,0)}}
+    .en-p canvas.run{flex:1;min-height:0;width:100%;margin:18px 0 12px;border-radius:10px;background:rgba(0,0,0,.18)}
+    .en-out{display:flex;align-items:baseline;justify-content:space-between;gap:16px;height:86px;align-items:center;padding:0 18px;border-radius:10px;background:rgba(255,255,255,.06);transition:background .3s}
+    .en-out.loss{background:rgba(255,255,255,.12)}
+    .en-out span{font:20px/1.3 var(--f-body);color:rgba(255,255,255,.8)}
+    .en-out b{font:800 34px var(--f-head);color:#fff;white-space:nowrap}
+    .en-out.win b{color:#8CCAA1}
+    .en-tally{display:grid;grid-template-columns:repeat(3,1fr);margin-top:14px;text-align:center}
+    .en-tally div{font:18px var(--f-body);color:rgba(255,255,255,.6)}
+    .en-tally b{display:block;font:800 30px var(--f-head);color:#fff;font-variant-numeric:tabular-nums}
+    .en-foot{position:absolute;left:120px;right:120px;bottom:46px;margin:0;display:flex;justify-content:space-between;align-items:baseline;gap:30px;
+      font:18px/1.4 var(--f-head);color:rgba(255,255,255,.7);white-space:nowrap;border-top:1px solid rgba(255,255,255,.14);padding-top:18px}
+    .en-foot b{color:#fff}
+    .en-foot .lk{color:#8CCAA1;font-weight:700}
   `);
   Deck.addSlide({
     id: "end", layout: "title", section: "", after: "conc-enough", steps: 0, secs: 8,
     notes: "Thank you for watching. And next time you see a fifteen percent coupon, ask yourself what it really costs you.",
     render(root) {
-      const R = XL.res;
+      const R = XL.res, CP = XL.coupon * B.nominal;   // both coupons, USD per 1,000
       root.innerHTML = `
         <div class="en">
-          <canvas></canvas>
-          <div class="en-top">
-            <p class="tt-uni">Corporate Finance (7,107) · University of St.Gallen · Fall Term 2026</p>
-            <div class="tt-rule"></div>
-            <h1 class="tt-title">Thank you for watching</h1>
-            <p class="tt-sub">Next time you see a <span class="hl">${CPN}% coupon</span>, ask yourself what it really costs you.</p>
+          <canvas class="fan"></canvas>
+          <div class="en-l">
+            <p class="en-uni">Corporate Finance (7,107) · University of St.Gallen</p>
+            <div class="en-rule"></div>
+            <h1 class="en-t">Thank you<br>for <em>watching.</em></h1>
+            <p class="en-q">Next time you see a <b>${CPN}% coupon</b>, ask yourself what it really costs you.</p>
           </div>
           <div class="en-k">
-            <div class="en-c"><b>USD ${U.fmt(R.fv, 0)}</b><p>fair value of a note you pay USD ${NOM} for</p></div>
-            <div class="en-c"><b>≈ ${U.fmt(R.fairCoupon, 0)}%<span>vs. ${CPN}%</span></b><p>fair coupon for this risk, against the coupon you get</p></div>
-            <div class="en-c"><b>${U.fmt(XL.below.pct, 0)}%</b><p>of our simulated years end below USD ${NOM}, coupons included</p></div>
+            <div><b>${U.fmt(R.fv, 0)}</b><p>fair value of a USD ${NOM} note</p></div>
+            <div><b>≈${U.fmt(R.fairCoupon, 0)}%<small>vs ${CPN}%</small></b><p>fair coupon vs the coupon you get</p></div>
+            <div><b>${U.fmt(XL.below.pct, 0)}%</b><p>of simulated years end below USD ${NOM}</p></div>
           </div>
+          <section class="en-p">
+            <div class="en-ph"><div><h3>Run your own year</h3><p>The worst of our three stocks, with our Excel's inputs</p></div>
+              <button class="en-btn" type="button">Simulate a year ▶</button></div>
+            <canvas class="run"></canvas>
+            <div class="en-out"><span>Press the button to simulate one possible year</span><b></b></div>
+            <div class="en-tally"><div><b class="t0">0</b>years simulated</div><div><b class="t1">–</b>average payout</div><div><b class="t2">–</b>ended below ${NOM}</div></div>
+          </section>
           <p class="en-foot"><span><b>Group III</b> · Ali Bozan Can, Benjamin Marco Bolliger, Cédric Anwar El Soda, Ivan Kissinger, Joaquim Graber, Leandro Broccucci, Mirko Cirantineo</span><span class="lk">montecarlooptionpricing.streamlit.app</span></p>
         </div>`;
-      const cv = root.querySelector("canvas");
-      let worst = null, k = 1, a = null;
-      function years() {   // the worst of the three stocks, day by day, for each simulated year (made when first needed)
-        if (!worst) {
-          const g = U.normal(U.rng(END.seed));
-          worst = Array.from({ length: END.n }, () => { const P = U.simBRC(g).paths; return P[0].map((_, t) => Math.min(P[0][t], P[1][t], P[2][t])); });
-        }
-        return worst;
+      const fanCv = root.querySelector("canvas.fan"), runCv = root.querySelector("canvas.run"), btn = root.querySelector(".en-btn");
+      const out = root.querySelector(".en-out"), outT = out.querySelector("span"), outV = out.querySelector("b");
+      const T = [0, 1, 2].map(k => root.querySelector(".t" + k));
+      const worstOf = P => P[0].map((_, t) => Math.min(P[0][t], P[1][t], P[2][t]));
+      // the background fan (fixed seed) and the stream of years for the button (its own seed)
+      let fan = null;
+      const fanYears = () => fan || (fan = (() => { const g = U.normal(U.rng(END.seed)); return Array.from({ length: END.fan }, () => worstOf(U.simBRC(g).paths)); })());
+      let gen = U.normal(U.rng(END.runSeed));
+      let runs = [], cur = null, day = 0, a = null, timer = 0, auto = 0, fanK = 1, fa = null;
+      const payout = sc => (sc.ki && sc.worst < B.strike ? B.nominal * sc.worst / B.strike : B.nominal) + CP;
+      function drawFan() {
+        const c = U.canvas(fanCv); if (!c) return;
+        const { ctx, w, h } = c, W = fanYears(), n = W[0].length - 1;
+        const X = t => -40 + t / n * (w + 80), Y = v => h * .62 + (1 - v) * h * .9;
+        const upto = Math.round(n * fanK);
+        ctx.lineJoin = "round"; ctx.lineWidth = 1.1;
+        W.forEach((p, j) => { ctx.strokeStyle = j % 3 ? "rgba(140,202,161,.07)" : "rgba(255,255,255,.05)"; ctx.beginPath(); ctx.moveTo(X(0), Y(1)); for (let t = 1; t <= upto; t++) ctx.lineTo(X(t), Y(p[t])); ctx.stroke(); });
       }
-      function draw() {
-        const c = U.canvas(cv); if (!c) return;
-        const { ctx, w, h } = c, W = years(), n = W[0].length - 1;
-        const X = t => 120 + t / n * (w - 240), Y = v => 26 + (1.22 - v) / (1.22 - .42) * (h - 40);
-        const upto = Math.round(n * k);
-        ctx.lineJoin = "round"; ctx.lineWidth = 1.2; ctx.strokeStyle = U.css("--green"); ctx.globalAlpha = .08;
-        W.forEach(p => { ctx.beginPath(); ctx.moveTo(X(0), Y(1)); for (let t = 1; t <= upto; t++) ctx.lineTo(X(t), Y(p[t])); ctx.stroke(); });
-        ctx.globalAlpha = 1; ctx.setLineDash([8, 7]); ctx.lineWidth = 1.6;
-        [[B.strike, "Strike 100%", U.css("--muted")], [B.kickIn, `Kick-in ${KI}%`, U.css("--ink")]].forEach(([v, lab, col]) => {
-          ctx.strokeStyle = col; ctx.globalAlpha = .55; ctx.beginPath(); ctx.moveTo(X(0), Y(v)); ctx.lineTo(X(n), Y(v)); ctx.stroke();
-          ctx.globalAlpha = .8; ctx.fillStyle = col; ctx.font = "700 17px " + U.F.body; ctx.textAlign = "right"; ctx.textBaseline = "bottom";
-          ctx.fillText(lab, X(n), Y(v) - 6);
+      function drawRun() {
+        const c = U.canvas(runCv); if (!c) return;
+        const { ctx, w, h } = c, n = B.steps, f = { x: 62, y: 22, w: w - 180, h: h - 54 };
+        const X = t => f.x + t / n * f.w, Y = v => f.y + (1.45 - v) / (1.45 - .35) * f.h;
+        ctx.font = "16px " + U.F.body; ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+        [.5, 1, 1.5].filter(v => v <= 1.45).forEach(v => { ctx.fillText(Math.round(v * 100) + "%", f.x - 10, Y(v)); });
+        ctx.textAlign = "center"; ctx.textBaseline = "top";
+        ["Issue", "6 months", "Maturity"].forEach((t, i) => ctx.fillText(t, X(i * n / 2), f.y + f.h + 10));
+        // strike and kick-in
+        ctx.setLineDash([7, 6]); ctx.lineWidth = 1.5;
+        [[B.strike, "Strike 100%", "rgba(255,255,255,.45)"], [B.kickIn, `Kick-in ${KI}%`, "rgba(255,255,255,.8)"]].forEach(([v, lab, col]) => {
+          ctx.strokeStyle = col; ctx.beginPath(); ctx.moveTo(f.x, Y(v)); ctx.lineTo(f.x + f.w, Y(v)); ctx.stroke();
+          ctx.fillStyle = col; ctx.font = "700 15px " + U.F.body; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(lab, f.x + f.w + 8, Y(v));
         });
-        ctx.setLineDash([]); ctx.globalAlpha = 1;
+        ctx.setLineDash([]);
+        ctx.save(); ctx.beginPath(); ctx.rect(f.x, 0, f.w + 2, h); ctx.clip();
+        // earlier years: faint, green if they paid in full, white if they ended below 1,000
+        ctx.lineWidth = 1.2; ctx.lineJoin = "round";
+        runs.forEach(r => { ctx.strokeStyle = r.below ? "rgba(255,255,255,.22)" : "rgba(63,191,107,.28)"; ctx.beginPath(); ctx.moveTo(X(0), Y(1)); for (let t = 1; t <= n; t++) ctx.lineTo(X(t), Y(r.p[t])); ctx.stroke(); });
+        if (cur) {   // the year being drawn
+          const col = cur.sc.ki ? "#ffffff" : "#5fd486";
+          ctx.strokeStyle = col; ctx.lineWidth = 3.2; ctx.shadowColor = col; ctx.shadowBlur = 12;
+          ctx.beginPath(); ctx.moveTo(X(0), Y(1)); for (let t = 1; t <= day; t++) ctx.lineTo(X(t), Y(cur.p[t])); ctx.stroke(); ctx.shadowBlur = 0;
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(day), Y(cur.p[day]), 6, 0, 7); ctx.fill();
+          if (cur.sc.ki && day >= cur.sc.kiDay) {   // the touch
+            ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(X(cur.sc.kiDay), Y(B.kickIn), 11, 0, 7); ctx.stroke();
+          }
+        }
+        ctx.restore();
       }
+      function tally() {
+        const n = runs.length;
+        T[0].textContent = U.fmt(n, 0);
+        T[1].textContent = n ? "USD " + U.fmt(runs.reduce((s, r) => s + r.pay, 0) / n, 0) : "–";
+        T[2].textContent = n ? U.fmt(runs.filter(r => r.below).length / n * 100, 0) + "%" : "–";
+      }
+      function finish() {
+        if (!cur) return;
+        const pay = cur.pay, below = pay < B.nominal;
+        runs.push({ p: cur.p, pay, below }); if (runs.length > 120) runs.shift();
+        out.className = "en-out " + (below ? "loss" : "win");
+        outT.textContent = cur.sc.ki
+          ? (cur.sc.worst < B.strike ? `Kick-in on day ${cur.sc.kiDay}: shares of the worst stock, plus coupons` : `Kick-in on day ${cur.sc.kiDay}, but the worst stock recovered: USD ${NOM}, plus coupons`)
+          : `No kick-in: USD ${NOM} back, plus coupons`;
+        outV.textContent = "USD " + U.fmt(pay, 0);
+        cur = null; day = 0; drawRun(); tally();
+      }
+      function simulate(fast) {
+        if (a) { a.cancel(); a = null; finish(); }
+        const sc = U.simBRC(gen);
+        cur = { sc, p: worstOf(sc.paths), pay: payout(sc) };
+        out.className = "en-out"; outT.textContent = "Simulating 252 trading days…"; outV.textContent = "";
+        if (fast || U.reduced) { day = B.steps; finish(); return; }
+        a = U.anim(END.dayMs, k => { day = Math.max(1, Math.round(k * B.steps)); drawRun(); }, { ease: U.ease.lin, done: () => { a = null; finish(); } });
+      }
+      btn.addEventListener("click", e => { e.stopPropagation(); auto = END.auto; clearTimeout(timer); simulate(false); });
+      function autoRun() {   // a few years by themselves when the slide opens
+        if (auto >= END.auto) return;
+        auto++; simulate(false); timer = setTimeout(autoRun, END.dayMs + END.autoGap);
+      }
+      function reset() { clearTimeout(timer); if (a) { a.cancel(); a = null; } if (fa) { fa.cancel(); fa = null; } runs = []; cur = null; day = 0; auto = 0; gen = U.normal(U.rng(END.runSeed)); out.className = "en-out"; outT.textContent = "Press the button to simulate one possible year"; outV.textContent = ""; tally(); }
       return {
-        resize: draw,
+        resize() { drawFan(); drawRun(); },
         step(i, o) {
-          if (a) { a.cancel(); a = null; }
-          if (o && o.dir === 1 && !o.instant) { k = 0; a = U.anim(END.ms, e => { k = e; draw(); }, { ease: U.ease.inOut, done: () => { a = null; } }); return; }
-          k = 1; draw();
+          reset();
+          if (o && o.instant || U.reduced) { fanK = 1; drawFan(); for (let k = 0; k < END.auto; k++) simulate(true); return; }
+          fanK = 0; fa = U.anim(2600, e => { fanK = e; drawFan(); }, { ease: U.ease.out, done: () => { fa = null; } });
+          drawRun(); timer = setTimeout(autoRun, 900);
         },
-        leave() { if (a) { a.cancel(); a = null; } k = 1; }
+        leave() { clearTimeout(timer); if (a) { a.cancel(); a = null; } if (fa) { fa.cancel(); fa = null; fanK = 1; } }
       };
     }
   });
