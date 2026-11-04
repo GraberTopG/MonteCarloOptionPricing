@@ -557,18 +557,19 @@
   const IV_RMSE = `<math display="block"><mtext>RMSE</mtext><mo stretchy="false">(</mo>${vs}<mo stretchy="false">)</mo><mo>=</mo><msqrt><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mo>(</mo><msubsup><mi>V</mi><mi>i</mi><mtext>BS</mtext></msubsup><mo stretchy="false">(</mo>${vs}<mo stretchy="false">)</mo><mo>−</mo><msubsup><mi>V</mi><mi>i</mi><mtext>market</mtext></msubsup><mo>)</mo></mrow><mn>2</mn></msup></msqrt></math>`;
   const IV_STEPS = [[`Trial <math>${vs}</math>`, "Black-Scholes prices"], ["RMSE", "vs. market prices"], ["Lowest RMSE", `= implied <math>${vs}</math>`]];
   // top to bottom: r solved at click 1, σ at click 2
-  const MI_VOL = { r: [1, 1, [1]], sg: [2, 2, [2]] };
+  const MI_VOL = { r: [1, 1, [1]], sg: [2, 3, [2, 3]] };   // click 1: r; click 2: σ is missing (Black-Scholes appears); click 3: implied σ
 
   Deck.addSlide({
-    id: "xl-input", section: "excel", steps: 2, secs: 44, liveSecs: 30,
+    id: "xl-input", section: "excel", steps: 3, secs: 47, liveSecs: 30,
     title: STEPS[0].t,
     subtitle: "The volatility is the one input Black-Scholes is missing: we imply it from option prices",
     lecture: "Lecture 4, slide 7",
     sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg (GC, OMON, DVD, CDSW, HP)",
     // live Excel follows (sheets 5 and 6): liveSecs = its narration (65 words) / 145 × 60 + 3 s for the Excel screen
-    notes: "Step one: volatility. Remember the Black-Scholes formula for a put. We know the stock price, the strike and the maturity from our product, but two inputs are missing: the interest rate and the volatility. "
+    notes: "Step one: the missing inputs. We know the stock prices, the strike and the maturity from our product, but two inputs are missing: the risk-free rate and the volatility. "
       + "[→] The risk-free rate comes from Bloomberg's yield curves, function GC: 4.43 percent. "
-      + "[→] The volatility we imply from option prices. We downloaded fifty put and call prices per stock with the Bloomberg function OMON, with different strikes and an expiry very close to our product's. We price the fifty options with Black-Scholes for a trial volatility, compare with the market prices, and keep the volatility with the lowest root mean squared error. "
+      + "[→] The volatility is harder. Remember the Black-Scholes formula for a put: it needs the volatility, but we can't look it up anywhere. "
+      + "[→] So we imply it from option prices. We downloaded fifty put and call prices per stock with the Bloomberg function OMON, with different strikes and an expiry very close to our product's. We price the fifty options with Black-Scholes for a trial volatility, compare with the market prices, and keep the volatility with the lowest root mean squared error. "
       + "[Excel: sheet 5 (option quotes), then the result table of sheet 6 with the three implied volatilities highlighted] "
       + "So we turn the formula around. The market tells us the option prices, and we look for the volatility that fits them best: the implied volatility. Sheet six does this with fifty options per stock. So Black-Scholes can't price our product, but it still finds a missing piece: 45 percent for Adobe, 28 for Apple and 32 for Microsoft. Adobe moves the most, by far.",
     render(body) {
@@ -576,11 +577,11 @@
         <div class="xl-in">
           ${miList()}
           <div class="xl-in-r">
-            <p class="label">What we need to find out</p>
-            <div class="fbox orange"><span class="chip orange">PUT</span>${BS_P}</div>
-            <div class="xl-in-d"><div class="fbox gray">${BS_D1}</div><div class="fbox gray">${BS_D2}</div></div>
-            <p class="label" data-step="2">What we get</p>
-            <div class="xl-in-card out" data-step="2" style="--d:1"><h4><math>${vs}</math>Implied volatility</h4>
+            <p class="label" data-step="2">What we need to find out</p>
+            <div class="fbox orange" data-step="2" style="--d:1"><span class="chip orange">PUT</span>${BS_P}</div>
+            <div class="xl-in-d" data-step="2" style="--d:2"><div class="fbox gray">${BS_D1}</div><div class="fbox gray">${BS_D2}</div></div>
+            <p class="label" data-step="3">What we get</p>
+            <div class="xl-in-card out" data-step="3" style="--d:1"><h4><math>${vs}</math>Implied volatility</h4>
               <ol class="xl-iv-steps">${IV_STEPS.map(([b, s], i) => `<li><span class="n">${i + 1}</span><b>${b}</b><span>${s}</span></li>`).join("")}</ol>
               <div class="xl-iv-f">${IV_RMSE}</div>
               <div class="xl-iv-res">${XM.sigma.map((s, k) => `<span style="color:var(${LIGHT[k]})">${TK[k]}<b>${pct(s, 0)}</b></span>`).join("")}</div></div>
