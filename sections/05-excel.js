@@ -133,6 +133,8 @@
     .xl-mi-n{font:700 25px/1.2 var(--f-head);color:var(--ink)}
     .xl-mi-h{font:20px/1.3 var(--f-body);color:var(--muted)}
     .xl-mi-h b{color:var(--ink)}
+    .xl-mi-bb{margin-top:2px;font:19px/1.3 var(--f-body);color:var(--muted)}
+    .xl-mi-bb b{color:var(--green-ink);letter-spacing:.03em}
     .xl-mi-val{font:700 23px/1.25 var(--f-body);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
     .xl-mi-h,.xl-mi-val{opacity:0;transition:opacity .45s ease}
     .xl-mi-row.hw .xl-mi-h,.xl-mi-row.sv .xl-mi-val{opacity:1}
@@ -524,17 +526,17 @@
   const vc = (k, x) => `<mrow class="xl-vc v-${k}">${x}</mrow>`;   // an input in its colour
   const perStock = (a, f) => `<span class="xl-in-px">${a.map((v, j) => `<span><b style="color:var(${LIGHT[j]})">${TK[j]}</b>${f(v)}</span>`).join("")}</span>`;
   const MI_ROWS = [
-    { k: "r", sym: "<mi>r</mi>", n: "Risk-free rate", h: "<b>Bloomberg lookup</b>: USD, 1 year", val: pct(XM.r, 2) },
-    { k: "sg", sym: "<mi>σ</mi>", n: "Implied volatility", h: `<b>${fmt(XL.quotes / 3, 0)} option prices</b> per stock (Bloomberg OMON): different strikes, expiry near ours`,
+    { k: "r", sym: "<mi>r</mi>", n: "Risk-free rate", h: "USD, 1 year", bb: "GC", val: pct(XM.r, 2) },
+    { k: "sg", sym: "<mi>σ</mi>", n: "Implied volatility", h: `<b>${fmt(XL.quotes / 3, 0)} option prices</b> per stock, expiry near ours`, bb: "OMON",
       val: perStock(XM.sigma, v => pct(v, 0)) },
-    { k: "q", sym: "<mi>δ</mi>", n: "Dividend yields", h: "<b>Bloomberg lookup</b>", val: perStock(XM.q, v => pct(v, 2)) },
-    { k: "cds", sym: "<msub><mi>s</mi><mtext>UBS</mtext></msub>", n: "Issuer spread (UBS)", h: "<b>Bloomberg lookup</b>: UBS's CDS, for the bond part", val: pct(XM.cds, 2) },
-    { k: "rho", sym: "<mi>ρ</mi>", n: "Correlation matrix", h: "<b>1 year of daily prices</b> (Bloomberg HP)", val: "→" }
+    { k: "q", sym: "<mi>δ</mi>", n: "Dividend yields", h: "12-month dividend yield per stock", bb: "DVD", val: perStock(XM.q, v => pct(v, 2)) },
+    { k: "cds", sym: "<msub><mi>s</mi><mtext>UBS</mtext></msub>", n: "Issuer spread (UBS)", h: "UBS's CDS spread, for the bond part", bb: "CDSW", val: pct(XM.cds, 2) },
+    { k: "rho", sym: "<mi>ρ</mi>", n: "Correlation matrix", h: "<b>1 year of daily prices</b>", bb: "HP", val: "→" }
   ];
   const miList = () => `<div class="xl-mi"><p class="label">Missing inputs and how we solved them</p>
     ${MI_ROWS.map(r => `<div class="xl-mi-row v-${r.k}" data-k="${r.k}">
       <span class="xl-mi-sym"><math>${vc(r.k, r.sym)}</math></span>
-      <div><div class="xl-mi-n">${r.n}</div><div class="xl-mi-h">${r.h}</div></div>
+      <div><div class="xl-mi-n">${r.n}</div><div class="xl-mi-h">${r.h}</div><div class="xl-mi-bb">Bloomberg function: <b>${r.bb}</b></div></div>
       <div class="xl-mi-val">${r.val}</div></div>`).join("")}</div>`;
   const miStep = (body, plan, i) => body.querySelectorAll(".xl-mi-row").forEach(el => {
     const [how, sv, hl] = plan[el.dataset.k] || [Infinity, Infinity, []];
