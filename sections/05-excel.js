@@ -651,7 +651,7 @@
 
   // ================= 3) xl-gbm: step 2, simulating a stock =================
   // the lecture's model (Lecture 4, slide 15): S(t+Δt) = S(t) + Drift + Shock, written with r and q as in our Excel
-  // (the lecture writes δ for the dividend yield: a footnote on the drift card; r as in the lecture, never r_f)
+  // (the lecture writes r_f and δ, on slides 11 and 15, which this slide cites; the slide itself writes r: a footnote on the drift card)
   const S_t = sub("S", "<mi>t</mi>");
   const GBM_TOP = `<math display="block">${sub("S", `<mrow><mi>t</mi><mo>+</mo>${DT}</mrow>`)}<mo>=</mo>${S_t}<mo>+</mo><mtext class="xl-gb-w dr">Drift</mtext><mo>+</mo><mtext class="xl-gb-w sh">Shock</mtext></math>`;
   const GBM_DR = `<math><mo stretchy="false">(</mo><mi>r</mi><mo>−</mo><mi>q</mi><mo stretchy="false">)</mo><mo>·</mo>${S_t}<mo>·</mo>${DT}</math>`;
@@ -722,7 +722,7 @@
           <div class="xl-gb-cards">
             <div class="xl-gb-c dr"><p class="xl-gb-h"><span class="num">1</span>Drift (risk-neutral)</p>
               <div class="xl-gb-b"><div class="xl-gb-f">${GBM_DR}</div>
-                <p class="xl-gb-fn">lecture: <math><mi>r</mi></math> and <math><mi>δ</mi></math></p>
+                <p class="xl-gb-fn">lecture: <math>${sub("r", "<mi>f</mi>")}</math> and <math><mi>δ</mi></math></p>
                 <p>risk-free rate minus dividend yield: <b style="white-space:nowrap">risk-neutral</b>, no expected returns needed</p>
                 <p class="m">our Excel: <math><mi>r</mi></math> = ${pct(XM.r, 2)},<br><math><mi>q</mi></math> = ${Q_TXT}</p></div></div>
             <div class="xl-gb-c sh"><p class="xl-gb-h"><span class="num">2</span>Random shock</p>
@@ -775,7 +775,7 @@
     id: "xl-corr", section: "excel", steps: 2, secs: 27, liveSecs: 8,
     title: STEPS[2].t,
     subtitle: "The Z of the shock, one per stock: we mix them so our stocks move together",
-    sources: "own Excel model, sheets 4, 7 and 8 (path 1)",
+    sources: "own Excel model, sheets 4, 7 and 8 (path 1); Cholesky method: Glasserman (2003), ch. 2",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
     notes: "Remember the Z in the shock: each stock needs its own. But our random numbers are independent, and our stocks are not. So we mix them, with the Cholesky method. Adobe keeps its own random number. "
       + "[→] Apple takes 0.22 of Adobe's, exactly their correlation, plus 0.98 of its own. "
@@ -889,7 +889,7 @@
     title: STEPS[3].t,
     subtitle: `Sheet 8 copies the step down ${NDAY} trading days, for all three stocks`,
     lecture: "Lecture 4, slide 15",
-    sources: "Arnold (2026), slide 15",
+    sources: "Arnold (2026), slide 15; exponential step: Glasserman (2003), ch. 3",
     // live Excel: the K49 shot between clicks 2 and 3 (3 s); steps 4 to 6 have slides of their own (1 Nov 2026), step 7's
     // engine checks open xl-sens
     notes: "Step three: one simulated year. Sheet eight is the engine: each row is one trading day, and each cell uses this formula, "

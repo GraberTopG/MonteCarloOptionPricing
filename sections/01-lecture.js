@@ -72,7 +72,7 @@
     title: "Recap: Black-Scholes and why it can't price a Multi-BRC",
     subtitle: "An exact formula for vanilla options, but only for one underlying and path-<u>in</u>dependent options",
     lecture: "Lecture 4, slide 7",
-    sources: "Arnold (2026); Black & Scholes (1973); Merton (1973)",
+    sources: "Arnold (2026); Black & Scholes (1973); Merton (1973); Cox, Ross & Rubinstein (1979)",
     notes: `So why not just use Black-Scholes? [→] It's a great formula, but it only works for one stock, and only when the final price matters.`,
     render(body) {
       body.innerHTML = `
@@ -126,7 +126,7 @@
     id: "bt-recap", section: "why", after: "bs-recap", steps: 1, secs: 14,
     title: "Recap: Binomial tree and why it's impractical for a Multi-BRC",
     subtitle: `The curse of dimensionality: 1 stock needs ${U.fmt(BT_ONE, 0)} nodes, 3 stocks need ${U.fmt(BT_BN, 1)} billion`,
-    lecture: "Lecture 4, slide 10",
+    lecture: "Lecture 4, slides 9–13",
     sources: "Arnold (2026); Cox, Ross & Rubinstein (1979)",
     notes: `What about the binomial tree from the lecture? It moves the stock up or down each step and works backwards to today, and it handles any payoff, even early exercise. [→] In theory, it could price our product too. But with three stocks, the tree grows in three dimensions, and with 252 trading days it reaches about ${U.fmt(BT_BN, 1)} billion nodes. Far too big to compute, let alone in Excel.`,
     render(body) {

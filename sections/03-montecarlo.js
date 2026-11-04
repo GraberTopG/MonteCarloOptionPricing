@@ -310,7 +310,7 @@
     title: "Monte Carlo pricing: simulate paths, discount payoffs, average them",
     subtitle: "Instead of rolling a die, we simulate a whole year of share prices, 2,000 times",
     lecture: "Lecture 4, slides 11 and 15",
-    sources: "Arnold (2026), slides 11 and 15; own illustration",
+    sources: "Arnold (2026), slides 11 and 15; own illustration; Bloomberg (Apple's implied volatility, USD 1-year rate)",
     notes: "How do we apply this to an option? In three steps. [→] Step one: sample a random path, a whole year of daily share prices. We do that 2,000 times. [→] Step two: for each path, compute the payoff and discount it at the risk-free rate. One path, one number. [→] Step three: average them all. By the law of large numbers, this average converges to the discounted expected payoff in a risk-neutral world, which is exactly how our lecture prices an option.",
     render(body) {
       const box = (k, icon, txt) => `<div class="box" data-step="${k}"><span class="n">${k}</span><span class="badge">${U.icon(icon)}</span><span class="lb">${txt}</span></div>`;

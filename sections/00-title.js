@@ -597,7 +597,7 @@
     id: "hook-product", section: "product", steps: 3, secs: secsFor(NOTES_PR, 3),
     title: "Banks' solution: A Multi‑BRC on $ADBE, $AAPL, $MSFT",   // non-breaking hyphen: "Multi-BRC" stays on one line
     subtitle: "A bestseller among Swiss structured products: extra yield in sideways to slightly down markets",
-    sources: "Bloomberg; Swiss Structured Products Association (2026)",
+    sources: "Bloomberg; Swiss Structured Products Association (2026); Allet (2025)",
     notes: NOTES_PR,
     render(body) {
       // click 1: the 15% grows and holds for about a second, then the risk-free rate (after 0.99 s) and "> 3×" (1.26 s) fade in
