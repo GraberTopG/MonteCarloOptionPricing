@@ -19,7 +19,8 @@
    no slide uses them since the two slides were removed on 1 Nov. UBS, Vontobel and Swissquote now give the author and
    date shown on the page: Allet (2025), Vontobel Markets (2023; German title with an English translation) and Zoller
    (2026, updated 19 Oct 2026). Wallmeier & Diethelm (2009): pages 59–72 and the DOI (the jod.pm-research.com link is
-   dead). SSPA: the map's full title. Now 14 sources. Every link re-tested: all answer; the DOIs of Black & Scholes
+   dead). SSPA: the map's full title. Glasserman (2003) back for the Cholesky and exponential steps
+   (removed on 29 Oct in an edit by Claude, not by a group decision). Now 15 sources. Every link re-tested: all answer; the DOIs of Black & Scholes
    (1973) and Broadie et al. (1997) and the UBS page answer HTTP 403 to scripts but open in a browser. */
 (function () {
   const REFS = [
@@ -30,6 +31,7 @@
     "Broadie, M., Glasserman, P., &amp; Kou, S. (1997). A continuity correction for discrete barrier options. <i>Mathematical Finance, 7</i>(4), 325–349. <a class=\"ext\" href=\"https://doi.org/10.1111/1467-9965.00035\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1111/1467-9965.00035</a>",
     "Cox, J. C., Ross, S. A., &amp; Rubinstein, M. (1979). Option pricing: A simplified approach. <i>Journal of Financial Economics, 7</i>(3), 229–263. <a class=\"ext\" href=\"https://doi.org/10.1016/0304-405X(79)90015-1\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1016/0304-405X(79)90015-1</a>",
     "Eckhardt, R. (1987). Stan Ulam, John von Neumann, and the Monte Carlo method. <i>Los Alamos Science</i>, (15), 131–141. <a class=\"ext\" href=\"https://permalink.lanl.gov/object/tr?what=info:lanl-repo/lareport/LA-UR-88-9068\" target=\"_blank\" rel=\"noopener\">https://permalink.lanl.gov/object/tr?what=info:lanl-repo/lareport/LA-UR-88-9068</a>",
+    "Glasserman, P. (2003). <i>Monte Carlo methods in financial engineering</i>. Springer. <a class=\"ext\" href=\"https://doi.org/10.1007/978-0-387-21617-1\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.1007/978-0-387-21617-1</a>",
     "Merton, R. C. (1973). Theory of rational option pricing. <i>The Bell Journal of Economics and Management Science, 4</i>(1), 141–183. <a class=\"ext\" href=\"https://doi.org/10.2307/3003143\" target=\"_blank\" rel=\"noopener\">https://doi.org/10.2307/3003143</a>",
     "Metropolis, N. (1987). The beginning of the Monte Carlo method. <i>Los Alamos Science</i>, (15), 125–130. <a class=\"ext\" href=\"https://permalink.lanl.gov/object/tr?what=info:lanl-repo/lareport/LA-UR-88-9067\" target=\"_blank\" rel=\"noopener\">https://permalink.lanl.gov/object/tr?what=info:lanl-repo/lareport/LA-UR-88-9067</a>",
     "Swiss Structured Products Association. (2026). <i>SSPA Swiss Derivative Map© 2026</i> [Product classification]. <a class=\"ext\" href=\"https://sspa.ch/wp-content/uploads/2026/01/en_sspaswissmap_2026.pdf\" target=\"_blank\" rel=\"noopener\">https://sspa.ch/wp-content/uploads/2026/01/en_sspaswissmap_2026.pdf</a>",
@@ -60,14 +62,14 @@
     title: "References",
     subtitle: "Sources used in the video, the web app and the Excel model",
     sources: "APA 7th edition · links checked 4 November 2026",
-    notes: "(Not recorded: the video ends on the end card. This slide is the source list of the slides PDF we hand in: 14 sources.)",
+    notes: "(Not recorded: the video ends on the end card. This slide is the source list of the slides PDF we hand in: 15 sources.)",
     render(body) {
       const pdf = Deck.util.slidesPdf();
       body.innerHTML = `
         ${pdf ? `<a class="ui-btn rf-pdf${pdf.old ? " old" : ""}" href="${pdf.href}" download="Monte-Carlo-Option-Pricing-slides.pdf" title="${pdf.title}"><span class="ic">↓</span>Download presentation as PDF${pdf.old ? " (older version)" : ""}</a>` : ""}
         <div class="rf-box">
           <ul class="rf-list">${REFS.map(r => `<li>${r.replace(/>(https?:\/\/[^<]+)<\/a>/g, (m, u) => ">" + u.replace(/\//g, "/<wbr>") + "</a>")}</li>`).join("")}</ul>
-          <p class="rf-style"><b>Where we use them:</b> Lecture 4 (Arnold, 2026), slides 7 (Black-Scholes), 9–10 (binomial tree), 11–13 (risk-neutral valuation), 14 (replication) and 15 (Monte Carlo and geometric Brownian motion). Cox, Ross and Rubinstein (1979): the binomial tree and the meaning of N(d₂). Swiss Structured Products Association (2026): category 1230, barrier reverse convertible. Parts of the Monte Carlo section are adapted from The Synthetic Mind (2026), whose visual style also inspired the web app; all drawings and animations are our own. Vontobel Markets (2023) and Zoller (2026) inspired our payoff diagram of the Multi-BRC; Allet (2025) underlies the advantages and risks. Wallmeier and Diethelm (2009): the multi-BRC as a bond minus a down-and-in put.</p>
+          <p class="rf-style"><b>Where we use them:</b> Lecture 4 (Arnold, 2026), slides 7 (Black-Scholes), 9–10 (binomial tree), 11–13 (risk-neutral valuation), 14 (replication) and 15 (Monte Carlo and geometric Brownian motion). Cox, Ross and Rubinstein (1979): the binomial tree and the meaning of N(d₂). Glasserman (2003), chapters 2–3: correlated random numbers (Cholesky) and the exponential simulation step. Swiss Structured Products Association (2026): category 1230, barrier reverse convertible. Parts of the Monte Carlo section are adapted from The Synthetic Mind (2026), whose visual style also inspired the web app; all drawings and animations are our own. Vontobel Markets (2023) and Zoller (2026) inspired our payoff diagram of the Multi-BRC; Allet (2025) underlies the advantages and risks. Wallmeier and Diethelm (2009): the multi-BRC as a bond minus a down-and-in put.</p>
         </div>`;
       return {};
     }

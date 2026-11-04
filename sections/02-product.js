@@ -582,7 +582,7 @@
     id: "brc-decompose", section: "product", steps: 3, secs: 18,
     title: "The Multi-BRC is a bond minus a put",
     subtitle: "You lend UBS USD 1,000 and sell a down-and-in put on the worst of three: the put finances the high coupon",
-    sources: "Wallmeier & Diethelm (2009)",
+    sources: "Arnold (2026), slide 14; Wallmeier & Diethelm (2009)",
     notes: `To price it, we split it in two: [→] a UBS bond that pays the coupons and the thousand, [→] minus the put you sold. [→] The bond is easy: just discount it. The put is the hard part, so that is what we value with Monte Carlo.`,
     render(body) {
       body.innerHTML = `

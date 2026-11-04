@@ -775,7 +775,7 @@
     id: "xl-corr", section: "excel", steps: 2, secs: 27, liveSecs: 8,
     title: STEPS[2].t,
     subtitle: "The Z of the shock, one per stock: we mix them so our stocks move together",
-    sources: "own Excel model, sheets 4, 7 and 8 (path 1)",
+    sources: "own Excel model, sheets 4, 7 and 8 (path 1); Cholesky method: Glasserman (2003), ch. 2",
     // live Excel follows (sheets 4 and 8, no narration): liveSecs = the owner's value for its screen changes (fix round 1)
     notes: "Remember the Z in the shock: each stock needs its own. But our random numbers are independent, and our stocks are not. So we mix them, with the Cholesky method. Adobe keeps its own random number. "
       + "[→] Apple takes 0.22 of Adobe's, exactly their correlation, plus 0.98 of its own. "
@@ -889,7 +889,7 @@
     title: STEPS[3].t,
     subtitle: `Sheet 8 copies the step down ${NDAY} trading days, for all three stocks`,
     lecture: "Lecture 4, slide 15",
-    sources: "Arnold (2026), slide 15",
+    sources: "Arnold (2026), slide 15; exponential step: Glasserman (2003), ch. 3",
     // live Excel: the K49 shot between clicks 2 and 3 (3 s); steps 4 to 6 have slides of their own (1 Nov 2026), step 7's
     // engine checks open xl-sens
     notes: "Step three: one simulated year. Sheet eight is the engine: each row is one trading day, and each cell uses this formula, "
