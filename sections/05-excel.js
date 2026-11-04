@@ -402,11 +402,11 @@
   // the four steps of the Excel part (step 2 in two slides, 2a and 2b), its table of contents: only the title and one
   // small picture made from our data. The step slides take their titles from here
   const STEPS = [
-    { n: "1", t: "Step 1: Solving the Missing Inputs", v: "inputs" },   // the plan's card and xl-input, xl-rho (the group, 1 Nov 2026)
+    { n: "1", t: "Step 1: Solving the missing inputs", v: "inputs" },   // the plan's card and xl-input, xl-rho (the group, 1 Nov 2026)
     { n: "2a", t: "Step 2a: GBM applied", v: "gbm" },
-    { n: "2b", t: "Step 2b: Correlating the Z with Cholesky", v: "shocks" },
-    { n: "3", t: "Step 3: One Simulated Year", v: "year" },
-    { n: "4", t: "Step 4: Barrier &amp; Discounted Payoff", v: "barrier" }
+    { n: "2b", t: "Step 2b: Correlated shocks (Cholesky)", v: "shocks" },
+    { n: "3", t: "Step 3: One simulated year", v: "year" },
+    { n: "4", t: "Step 4: Barrier &amp; discounted payoff", v: "barrier" }
   ];
   const RES = XL.res;
   const VOL_PX = 165;                                        // bar height of a 50% volatility
@@ -527,11 +527,11 @@
   const perStock = (a, f) => `<span class="xl-in-px">${a.map((v, j) => `<span><b style="color:var(${LIGHT[j]})">${TK[j]}</b>${f(v)}</span>`).join("")}</span>`;
   const MI_ROWS = [
     { k: "r", sym: "<mi>r</mi>", n: "Risk-free rate", h: "USD, 1 year", bb: "GC", val: pct(XM.r, 2) },
-    { k: "sg", sym: "<mi>σ</mi>", n: "Implied volatility", h: `<b>${fmt(XL.quotes / 3, 0)} option prices</b> per stock, expiry near ours`, bb: "OMON",
+    { k: "sg", sym: "<mi>σ</mi>", n: "Implied volatility", h: `${fmt(XL.quotes / 3, 0)} option prices per stock, expiry near ours`, bb: "OMON",
       val: perStock(XM.sigma, v => pct(v, 0)) },
     { k: "q", sym: "<mi>δ</mi>", n: "Dividend yields", h: "12-month dividend yield per stock", bb: "DVD", val: perStock(XM.q, v => pct(v, 2)) },
     { k: "cds", sym: "<msub><mi>s</mi><mtext>UBS</mtext></msub>", n: "Issuer spread (UBS)", h: "UBS's CDS spread, for the bond part", bb: "CDSW", val: pct(XM.cds, 2) },
-    { k: "rho", sym: "<mi>ρ</mi>", n: "Correlation matrix", h: "<b>1 year of daily prices</b>", bb: "HP", val: "→" }
+    { k: "rho", sym: "<mi>ρ</mi>", n: "Correlation matrix", h: "1 year of daily prices", bb: "HP", val: "→" }
   ];
   const miList = () => `<div class="xl-mi"><p class="label">Missing inputs and how we solved them</p>
     ${MI_ROWS.map(r => `<div class="xl-mi-row v-${r.k}" data-k="${r.k}">
@@ -564,10 +564,10 @@
     title: STEPS[0].t,
     subtitle: "The volatility is the one input Black-Scholes is missing: we imply it from option prices",
     lecture: "Lecture 4, slide 7",
-    sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg (OMON, market data)",
+    sources: "Arnold (2026), slide 7; Black & Scholes (1973); Bloomberg (GC, OMON, DVD, CDSW, HP)",
     // live Excel follows (sheets 5 and 6): liveSecs = its narration (65 words) / 145 × 60 + 3 s for the Excel screen
     notes: "Step one: volatility. Remember the Black-Scholes formula for a put. We know the stock price, the strike and the maturity from our product, but two inputs are missing: the interest rate and the volatility. "
-      + "[→] The risk-free rate we looked up on Bloomberg: 4.43 percent. "
+      + "[→] The risk-free rate comes from Bloomberg's yield curves, function GC: 4.43 percent. "
       + "[→] The volatility we imply from option prices. We downloaded fifty put and call prices per stock with the Bloomberg function OMON, with different strikes and an expiry very close to our product's. We price the fifty options with Black-Scholes for a trial volatility, compare with the market prices, and keep the volatility with the lowest root mean squared error. "
       + "[Excel: sheet 5 (option quotes), then the result table of sheet 6 with the three implied volatilities highlighted] "
       + "So we turn the formula around. The market tells us the option prices, and we look for the volatility that fits them best: the implied volatility. Sheet six does this with fifty options per stock. So Black-Scholes can't price our product, but it still finds a missing piece: 45 percent for Adobe, 28 for Apple and 32 for Microsoft. Adobe moves the most, by far.",
@@ -620,10 +620,10 @@
     id: "xl-rho", section: "excel", after: "xl-input", steps: 3, secs: 22, liveSecs: 15,
     title: STEPS[0].t,
     subtitle: "The correlation and the other missing inputs, and how we found each one",
-    sources: "Bloomberg (HP, market data)",
+    sources: "Bloomberg (GC, OMON, DVD, CDSW, HP)",
     // live Excel follows (sheet 4): liveSecs = its narration (29 words) / 145 × 60 + 3 s for the Excel screen
     notes: "To simulate our product we need a few more inputs than Black-Scholes. "
-      + "[→] The dividends and UBS's issuer spread we looked up on Bloomberg. "
+      + "[→] The dividend yields come from the Bloomberg function DVD, and UBS's issuer spread from its credit default swap, function CDSW. "
       + "[→] For the correlation, we used one year of daily prices, downloaded with the Bloomberg function HP. "
       + "[→] From these daily returns we build the correlation matrix. "
       + "[Excel: sheet 4, correlation matrix] "
@@ -1093,7 +1093,7 @@
   Deck.addSlide({
     // a bonus after the four steps, in the Excel section but not a step: not on the plan slide (the group, 1 Nov 2026)
     id: "xl-sens", section: "excel", steps: 1, secs: 15, liveSecs: 27,
-    title: "Bonus Step: Sensitivity Analysis",
+    title: "Bonus step: sensitivity analysis",
     subtitle: `Volatility drives the price: ±5 points move the put by up to ${VOL_MAX} USD, correlation by only ${RHO_MAX}`,
     notes: "[Excel: sheet 11, the engine-check rows (scenarios 10 and 11); next to them, the average of sheet 9, column D (select D13:D2012 and read the average in the status bar)] "
       + "Can we trust the engine? We test two extreme cases. With the barrier at zero, it's never touched, so the put must be worth nothing. And it is. With the barrier at 100 percent, it's always touched, so we must get the plain worst-of put from column D of sheet nine: 227 dollars. Exactly what we get. "
