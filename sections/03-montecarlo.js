@@ -4,10 +4,9 @@
                 1,000 simulated rolls whose average settles at 3.5
      mc-sample  "Monte Carlo: averaging the payoffs of random paths": price = discounted risk-neutral expectation, 2,000
                 simulated years (as many as our Excel's paths)
-     mc-grid    "Monte Carlo escapes the curse of dimensionality": a grid needs 10^756 points for our 756 random numbers,
-                random points do not care
      mc-pi      "How precise is Monte Carlo?": 5 darts, then 10,000, with a 95% interval
      (mc-paths, "Step 1 in detail: simulating paths with GBM", was removed on 1 Nov 2026: the group)
+     (mc-grid, "Monte Carlo escapes the curse of dimensionality", was removed on 5 Nov 2026: the group)
    All random numbers are seeded (Deck.util.rng), so every take shows the same picture. Classes keep the prefix .mc-. */
 (function () {
   const U = Deck.util, XL = U.XL, B = U.BRC;
@@ -111,38 +110,6 @@
     .mc-lln{position:relative;flex:1;min-height:0;padding:34px 18px 10px 60px;display:flex;flex-direction:column;justify-content:center}
     .mc-lln math{font-size:32px}
     .mc-lln p{margin:4px 0 0;font:26px/1.3 var(--f-body);text-align:center}
-
-    /* ---------- 3) mc-grid ---------- */
-    .mc-gr{--mc-gcols:1fr 66px 1fr 66px 1fr 66px 1fr;display:grid;grid-template-rows:auto 314px minmax(0,1fr);row-gap:32px;height:100%}
-    .mc-gr-s{margin:0;font:24px/1.3 var(--f-body);color:var(--ink);white-space:nowrap}
-    .mc-gr>.panel{padding:34px 32px 12px}
-    .mc-gcells{display:grid;grid-template-columns:var(--mc-gcols);height:100%}
-    .mc-gc{display:flex;flex-direction:column;align-items:center;min-width:0;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;transition-delay:calc(var(--d) * 220ms)}
-    .mc-gr.in .mc-gc{opacity:1;transform:none}
-    .mc-gh{font:700 24px/1 var(--f-head);color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin:4px 0 0;font-variant-numeric:lining-nums;white-space:nowrap}
-    .mc-gc svg{display:block;width:300px;height:169px;margin-top:10px;flex:none}
-    .mc-gn{display:flex;align-items:baseline;gap:12px;margin-top:6px;white-space:nowrap}
-    .mc-gn b{font:800 48px/1 var(--f-head);color:var(--green-ink);font-variant-numeric:lining-nums}
-    .mc-gn span{font:26px var(--f-body);color:var(--muted)}
-    .mc-gn b.q{color:var(--rule-light)}
-    .mc-gn b.x{color:var(--orange)}
-    .mc-gn b sup{font-size:.56em;vertical-align:.78em;line-height:0;margin-left:2px}
-    .mc-g756{width:300px;height:169px;margin-top:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
-    .mc-g756 .d{font:700 46px/1 var(--f-head);color:var(--green-ink);letter-spacing:.06em}
-    .mc-g756 .s{font:28px/1.2 var(--f-body);color:var(--ink)}
-    .mc-g756 .t{font:700 26px/1.2 var(--f-body);color:var(--orange)}
-    .mc-gx{display:flex;flex-direction:row;align-items:flex-start;justify-content:center;padding-top:110px;font:700 26px/1 var(--f-body);color:var(--orange);white-space:nowrap}
-    .mc-gr>.mc-gt{min-height:0;display:flex;flex-direction:column;padding:30px 32px 12px}
-    .mc-gt-b{flex:1;min-height:0;display:grid;grid-template-columns:var(--mc-gcols)}
-    .mc-gt .cl{position:relative;min-width:0;display:flex;flex-direction:column;align-items:center}
-    .mc-gt .cl canvas{position:relative;inset:auto;flex:1;min-height:0;height:auto;width:100%}
-    .mc-gt .cl p{margin:6px 0 0;font:700 20px/1 var(--f-body);color:var(--muted);white-space:nowrap}
-    .mc-gt .cl.f{justify-content:center;gap:10px;text-align:center}
-    .mc-gt .cl.f math{font-size:40px;color:var(--amber)}
-    .mc-gt .cl.f span{font:700 24px/1.3 var(--f-body);color:var(--ink)}
-    .mc-gt .cl.f small{font:400 19px var(--f-body);color:var(--muted)}
-    .mc-gt .cl.f .mc-gmc{display:flex;flex-direction:column;align-items:center;gap:6px}
-    .mc-gt .cl.f .mc-gmc>span{color:var(--amber)}
 
     /* ---------- 4) mc-pi ---------- */
     .slide[data-id="mc-pi"] .s-title{font-size:48px;white-space:nowrap}
@@ -442,118 +409,6 @@
         step,
         // a cancelled reveal ends complete (also when it had not drawn its first day yet)
         leave() { clearTimeout(pre); pre = 0; if (a) step(cur, { instant: true }); }
-      };
-    }
-  });
-
-  // =====================================================================================================
-  // 3) Monte Carlo escapes the curse of dimensionality
-  // =====================================================================================================
-  // the drawings share one 320 x 180 box: 1D on a line, 2D in a square, 3D in an oblique cube
-  const G1 = { x0: 24, x1: 296, y: 96 }, G2 = { x0: 76, y0: 8, s: 168 }, G3 = { x0: 70, y0: 168, s: 118, dx: 65, dy: 48 };
-  const at3 = (u, v, w) => [G3.x0 + u * G3.s + w * G3.dx, G3.y0 - v * G3.s - w * G3.dy];
-  const cubeEdges = () => { const c = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]].map(p => at3(...p));
-    return [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]].map(([a, b]) => [c[a], c[b]]); };
-  function gridSVG(dim) {
-    const ink = "var(--green-ink)";
-    let s = "";
-    if (dim === 1) {
-      s += `<line x1="10" y1="${G1.y}" x2="310" y2="${G1.y}" style="stroke:var(--rule);stroke-width:2"/>`;
-      for (let i = 0; i < 10; i++) s += `<circle cx="${G1.x0 + i * (G1.x1 - G1.x0) / 9}" cy="${G1.y}" r="8" style="fill:${ink}"/>`;
-    } else if (dim === 2) {
-      s += `<rect x="${G2.x0 - 8}" y="${G2.y0 - 8 + 4}" width="${G2.s + 16}" height="${G2.s + 16 - 8}" style="fill:none;stroke:var(--rule-light);stroke-width:1.5"/>`;
-      const sp = (G2.s - 8) / 9;
-      for (let i = 0; i < 10; i++) for (let j = 0; j < 10; j++) s += `<circle cx="${G2.x0 + i * (G2.s / 9)}" cy="${G2.y0 + 4 + j * sp}" r="4.6" style="fill:${ink}"/>`;
-    } else {
-      cubeEdges().forEach(([a, b]) => { s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" style="stroke:var(--rule-light);stroke-width:1.5"/>`; });
-      // all 1,000 points, back layers first: the three faces we see are solid, the points inside and behind faint
-      for (let k = 9; k >= 0; k--) for (let i = 0; i < 10; i++) for (let j = 0; j < 10; j++) {
-        const [x, y] = at3(i / 9, j / 9, k / 9), face = k === 0 || j === 9 || i === 9;
-        s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${face ? 2.7 : 1.7}" style="fill:${ink};opacity:${face ? 1 : .22}"/>`;
-      }
-    }
-    return `<svg viewBox="0 0 320 180" aria-hidden="true">${s}</svg>`;
-  }
-  const CLOUD_N = 100, CLOUD_SEED = 9;
-  const ERR = `<math><mtext>error</mtext><mo>∝</mo><mfrac><mn>1</mn><msqrt><mi>n</mi></msqrt></mfrac></math>`;
-
-  Deck.addSlide({
-    id: "mc-grid", section: "mc", steps: 2, secs: 19,
-    title: "Monte Carlo escapes the curse of dimensionality",
-    subtitle: "A grid grows exponentially with every dimension; the number of random points doesn’t",
-    sources: "own illustration",
-    notes: "",
-    render(body) {
-      body.closest(".slide").classList.add("mc-tw");
-      const cell = (dim, n, d) => `<div class="mc-gc" style="--d:${d}"><p class="mc-gh">${dim} dimension${dim > 1 ? "s" : ""}</p>${gridSVG(dim)}<div class="mc-gn"><b>${fmt(n, 0)}</b><span>points</span></div></div>`;
-      const cl = (k, d) => `<div class="cl"><canvas data-k="${k}"></canvas><p>${CLOUD_N} random points</p></div>`;
-      body.innerHTML = `
-        <div class="mc-gr">
-          <p class="mc-gr-s">One random number is one dimension. A simulated year of three stocks needs ${fmt(DIMS, 0)} of them, so it is <b class="g">a single point in ${fmt(DIMS, 0)}-dimensional space</b>.</p>
-          <section class="panel"><h3 class="panel-title">A grid, like the binomial tree: the points multiply with every dimension</h3>
-            <div class="mc-gcells">
-              ${cell(1, 10, 0)}<div class="mc-gx mc-gc" style="--d:1">× 10 →</div>${cell(2, 100, 1)}<div class="mc-gx mc-gc" style="--d:2">× 10 →</div>${cell(3, 1000, 2)}<div class="mc-gx mc-gc" style="--d:3">…</div>
-              <div class="mc-gc" style="--d:3"><p class="mc-gh">${fmt(DIMS, 0)} dimensions</p>
-                <div class="mc-g756"><span class="d">…</span><span class="s">${NSTOCK} stocks × ${NDAY} days</span><span class="t" data-step="1">ten values for each</span></div>
-                <div class="mc-gn"><b class="mc-gxn q">?</b><span>points</span></div></div>
-            </div></section>
-          <section class="panel mc-gt" data-step="2"><h3 class="panel-title">Monte Carlo: the same number of random points in any dimension</h3>
-            <div class="mc-gt-b">${cl(1)}<div></div>${cl(2)}<div></div>${cl(3)}<div></div><div class="cl f"><span>${fmt(DIMS, 0)} dimensions:<br>still ${CLOUD_N} points</span><div class="mc-gmc">${ERR}</div><span>in any dimension<br><small>more on the next slide</small></span></div></div></section>
-        </div>`;
-      const wrap = body.querySelector(".mc-gr"), cnt = body.querySelector(".mc-gxn"), cvs = [...body.querySelectorAll(".mc-gt canvas")];
-      // the clouds: seeded uniform points, the same stream every time
-      const rnd = U.rng(CLOUD_SEED), pts = Array.from({ length: CLOUD_N }, () => [rnd(), rnd(), rnd()]);
-      const p3 = pts.map((p, i) => ({ p, i })).sort((a, b) => b.p[2] - a.p[2]);   // 3D: far points first
-      let shown = 0, a = null, xa = null, cur = 0;
-      function setCount(e) {   // e: the exponent shown, or null for "?"
-        cnt.classList.toggle("q", e === null); cnt.classList.toggle("x", e !== null);
-        cnt.innerHTML = e === null ? "?" : `10<sup>${e}</sup>`;
-      }
-      function drawClouds() {
-        const text = css("--term-text"), line = css("--term-line"), muted = css("--term-muted");
-        cvs.forEach(cv => {
-          const c = U.canvas(cv); if (!c) return;
-          const { ctx, w, h } = c, k = +cv.dataset.k, s = Math.min(w / 320, h / 180);
-          ctx.save(); ctx.translate((w - 320 * s) / 2, (h - 180 * s) / 2); ctx.scale(s, s);
-          ctx.fillStyle = text; ctx.strokeStyle = text;
-          if (k === 1) {
-            ctx.strokeStyle = muted; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(10, G1.y); ctx.lineTo(310, G1.y); ctx.stroke();
-            // dots on the line, like the 2D and 3D clouds; see-through, so where they bunch up it shows
-            ctx.globalAlpha = .45;
-            for (let i = 0; i < shown; i++) { const x = G1.x0 + pts[i][0] * (G1.x1 - G1.x0); ctx.beginPath(); ctx.arc(x, G1.y, 3.8, 0, 7); ctx.fill(); }
-          } else if (k === 2) {
-            ctx.strokeStyle = line; ctx.lineWidth = 1.5; ctx.strokeRect(G2.x0 - 8, G2.y0 - 4, G2.s + 16, G2.s + 8);
-            ctx.globalAlpha = .9;
-            for (let i = 0; i < shown; i++) { ctx.beginPath(); ctx.arc(G2.x0 + pts[i][0] * G2.s, G2.y0 + pts[i][1] * G2.s, 3.8, 0, 7); ctx.fill(); }
-          } else {
-            ctx.strokeStyle = line; ctx.lineWidth = 1.5;
-            cubeEdges().forEach(([a, b]) => { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); });
-            p3.forEach(({ p, i }) => { if (i >= shown) return; const [x, y] = at3(p[0], p[1], p[2]); ctx.globalAlpha = 1 - p[2] * .5; ctx.beginPath(); ctx.arc(x, y, 3.4 - p[2] * .9, 0, 7); ctx.fill(); });
-          }
-          ctx.restore();
-        });
-      }
-      function step(i, o) {
-        if (a) { a.cancel(); a = null; }
-        if (xa) { xa.cancel(); xa = null; }
-        cur = i;
-        // step 0: the four grids come in one after another when the slide comes in forwards
-        if (i === 0 && fwd(o)) { wrap.classList.remove("in"); void wrap.offsetWidth; }
-        wrap.classList.add("in");
-        // click 1: the count of the 756-dimensional grid jumps to 10^756
-        if (i < 1) setCount(null);
-        else if (i === 1 && fwd(o)) xa = U.anim(1300, k => setCount(Math.round(3 + (DIMS - 3) * k)), { ease: U.ease.inOut, done: () => { xa = null; } });
-        else setCount(DIMS);
-        // click 2: the random points
-        if (i < 2) { shown = 0; drawClouds(); return; }
-        if (i === 2 && fwd(o)) { shown = 0; a = U.anim(1500, k => { shown = Math.round(CLOUD_N * k); drawClouds(); }, { ease: U.ease.lin, done: () => { a = null; } }); return; }
-        shown = CLOUD_N; drawClouds();
-      }
-      return {
-        resize() { U.tightenRoots(body); drawClouds(); },
-        step,
-        // a cancelled count or cloud ends complete
-        leave() { if (a || xa) step(cur, { instant: true }); }
       };
     }
   });
